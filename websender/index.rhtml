@@ -1,0 +1,204 @@
+<%
+extend WEBrick::HTMLUtils
+
+def self.get_query(value)
+   if value
+       value = value.strip
+       if value.empty?
+           value = nil
+       end
+   end
+
+   value
+end
+
+schema_dir = File.join(File.dirname(__FILE__), "schema")
+
+schema = get_query(query["schema"]) || "freeform"
+schemas = Dir.glob(File.join(schema_dir, "*"))
+schemas = schemas.map {|d| File.basename(d)}
+
+request = get_query(query["request"])
+request_schema = nil
+request_sample = nil
+response = nil
+response_schema = nil
+
+ip = get_query(query["ip"]) || "localhost"
+port = get_query(query["port"]) || "18181"
+
+errors = []
+
+# load schemas
+selected_schema_dir = File.join(schema_dir, schema)
+if File.directory? selected_schema_dir
+   request_schema = File.read(File.join(selected_schema_dir, "request.json")) rescue nil
+   request_sample = File.read(File.join(selected_schema_dir, "sample.json")) rescue nil
+   response_schema = File.read(File.join(selected_schema_dir, "response.json")) rescue nil
+else
+   errors << "Schema not found: #{schema}"
+end
+
+# send request and get response
+if query["jsonsubmit"]
+    response = <<JSON
+{
+  "header": {"success": true},
+  "errors":["test", "test2"]
+}
+JSON
+else
+    request = request_sample
+end
+
+%><html>
+<head>
+  <title>SF1 Driver WEB Sender</title>
+
+  <script src="js/json.js"></script> 
+  <script src="js/jsonwidget.js"></script> 
+  <script src="js/named-jsonwidget.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/jsonwidget.css" />
+
+</head>
+
+<body onload="load_editors('request'<% if response %>, 'response'<% end %>);">
+  <!-- just used to ignore the js error -->
+  <div id="je_formdiv" style="display: none"></div>
+  <h1>SF1 Driver WEB Sender</h1>
+
+  <% unless errors.empty? %>
+  <div id="errordiv">
+    <% errors.each do |e| %>
+    <p>
+      <%= escape e %>
+    </p>
+    <% end %>
+  </div>
+  <% end %>
+
+  <% if response %>
+  <div id="response" class="container">
+    <h2>Response</h2>
+
+    <p>
+      Go to <a href="#request">request</a>.
+    </p>
+
+
+    <div id="response_warningdiv" class="warningdiv">
+    </div>
+
+    <div class="buttons-container">
+      <span id="response_formbutton">[Edit w/Form]</span>
+      <span id="response_sourcebutton">[Edit Source]</span>
+    </div>
+
+    <div class="fixed"></div>
+
+    <div id="response_formdiv" class="formdiv">
+    </div>
+
+    <div>
+      <div id="response_schemaformdiv" class="schemaformdiv">
+      </div>
+
+      <textarea id="response_schematextarea" class="schematextarea" rows="10" cols="80">
+<%= escape (response_schema || "{}") %>
+      </textarea>
+
+      <form methodp='POST' id="response_sourcetextform" class="sourcetextform">
+        <textarea id="response_sourcetextarea" rows="30" cols="80"
+                  name="response" class="sourcetextarea">
+<%= escape (response || "{}") %>
+        </textarea>
+      </form>
+    </div>
+  </div>
+  <% end %>
+
+  <div id="request" class="container">
+    <h2>Request</h2>
+
+    <% if response %>
+    <p>
+      Back to <a href="#response">response</a>.
+    </p>
+    <% end %>
+
+    <div id="request_warningdiv" class="warningdiv">
+    </div>
+
+    <div class="buttons-container">
+      <span id="request_formbutton">[Edit w/Form]</span>
+      <span id="request_sourcebutton">[Edit Source]</span>
+    </div>
+
+    <div class="fixed"></div>
+
+    <div id="request_formdiv" class="formdiv">
+    </div>
+
+    <div>
+      <div id="request_schemaformdiv" class="schemaformdiv">
+      </div>
+
+      <textarea id="request_schematextarea" class="schematextarea" rows="10" cols="80">
+<%= escape (request_schema || '{"title":"Freeform JSON","type":"any"}') %>
+      </textarea>
+
+      <form method='POST' id="request_sourcetextform" class="sourcetextform">
+        <textarea id="request_sourcetextarea" rows="30" cols="80"
+                  name="request" class="sourcetextarea">
+<%= escape (request || "{}") %>
+        </textarea>
+
+        <div>
+          <input type="hidden" name="jsonsubmit" value="true"/>
+          <input type="hidden" name="schema" value="<%= escape schema %>"/>
+
+          <p>
+            <label for="ip">BA IP: </label>
+            <input type="textfield" id="ip" name="ip"
+                   value="<%= escape ip %>" />
+          </p>
+
+          <p>
+            <label for="port">BA Port: </label>
+            <input type="textfield" id="port" name="port"
+                   value="<%= escape port %>" />
+          </p>
+
+          <input type="submit" class="submit" value="Send"/>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <form method="GET">
+      <fieldset><legend>Schema</legend>
+        <select name="schema" type="text">
+          <% schemas.each do |s| %>
+          <option value="<%= escape s %>"
+                  <%= s == schema ? 'selected="select"' : '' %>>
+            <%= escape s.capitalize %>
+          </option>
+          <% end %>
+        </select>
+        <input value="Change Schema" type="submit">
+      </fieldset>
+    </form>
+
+
+  <p>
+    Back to <a href="#request">request</a><% if response %>
+    | <a href="#response">response</a><% end %>.
+  </p>
+
+  <div id="footer">
+    iZENEsoft 2010
+  </div>
+</body>
+</html>

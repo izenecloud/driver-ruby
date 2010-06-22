@@ -1,0 +1,30 @@
+{
+  "title":"Response",
+  "type":"map",
+  "desc":"General Response",
+  "mapping": {
+    "header": {
+      "title":"Header",
+      "type":"map",
+      "mapping": {
+        "success": {
+          "type":"bool",
+          "desc":"Whether the request has been processed successfully."
+        }
+      }
+    },
+    "errors": {
+      "title":"Error messages",
+      "type":"seq",
+      "desc":"List of error messages",
+      "sequence": [
+        {
+          "desc":"Error message",
+          "id":"errro_message",
+          "title":"Error Message",
+          "type":"str"
+        }
+      ]
+    }
+  }
+}

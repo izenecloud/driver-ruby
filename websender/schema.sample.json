@@ -1,0 +1,308 @@
+{
+  "title":"Election configuration file",
+  "type":"map",
+  "desc":"An election configuration is a mapping with a series of parameters, as defined below:",
+  "mapping":
+  {
+    "version":
+    {
+      "title":"Version",
+      "type":"str",
+      "enum":
+      [
+        "0.1"
+      ],
+      "desc":"Version of the election configuration format being used.",
+      "required":true,
+      "desc_enum":
+      {
+        "0.1":"Format version number for all versions of Electowidget as of this writing (October, 2005)"
+      }
+    },
+    "allow_voting":
+    {
+      "title":"Allow voting?",
+      "type":"bool",
+      "desc":"'true' if a link should be displayed to allow logged-in users to edit their vote."
+    },
+    "ballot_type":
+    {
+      "title":"Ballot type",
+      "type":"str",
+      "enum":
+      [
+        "barscale",
+        "radioarray",
+        "singlecheckbox",
+        "singleradio",
+        "stars"
+      ],
+      "desc":"Controls the appearance and behavior of the voting user interface.",
+      "desc_enum":
+      {
+        "barscale":"Bar chart with adjustable bars.  Requires JavaScript for optimal use, though essential functionality is accessible without JavaScript by entering a rating in the provided text entry field.  Specify minimum and maximum ratings using <code>min_rating</code> and <code>max_rating</code> parameters, and control the size of the sliding scale using <code>barscale_tickpx</code>",
+        "radioarray":"Series of descrete ratings selectable by simple radio button control.  Specify minimum and maximum ratings using <code>min_rating</code> and <code>max_rating</code> parameters, and set the labels for each rating using <code>radioarray_labels</code>.",
+        "singlecheckbox":"Allow users to check (set rating to 1) or uncheck (set rating to 0) for each candidate.  Ignores <code>min_rating</code> and <code>max_rating</code> parameters.  Useful for conducting a pure Approval election.",
+        "singleradio":"Allow users to select (set rating to 1) a single candidate, deselecting all other candidates (setting ratings to 0).  Ignores <code>min_rating</code> and <code>max_rating</code> parameters.  Useful for conducting a traditional plurality election.",
+        "stars":"Graphical bar chart with stars representing the ratings.  Requires JavaScript for optimal use, though essential functionality is accessible without JavaScript by selecting a rating from the provided drop-down selection box.  Specify maximum rating using <code>max_rating</code> parameter.   Ignores <code>min_rating</code> parameter."
+      }
+    },
+    "barscale_tickpx":
+    {
+      "title":"Barscale pixels per tickmark",
+      "type":"number",
+      "desc":"Used when <code>ballot_type</code> is set to 'barscale' to specify the number of pixels per rating.  For example, if min_rating is set to 0, and max_rating is set to 10, setting barscale_tickpx to 2 will cause adjustable portion of the barscale to be 20 pixels wide."
+    },
+    "candidates":
+    {
+      "title":"Candidates",
+      "type":"map",
+      "desc":"Key/value List of candidates in the election.  The key portion is an internal identifier for the candidate used by the program which sometimes shows up in the user interface (though this will hopefully be rare).  Set the key to something readable, but short.",
+      "user_key":"(candidate key)",
+      "mapping":
+      {
+        "(candidate key)":
+        {
+          "title":"Candidate key",
+          "type":"map",
+          "user_key":"(other fields)",
+          "mapping":
+          {
+            "candidate_url":
+            {
+              "title":"Candidate URL",
+              "type":"str",
+              "desc":"URL to a page describing the candidate"
+            },
+            "display_name":
+            {
+              "title":"Display name",
+              "type":"str",
+              "desc":"Name of the candidate as you would like it displayed in the ballots and results."
+            },
+            "(other fields)":
+            {
+              "title":"Other fields",
+              "type":"str",
+              "desc":"Other fields may be defined by adding field definitions to the <code>features</code> mapping."
+            }
+          }
+        }
+      }
+    },
+    "count_subpage_ballots":
+    {
+      "title":"Count subpage ballots?",
+      "type":"bool",
+      "desc":"If <code>true</code>, count ballots cast by logged in users."
+    },
+    "count_inline_ballots":
+    {
+      "title":"Count inline ballots?",
+      "type":"bool",
+      "desc":"If <code>true</code>, count ballots encoded inline in the election config file."
+    },
+    "description":
+    {
+      "title":"Description",
+      "type":"str",
+      "desc":"Description of the election, which appears at the top of the initial election entry page."
+    },
+    "display_ballots":
+    {
+      "title":"Display ballots?",
+      "type":"bool",
+      "desc":"Show the ballots."
+    },
+    "display_parameters":
+    {
+      "title":"Display parameters?",
+      "type":"bool",
+      "desc":"If <code>true</code>, display the parameters for this election on the initial election entry page.  At the time of this writing, this is woefully incomplete, but will at least return the list of candidates."
+    },
+    "display_results":
+    {
+      "title":"Display results?",
+      "type":"bool",
+      "desc":"If <code>true</code>, calculate and display the results of the election with ballots currently on hand."
+    },
+    "election_methods":
+    {
+      "title":"Election methods",
+      "type":"seq",
+      "desc":"List of election methods to use in tallying the results.  Each item of the list is a mapping which has parameters specific to that particular method.",
+      "sequence":
+      [
+        {
+          "desc":"Key/value list of parameters for this particular method.",
+          "id":"election_method",
+          "title":"Method definition",
+          "type":"map",
+          "mapping":
+          {
+            "type":
+            {
+              "title":"Method type",
+              "type":"str",
+              "enum":
+              [
+                "approval",
+                "chain",
+                "copeland",
+                "dmc",
+                "instant-runoff",
+                "minmax-margins",
+                "minmax-wv",
+                "plurality",
+                "range",
+                "schulze-margins",
+                "schulze-wv",
+                "schulze-wv-mod",
+                "smith"
+              ],
+              "desc":"The election tallying method.  <code>schulze-wv</code> is recommended by the author of this software.",
+              "desc_enum":
+              {
+                "approval":"[[Wikipedia:Approval voting|Approval voting]]",
+                "chain":"Chain multiple methods using this election type.  For example, one can define a chain such that the Smith method is used, and Minmax(wv) settles any ties should there be multiple Smith method winners.  Use the 'methods' parameter described below to provide an ordered list of methods.",
+                "copeland":"[[Wikipedia:Copeland method|Copeland method]]",
+                "dmc":"[[Definite Majority Choice]] method.  This particular implementation implements it as Minmax(Total Approval) as an implementation convenience. ",
+                "instant-runoff":"[[Wikipedia:Instant runoff voting|Instant runoff voting]]",
+                "minmax-margins":"[[Minmax]](wv) - use 'margins' to measure victory strength.",
+                "minmax-wv":"[[Minmax]](wv) - use 'winning votes' to measure victory strength.",
+                "plurality":"[[Plurality]]",
+                "range":"[[Wikipedia:Range Voting|Range Voting]]",
+                "schulze-margins":"[[Wikipedia:Schulze method|Schulze method]] - use 'margins' to measure victory strength.",
+                "schulze-wv":"[[Wikipedia:Schulze method|Schulze method]] - use 'winning votes' to measure victory strength.",
+                "schulze-wv-mod":"[[Schulze method]] - use 'winning votes' to measure victory strength, and use 'margins' to resolve ties.",
+                "smith":"Choses the member(s) of the [[Smith set]]"
+              },
+              "required":"true"
+            },
+            "methods":
+            {
+              "title":"Chained methods",
+              "type":"seq",
+              "desc":"Used in conjunction with the <code>chain</code> method.  This defines an ordered sequence of methods to use in calculating the winner.",
+              "sequence":
+              [
+                {
+                  "type":"idref",
+                  "idref":"election_method"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "features":
+    {
+      "title":"Features",
+      "type":"map",
+      "desc":"List of important features/characteristics useful in comparing candidates.  'Political party' is an example of a candidate characteristic important while voting.  These features will be listed in a separate column from the candidates' names, and will be sortable.",
+      "user_key":"(feature identifier)",
+      "mapping":
+      {
+        "(feature identifier)":
+        {
+          "title":"Feature definition",
+          "type":"map",
+          "desc":"Parameters for a particular feature.",
+          "mapping":
+          {
+            "display_name":
+            {
+              "title":"display name",
+              "type":"str",
+              "desc":"The label for use in the column header."
+            },
+            "url_field":
+            {
+              "title":"url field",
+              "type":"str",
+              "desc":"A field identifier for an optional URL associated with a particular feature.  The identifier defined here can be used in the (candidate key) mapping defined above."
+            }
+          }
+        }
+      }
+    },
+    "inline_ballot_type":
+    {
+      "title":"Inline ballot type",
+      "type":"str",
+      "enum":
+      [
+        "range-array"
+      ],
+      "desc":"Type of ballots embedded inline"
+    },
+    "inline_ballots":
+    {
+      "title":"Inline ballots",
+      "type":"seq",
+      "desc":"Used to provide a set of ballots inline, rather than relying on an external source.",
+      "sequence":
+      [
+        {
+          "type":"map",
+          "title":"Batch of ballots",
+          "mapping":
+          {
+            "qty":
+            {
+              "title":"Quantity",
+              "type":"number",
+              "desc":"Number of votes",
+              "required":true
+            },
+            "vote":
+            {
+              "title":"vote",
+              "type":"map",
+              "desc":"set of ratings",
+              "user_key":"(candidate key)",
+              "mapping":
+              {
+                "(candidate key)":
+                {
+                  "title":"(candidate key)",
+                  "type":"number",
+                  "desc":"Rating for the specific candidate"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "max_rating":
+    {
+      "title":"Maximum rating",
+      "desc":"Maximum rating that voters may assign to a candidate.  Not respected by all ballot types.",
+      "type":"number"
+    },
+    "min_rating":
+    {
+      "title":"Mininum rating",
+      "desc":"Maximum rating that voters may assign to a candidate.  Not respected by all ballot types.",
+      "type":"number"
+    },
+    "radioarray_labels":
+    {
+      "title":"radioarray labels",
+      "type":"map",
+      "desc":"Set of labels to use when the <code>'radioarray'</code> value for <code>ballot_type</code> is chosen.",
+      "user_key":"(rating value)",
+      "mapping":
+      {
+        "(rating value)":
+        {
+          "title":"Label for rating value",
+          "type":"str",
+          "desc":"label associated with this particular numerical rating."
+        }
+      }
+    }
+  }
+}
