@@ -1,0 +1,9 @@
+{
+  "uri": "documents",
+  "collection": "ChnWiki",
+  "search": {
+    "keywords": "america",
+    "in": ["Title", "Content"]
+  },
+  "select": ["Title", "Content"]
+}
