@@ -1,0 +1,12 @@
+{
+  "uri": "documents",
+  "collection": "ChnWiki",
+  "conditions": [
+    {"property": "_id", "operator": "=", "value": 115}
+  ],
+  "search_session": {
+    "keywords": "america",
+    "in": ["Title", "Content"]
+  },
+  "select": ["Title", "Content"]
+}
