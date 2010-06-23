@@ -5,6 +5,7 @@
 #
 # read data from JSON
 
+require 'rubygems'
 require 'json'
 
 module Sf1Driver
