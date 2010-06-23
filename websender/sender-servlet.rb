@@ -1,4 +1,5 @@
 require "sf1-driver/connection"
+require "rubygems"
 require "json"
 require "webrick"
 include WEBrick
