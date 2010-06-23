@@ -18,6 +18,7 @@
     "search": {
       "type":"map",
       "desc":"Specify a full text search",
+      "id":"search",
       "mapping": {
         "keywords": {
           "type": "str",
@@ -55,6 +56,12 @@
           }
         }
       }
+    },
+
+    "search_session": {
+      "desc": "Trace last search",
+      "type": "idref",
+      "idref": "search"
     },
 
     "group": {
@@ -137,7 +144,6 @@
 
     "select": {
       "type": "seq",
-      "required": true,
       "sequence": [{
         "title": "proeprty",
         "type": "map",
@@ -147,9 +153,13 @@
             "required": true,
             "desc": "Property name"
           },
-          "hightlight": {
+          "highlight": {
             "type": "bool",
             "desc": "Highlight search keywords in the property value"
+          },
+          "snippet": {
+            "type": "bool",
+            "desc": "Only returns snippet."
           },
           "summary": {
             "type": "bool",

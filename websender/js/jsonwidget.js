@@ -901,7 +901,7 @@ jsonwidget.editor.getStringInput = function (jsonref) {
         if (curvalue.length > 50) {
           inputelement = document.createElement("textarea");
           inputelement.value = curvalue;
-          inputelement.rows = 18;
+          inputelement.rows = 6;
         } else {
           inputelement = document.createElement("input");
           inputelement.type="text";
