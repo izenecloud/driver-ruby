@@ -4,6 +4,7 @@
 #+++
 #
 require File.join(File.dirname(__FILE__), "common")
+require 'rubygems'
 require 'optparse'
 require 'json'
 

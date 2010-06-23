@@ -1,0 +1,9 @@
+{
+  "uri": "documents",
+  "collection": "SohuNews",
+  "search": {
+    "keywords": "北京",
+    "in": ["Title","Title2","Content","Content2"]
+  },
+  "select": ["Title", "Content"]
+}
