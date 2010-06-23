@@ -1259,8 +1259,8 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     helpdiv.className = "je_helpdiv";
     jsonnode.domparent.appendChild(helpdiv);
 
-    helpdiv.style.top = event.clientY-helpdiv.offsetParent.offsetTop-10;
-    helpdiv.style.left = event.clientX-helpdiv.offsetParent.offsetLeft-10;
+    helpdiv.style.top = event.pageY-helpdiv.offsetParent.offsetTop-10;
+    helpdiv.style.left = event.pageX-helpdiv.offsetParent.offsetLeft-10;
 
     var hideContextHelp = function (event) {
         if((helpdiv.compareDocumentPosition(event.relatedTarget) 
