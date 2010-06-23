@@ -4,7 +4,6 @@
   "desc":"General Response",
   "mapping": {
     "header": {
-      "title":"Header",
       "type":"map",
       "mapping": {
         "success": {
@@ -14,17 +13,12 @@
       }
     },
     "errors": {
-      "title":"Error messages",
       "type":"seq",
       "desc":"List of error messages",
-      "sequence": [
-        {
-          "desc":"Error message",
-          "id":"errro_message",
+      "sequence": [{
           "title":"Error Message",
           "type":"str"
-        }
-      ]
+      }]
     }
   }
 }

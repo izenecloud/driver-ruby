@@ -1,0 +1,203 @@
+{
+  "title":"Documents",
+  "type":"map",
+  "desc":"Get documents from SF1.",
+  "mapping": {
+    "uri": {
+      "type":"str",
+      "enum": ["documents"],
+      "required":true
+    },
+
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "search": {
+      "type":"map",
+      "desc":"Specify a full text search",
+      "mapping": {
+        "keywords": {
+          "type": "str",
+          "required": true,
+          "desc": "Search keywords"
+        },
+        "in": {
+          "desc": "Search in specified properties",
+          "type": "seq",
+          "required": true,
+          "sequence": [{
+            "type": "str",
+            "desc": "Property name"
+          }]
+        },
+        "ranking_model": {
+          "enum": ["plm", "kl", "bm25"]
+        },
+        "log_keywords": {
+          "type": "bool"
+        },
+        "analyzer": {
+          "desc": "Analyzer Options",
+          "type": "map",
+          "mapping": {
+            "use_synonym_extension": {
+              "type": "bool"
+            },
+            "apply_la": {
+              "type": "bool"
+            },
+            "use_original_keyword": {
+              "type": "bool"
+            }
+          }
+        }
+      }
+    },
+
+    "group": {
+      "type": "seq",
+      "sequence": [{
+        "title": "Group by property",
+        "type": "map",
+        "mapping": {
+          "property": {
+            "required": true,
+            "type": "str"
+          },
+          "from": {
+            "type": "any"
+          },
+          "to": {
+            "type": "any"
+          },
+          "group_count": {
+            "type": "int",
+            "desc": "How many groups are splited between \"from\" and \"to\""
+          }
+        }
+      }]
+    },
+
+    "conditions": {
+      "type": "seq",
+      "sequence": [{
+        "title": "Filter by proeprty",
+        "type": "map",
+        "mapping": {
+          "property": {
+            "type": "str",
+            "desc": "Property Name",
+            "required": true
+          },
+          "operator": {
+            "type": "str",
+            "required": true,
+            "desc": "Filtering operator",
+            "enum": [
+              "=",
+              "<>",
+              ">",
+              ">=",
+              "<",
+              "<=",
+              "in",
+              "between",
+              "starts_with",
+              "ends_with",
+              "contains"
+            ],
+            "desc_enum": {
+              "=": "Equal to",
+              "<>": "Not equal to",
+              ">": "Greater than",
+              ">=": "Greater than or equal to",
+              "<": "Less than",
+              "<=": "Less than or equal to",
+              "in": "Equal to any of the listed values",
+              "between": "Between the specified range (inclusively)",
+              "starts_with": "Starts with the specified prefix",
+              "ends_with": "Ends with the specified suffix",
+              "contains": "Contains the specified sub-string"
+            }
+          },
+          "value": {
+            "type": "seq",
+            "required": true,
+            "sequence": [{
+              "title": "operands",
+              "type": "any"
+            }]
+          }
+        }
+      }]
+    },
+
+    "select": {
+      "type": "seq",
+      "required": true,
+      "sequence": [{
+        "title": "Select proeprty in result.",
+        "type": "map",
+        "mapping": {
+          "property": {
+            "type": "str",
+            "required": true,
+            "desc": "Property name"
+          },
+          "hightlight": {
+            "type": "bool",
+            "desc": "Highlight search keywords in the property value"
+          },
+          "summary": {
+            "type": "bool",
+            "desc": "Also select summary as another property"
+          },
+          "summary_sentence_count": {
+            "type": "int",
+            "desc": "How many sentences in summary?"
+          },
+          "summary_property_alias": {
+            "type": "str",
+            "desc": "The property alias of the summary"
+          }
+        }
+      }]
+    },
+
+    "sort": {
+      "type": "seq",
+      "sequence": [{
+        "title": "Sort by proeprty",
+        "type": "map",
+        "mapping": {
+          "property": {
+            "type": "str",
+            "required": true,
+            "desc": "Property name"
+          },
+          "order": {
+            "type": "str",
+            "enum": ["ASC", "DESC"]
+          }
+        }
+      }]
+    },
+
+    "limit": {
+      "type": "int",
+      "desc": "Number of documents in page"
+    },
+
+    "offset": {
+      "type": "int",
+      "desc": "Offset of documents in current page"
+    },
+
+    "remove_duplicated_result": {
+      "type": "bool"
+    }
+  }
+}

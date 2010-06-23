@@ -4,7 +4,6 @@
   "desc":"Sends index, mining, optimize_index commands.",
   "mapping": {
     "uri": {
-      "title":"URI",
       "type":"str",
       "desc":"Which command?",
       "enum": ["commands/index", "commands/mining", "commands/optimize_index"],
@@ -17,14 +16,12 @@
     },
 
     "collection": {
-      "title":"Collection Name",
       "type":"str",
       "desc":"Specifie a collection name",
       "required":true
     },
 
     "document_count": {
-      "title":"Document Count",
       "type":"int",
       "desc":"Index at most so many documents in each SCD file. It is for developer."
     }

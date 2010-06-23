@@ -5,5 +5,8 @@
     "keywords": "america",
     "in": ["Title", "Content"]
   },
-  "select": ["Title", "Content"]
+  "select": [
+    {"property": "Title"},
+    {"property": "Content"}
+  ]
 }
