@@ -212,7 +212,7 @@ request = request_template
             <% schemas.each do |s| %>
             <option value="<%= escape s %>"
                     <%= s == schema ? 'selected="select"' : '' %>>
-              <%= escape s.capitalize %>
+              <%= escape s %>
             </option>
             <% end %>
           </select>
@@ -231,7 +231,7 @@ request = request_template
             <% templates.each do |s| %>
             <option value="<%= escape s %>"
                     <%= s == template ? 'selected="select"' : '' %>>
-              <%= escape s.capitalize %>
+              <%= escape s %>
             </option>
             <% end %>
           </select>
