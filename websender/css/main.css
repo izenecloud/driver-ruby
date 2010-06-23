@@ -1,0 +1,146 @@
+body {
+	/* background:#E9E9E9; */
+	font-family:"DejaVu Sans","BitStream Vera Sans",Verdana,Arial,Helvetica,sans-serif;
+	font-size:12px;
+    height:100%;
+	width: 86%;
+	margin: 30px auto;
+}
+h1 { font-size:180%; line-height:300%; }
+h2 { font-size:140%; line-height:200%; }
+
+strong {
+	font-weight: bold;
+}
+
+a {
+	text-decoration:none;
+	cursor:pointer;
+}
+a:hover {
+	text-decoration:underline;
+	cursor:pointer;
+}
+a:visited {
+	cursor:pointer;
+}
+
+.error div, .notice div {
+	padding: .3em .7em;
+}
+.error .ui-icon, .notice .ui-icon {
+	float: left;
+	margin-right: .3em;
+}
+
+#save-template-dialog-link {
+	padding: .4em 1em .4em 20px;
+	text-decoration: none;
+	position: relative;
+}
+#save-template-dialog-link span.ui-icon {
+	margin: 0 5px 0 0;
+	position: absolute;
+	left: .2em;
+	top: 50%;
+	margin-top: -8px;
+}
+
+#jsonwidegts-switcher {
+	display: none;
+}
+
+.ui-widget {
+	margin-bottom: 2em;
+}
+
+fieldset {
+	border: 1px solid #dddddd;
+	padding: .8em;
+}
+
+form p label {
+	display: block;
+	float: left;
+	width: 10em;
+}
+
+.formdiv table {
+	margin:5px 5px 10px;
+    clear:both;
+}
+.formdiv td {
+	padding: 6px 3px;
+	vertical-align:top;
+	border-color:#dddddd;
+}
+
+#schema-form {
+	float: left;
+	width: 48%;
+}
+#template-form {
+	float: right;
+	width: 48%;
+}
+
+.request_indicator {
+	padding: 1px;
+}
+
+.rmx, .je_hide, .je_show, .je_help {
+    font-size: 0.8em;
+    cursor: pointer;
+}
+.je_disabled {
+    font-size: 0.8em;
+    cursor: help;
+    color: grey;
+}
+.je_topcontrols {
+    font-size: 0.8em;
+    vertical-align: super;
+    visibility: hidden;
+	color: #c77405;
+}
+tr:hover > td > span.je_topcontrols {
+    visibility: visible;
+}
+div.je_topcontrols {
+    visibility: visible;
+    float: right;
+    padding: 0 3px 3px;
+}
+span:hover.je_userkey {
+    border-style: solid;
+    border-color: #444444;
+    border-width: 1px;
+}
+.je_userkey {
+    border-style: solid;
+    border-color: #cccccc;
+    border-width: 1px;
+    padding: 3px 5px;
+}
+
+.je_helpdiv {
+    border-style: solid;
+    border-width: 1px;
+    background-color: lightgoldenrodyellow;
+    position: absolute;
+    padding: 10px;
+    padding-left: 30px;
+}
+
+.jeclass {
+    width: 100%;
+}
+
+.schematextarea {
+	display: none;
+}
+
+#footer {
+	clear: both;
+	padding-top: 20px;
+}

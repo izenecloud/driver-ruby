@@ -117,12 +117,13 @@ jsonwidget.treeRef = function (node, parent, nodeindex, nodename) {
 // jsonTreeRef object
 //
 // not yet bothering to make this a subclass of treeRef
-jsonwidget.jsonTreeRef = function (node, parent, nodeindex, nodename, schemaref) {
+jsonwidget.jsonTreeRef = function (node, parent, nodeindex, nodename, schemaref, id) {
     this.node = node;
     this.parent = parent;
     this.nodeindex = nodeindex;
     this.nodename = nodename;
     this.schemaref = schemaref;
+    this.rootname = id || 'json_root';
 
     this.init = jsonwidget.jsonTreeRef.init;
     this.isUserKey = jsonwidget.jsonTreeRef.isUserKey;
@@ -205,7 +206,7 @@ jsonwidget.jsonTreeRef.getType = function () {
 
 jsonwidget.jsonTreeRef.getFullIndex = function () {
     if(this.parent==undefined) {
-        return "json_root";
+        return this.rootname;
     }
     else {
         return this.parent.getFullIndex() + "." + jsonwidget.stringToId(this.nodeindex);
@@ -264,7 +265,8 @@ jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex, nodename) {
 // editor object
 //
 
-jsonwidget.editor = function () {
+jsonwidget.editor = function (prefix) {
+    this.prefix = prefix;
     this.buffer = new Array();
     this.bufferTree = document.createElement("div");
     this.bufferCurrent = this.bufferTree;
@@ -274,14 +276,14 @@ jsonwidget.editor = function () {
 
     //override if you want to use different ids
     this.htmlids = {
-        "warningdiv": "je_warningdiv",
-        "formdiv": "je_formdiv",
-        "schemaformdiv": "je_schemaformdiv",
-        "sourcetextarea": "je_sourcetextarea",
-        "schematextarea": "je_schematextarea",
-        "schemaschematextarea": "je_schemaschematextarea",
-        "byexamplebutton": "je_byexamplebutton",
-        "sourcetextform": "je_sourcetextform"
+        "warningdiv": this.prefix + "_warningdiv",
+        "formdiv": this.prefix + "_formdiv",
+        "schemaformdiv": this.prefix + "_schemaformdiv",
+        "sourcetextarea": this.prefix + "_sourcetextarea",
+        "schematextarea": this.prefix + "_schematextarea",
+        "schemaschematextarea": this.prefix + "_schemaschematextarea",
+        "byexamplebutton": this.prefix + "_byexamplebutton",
+        "sourcetextform": this.prefix + "_sourcetextform"
     }
     this.debuglevel=0;
 
@@ -291,10 +293,10 @@ jsonwidget.editor = function () {
 	this.showByExampleButton = false;
 
     this.htmlbuttons = {
-        form: "je_formbutton",
-        source: "je_sourcebutton",
-        schemasource: "je_schemasourcebutton",
-        schemaform: "je_schemaformbutton"
+        form: this.prefix + "_formbutton",
+        source: this.prefix + "_sourcebutton",
+        schemasource: this.prefix + "_schemasourcebutton",
+        schemaform: this.prefix + "_schemaformbutton"
     }
     
     this.classname = {
@@ -402,7 +404,6 @@ jsonwidget.editor.attachByExampleText = function () {
 
 jsonwidget.editor.showForm = function (formnode) {
     this.formdiv.appendChild(formnode);
-    formnode.style.background = "#ffffff";
     this.formdiv.style.display="inline";
 }
 
@@ -416,7 +417,6 @@ jsonwidget.editor.clearForm = function () {
 
 jsonwidget.editor.attachHandlers = function () {
     var jsoneditobj = this;
-    document.body.style.background = jsoneditobj.bgcolor;
     this.formdiv.onchange = function (event) {
         if(event.target.className == "jeclass") {
             var jsonnode = jsoneditobj.jsonLookupById[event.target.id.substr(8)];
@@ -897,12 +897,19 @@ jsonwidget.editor.getStringInput = function (jsonref) {
 
     if(jsonref.schemaref.node['enum']==undefined) {
         //switching to DOM creation in hopes of preventing injection problems
-        var inputelement = document.createElement("input");
+        var inputelement = null;
+        if (curvalue.length > 50) {
+          inputelement = document.createElement("textarea");
+          inputelement.value = curvalue;
+          inputelement.rows = 18;
+        } else {
+          inputelement = document.createElement("input");
+          inputelement.type="text";
+          inputelement.setAttribute("value", curvalue);
+        }
         inputelement.className = "jeclass";
         inputelement.id=inputid;
         inputelement.size=50;
-        inputelement.type="text";
-        inputelement.setAttribute("value", curvalue);
     } else {
         var inputelement = document.createElement("select");
         var validvalue = false;
@@ -1173,7 +1180,7 @@ jsonwidget.editor.toggleToFormActual = function () {
 
     var nodename = jsonwidget.getTitleFromNode(schema, "Root node");
     var rootschema = this.schemaindex.newRef(schema, null, null, nodename);
-    var rootjson = new jsonwidget.jsonTreeRef(this.jsondata, null, null, nodename, rootschema);
+    var rootjson = new jsonwidget.jsonTreeRef(this.jsondata, null, null, nodename, rootschema, this.prefix);
     this.rootjson = rootjson;
     this.jsonLookupById[rootjson.fullindex]=rootjson;
 
@@ -1252,8 +1259,8 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     helpdiv.className = "je_helpdiv";
     jsonnode.domparent.appendChild(helpdiv);
 
-    helpdiv.style.top = event.pageY-10;
-    helpdiv.style.left = event.pageX-10;
+    helpdiv.style.top = event.clientY-helpdiv.offsetParent.offsetTop-10;
+    helpdiv.style.left = event.clientX-helpdiv.offsetParent.offsetLeft-10;
 
     var hideContextHelp = function (event) {
         if((helpdiv.compareDocumentPosition(event.relatedTarget) 

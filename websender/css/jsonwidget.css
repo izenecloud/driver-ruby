@@ -98,16 +98,16 @@ fieldset {
 }
 
 .rmx, .je_hide, .je_show, .je_help {
-    font-size: 12px;
+    font-size: 0.8em;
     cursor: pointer;
 }
 .je_disabled {
-    font-size: 12px;
+    font-size: 0.8em;
     cursor: help;
     color: grey;
 }
 .je_topcontrols {
-    font-size: 12px;
+    font-size: 0.8em;
     vertical-align: super;
     visibility: hidden;
 }
