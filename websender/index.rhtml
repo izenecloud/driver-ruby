@@ -87,13 +87,64 @@ request = request_template
 <body>
   <!-- just used to ignore the js error -->
   <div id="je_formdiv" style="display: none"></div>
-  <h1>SF1 Driver WEB Sender</h1>
-
-  <p>
+  <p style="float:right">
     <a href="https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html">
       Online Driver Specification
     </a>
   </p>
+
+  <h1>SF1 Driver WEB Sender</h1>
+
+  <div class="ui-widget">
+	<div class="ui-widget notice">
+	  <div class="ui-state-highlight ui-corner-all">
+		<p><span class="ui-icon ui-icon-info"></span>
+		  <strong>Hey!</strong> Changing schema and template will erase the
+		  request.
+        </p>
+	  </div>
+	</div>
+
+    <form method="GET" id="schema-form">
+      <fieldset><legend>Schema</legend>
+
+        <p>
+          <select name="schema" type="text">
+            <% schemas.each do |s| %>
+            <option value="<%= escape s %>"
+                    <%= s == schema ? 'selected="select"' : '' %>>
+              <%= escape s %>
+            </option>
+            <% end %>
+          </select>
+
+          <input type="submit" value="Change Schema" />
+        </p>
+      </fieldset>
+    </form>
+
+    <form method="GET" id="template-form">
+      <fieldset><legend>Template</legend>
+
+        <p>
+          <input type="hidden" name="schema" value="<%= escape schema %>" />
+          <select name="template" type="text">
+            <% templates.each do |s| %>
+            <option value="<%= escape s %>"
+                    <%= s == template ? 'selected="select"' : '' %>>
+              <%= escape s %>
+            </option>
+            <% end %>
+          </select>
+
+          <input type="submit" value="Change Template" />
+        </p>
+      </fieldset>
+    </form>
+
+  </div>
+
+  <div style="clear:both"></div>
 
   <div class="ui-widget error" id="error-container" <% if errors.empty? %>style="display:none"<% end %>>
 	<div class="ui-state-error ui-corner-all"> 
@@ -200,54 +251,6 @@ request = request_template
 	</div>
   </div>
 
-  <div class="ui-widget">
-	<div class="ui-widget notice">
-	  <div class="ui-state-highlight ui-corner-all">
-		<p><span class="ui-icon ui-icon-info"></span>
-		  <strong>Hey!</strong> Changing schema and template will erase the
-		  request.
-        </p>
-	  </div>
-	</div>
-
-    <form method="GET" id="schema-form">
-      <fieldset><legend>Schema</legend>
-
-        <p>
-          <select name="schema" type="text">
-            <% schemas.each do |s| %>
-            <option value="<%= escape s %>"
-                    <%= s == schema ? 'selected="select"' : '' %>>
-              <%= escape s %>
-            </option>
-            <% end %>
-          </select>
-
-          <input type="submit" value="Change Schema" />
-        </p>
-      </fieldset>
-    </form>
-
-    <form method="GET" id="template-form">
-      <fieldset><legend>Template</legend>
-
-        <p>
-          <input type="hidden" name="schema" value="<%= escape schema %>" />
-          <select name="template" type="text">
-            <% templates.each do |s| %>
-            <option value="<%= escape s %>"
-                    <%= s == template ? 'selected="select"' : '' %>>
-              <%= escape s %>
-            </option>
-            <% end %>
-          </select>
-
-          <input type="submit" value="Change Template" />
-        </p>
-      </fieldset>
-    </form>
-
-  </div>
 
   <div id="footer">
     iZENEsoft 2010
