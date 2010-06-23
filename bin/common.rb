@@ -13,7 +13,7 @@ LIBDIR = File.join(File.dirname(BINDIR), "lib").freeze
 $LOAD_PATH << LIBDIR
 
 require "sf1-driver/connection"
-
+require "yaml"
 config_file = File.join(BINDIR, "config.yml")
 unless File.exist? config_file
   config_file = File.join(BINDIR, "config.yml.default")
