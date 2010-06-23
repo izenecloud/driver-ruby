@@ -1,7 +1,7 @@
 {
   "title":"Documents",
   "type":"map",
-  "desc":"Get documents from SF1.",
+  "desc":"Get documents from SF1",
   "mapping": {
     "uri": {
       "type":"str",
@@ -60,7 +60,7 @@
     "group": {
       "type": "seq",
       "sequence": [{
-        "title": "Group by property",
+        "title": "property",
         "type": "map",
         "mapping": {
           "property": {
@@ -84,7 +84,7 @@
     "conditions": {
       "type": "seq",
       "sequence": [{
-        "title": "Filter by proeprty",
+        "title": "proeprty",
         "type": "map",
         "mapping": {
           "property": {
@@ -139,7 +139,7 @@
       "type": "seq",
       "required": true,
       "sequence": [{
-        "title": "Select proeprty in result.",
+        "title": "proeprty",
         "type": "map",
         "mapping": {
           "property": {
@@ -170,7 +170,7 @@
     "sort": {
       "type": "seq",
       "sequence": [{
-        "title": "Sort by proeprty",
+        "title": "proeprty",
         "type": "map",
         "mapping": {
           "property": {
