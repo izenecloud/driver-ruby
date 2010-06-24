@@ -18,6 +18,7 @@ sf1_driver_spec = Gem::Specification.new do |s|
   s.name = "sf1-driver"
   s.requirements << "none"
   s.require_path = "lib"
+  s.dependencies = "json"
   s.email = "it@izenesoft.com"
   s.homepage = "http://www.izenesoft.com"
   s.files = FileList['lib/sf1-driver/**/*.rb']
