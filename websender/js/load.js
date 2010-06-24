@@ -29,11 +29,20 @@ jQuery(document).ready(function() {
     $('.request-indicator').html('<img src="images/ajax-loader.gif" alt="sending ..." />');
     $('#error-container').hide();
 
+    var jsondata = "{}";
+    var jsonarea = $("#" + request_editor.htmlids.sourcetextarea);
+    if (jsonarea.css("display") != "none") {
+      jsondata = jsonarea.val();
+      request_editor.setView("form");
+    } else {
+      jsondata = JSON.stringify(request_editor.jsondata);
+    }
+
     $.ajax({
       url: 'sender',
       contentType: 'application/json',
       dataType: 'json',
-      data: JSON.stringify(request_editor.jsondata),
+      data: jsondata,
       type: 'POST',
       success: function(json) {
         response_editor.jsondata = json;
