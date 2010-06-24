@@ -23,6 +23,7 @@ unless File.exist? config_file
 end
 
 CONFIG = YAML::load_file config_file
+SCHEMA_DIR = File.join(current_dir, "schema")
 
 start_webrick(CONFIG) {|server|
   doc_root = File.dirname(__FILE__)

@@ -12,8 +12,6 @@ def self.get_query(value)
    value
 end
 
-schema_dir = File.join(File.dirname(__FILE__), "schema")
-
 request = get_query(query["request"])
 request_schema = nil
 request_template = nil
@@ -23,14 +21,14 @@ response_schema = nil
 errors = []
 
 schema = get_query(query["schema"]) || "freeform"
-schemas = Dir.glob(File.join(schema_dir, "*"))
+schemas = Dir.glob(File.join(SCHEMA_DIR, "*"))
 schemas = schemas.map {|d| File.basename(d)}
 
 template = get_query(query["template"]) || "default"
 if template == "default"
-  template_file = File.join(schema_dir, schema, "template.json")
+  template_file = File.join(SCHEMA_DIR, schema, "template.json")
 else
-  template_file = File.join(schema_dir, schema, "template.#{template}.json")
+  template_file = File.join(SCHEMA_DIR, schema, "template.#{template}.json")
 end
 
 if query["save-template"]
@@ -44,20 +42,20 @@ if query["save-template"]
 end
 
 templates = ["default"]
-templates += Dir.glob(File.join(schema_dir, schema, "template.*.json")).map {|f|
+templates += Dir.glob(File.join(SCHEMA_DIR, schema, "template.*.json")).map {|f|
    File.basename(f).sub(/^template\.(.*)\.json$/, '\1')
 }
 unless templates.include? template
    template = "default"
 end
 if template == "default"
-  template_file = File.join(schema_dir, schema, "template.json")
+  template_file = File.join(SCHEMA_DIR, schema, "template.json")
 else
-  template_file = File.join(schema_dir, schema, "template.#{template}.json")
+  template_file = File.join(SCHEMA_DIR, schema, "template.#{template}.json")
 end
 
 # load schemas
-selected_schema_dir = File.join(schema_dir, schema)
+selected_schema_dir = File.join(SCHEMA_DIR, schema)
 if File.directory? selected_schema_dir
   request_schema = File.read(File.join(selected_schema_dir, "request.json")) rescue nil
   response_schema = File.read(File.join(selected_schema_dir, "response.json")) rescue nil
