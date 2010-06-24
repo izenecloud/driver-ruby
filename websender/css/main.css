@@ -56,7 +56,11 @@ a:visited {
 
 fieldset {
 	border: 1px solid #dddddd;
-	padding: .8em;
+	padding: .6em;
+	margin-left: -.2em;
+}
+legend {
+    margin-left: -.4em;
 }
 
 form p label {
