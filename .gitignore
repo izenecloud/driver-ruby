@@ -1,3 +1,4 @@
 pkg
 *.out.json
 bin/config.yml
+websender/server.yml
