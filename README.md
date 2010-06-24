@@ -2,9 +2,10 @@
 
 ## Installation ##
 
-Add `lib` directory to LOAD_PATH. Or, which is recommended, install the gem:
+Add `lib` directory to environment variable `RUBYLIB` or ruby global
+environment `$LOAD_PATH`. Or, which is recommended, install the gem:
 
-    make gem
+    rake gem
     gem install pkg/sf1-driver-${VERSION}.gem
     
 (Replace ${VERSION} to the latest version)
