@@ -1,0 +1,16 @@
+{
+  "title":"Hello",
+  "type":"map",
+  "desc":"Say hello",
+  "mapping": {
+    "uri": {
+      "type":"str",
+      "desc":"Say hello",
+      "enum": ["hello/index"],
+      "required":true,
+      "desc_enum": {
+        "hello/index":"Get a list of collections"
+      }
+    }
+  }
+}
