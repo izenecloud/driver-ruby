@@ -2,7 +2,7 @@
   "uri": "documents",
   "collection": "SohuNews",
   "search": {
-    "keywords": "北京",
+    "keywords": "请问北京在哪里?",
     "in": ["Title","Title2","Content","Content2"]
   },
   "select": ["Title", "Content"]
