@@ -1,0 +1,178 @@
+<html>
+<head>
+  <title>SF1 Driver WEB Sender</title>
+
+  <script src="js/json.js"></script> 
+  <script src="js/jsonwidget.js"></script> 
+  <script src="js/jquery-1.4.2.min.js"></script> 
+  <script src="js/jquery-ui-1.8.2.custom.min.js"></script> 
+  <script src="js/jquery.hashchange-1.0.0.js"></script>
+  <script src="js/websender.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/reset-min.css" />
+  <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.2.custom.css" />
+
+</head>
+
+<body>
+  <p style="float:right">
+    <a href="https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html">
+      Online Driver Specification
+    </a>
+  </p>
+
+  <h1>SF1 Driver WEB Sender</h1>
+
+  <div id="page-overlay" class="ui-widget">
+    <p><img src="images/ajax-loader.gif" alt="loading ..." />
+      <span id="page-overlay-message"></span>
+    </p>
+  </div>
+
+  <div class="ui-widget">
+	<div class="ui-widget notice">
+	  <div class="ui-state-highlight ui-corner-all">
+		<p><span class="ui-icon ui-icon-info"></span>
+		  <strong>Hey!</strong> Changing schema and template will erase the
+		  request.
+        </p>
+	  </div>
+	</div>
+
+    <form method="GET" id="schema-form">
+      <fieldset><legend>Change Schema &amp; Template</legend>
+
+        <div class="selector">
+          <label for="controller">Controller: </label>
+          <select id="controller" name="controller" type="text">
+            <option>Loading...</option>
+          </select>
+        </div>
+
+        <div class="selector">
+          <label for="action">Action: </label>
+          <select id="action" name="action" type="text">
+            <option>Loading...</option>
+          </select>
+        </div>
+
+        <div class="selector">
+          <label for="template">Template: </label>
+          <select id="template" name="template" type="text">
+            <option>Loading...</option>
+          </select>
+        </div>
+
+        <div style="clear:both"></div>
+
+        <div id="request-description"></div>
+      </fieldset>
+    </form>
+  </div>
+
+
+  <div class="ui-widget error" id="error-container" style="display:none">
+	<div class="ui-state-error ui-corner-all"> 
+	  <p><span class="ui-icon ui-icon-alert"></span><strong>Error:</strong></p>
+      <div id="error-messages">
+	  </div>
+    </div>
+  </div>
+
+  <div id="warningdiv">
+    <div id="request_warningdiv">
+    </div>
+    <div id="response_warningdiv">
+    </div>
+  </div>
+
+  <div id="jsonwidegts-switcher">
+    <span id="request_formbutton">[Request Form]</span>
+    <span id="request_sourcebutton">[Request Source]</span>
+    <span id="response_formbutton">[Response Form]</span>
+    <span id="response_sourcebutton">[Response Source]</span>
+  </div>
+
+  <div id="tabs">
+	<ul>
+	  <li><a href="#request">Request Form</a></li>
+	  <li><a href="#request-source">Request Source</a></li>
+	  <li>
+        <a id="response-tab-header" href="#response">Response Form</a>
+        <span class="request-indicator"></span>
+      </li>
+	  <li>
+        <a href="#response-source">Response Source</a>
+        <span class="request-indicator"></span>
+      </li>
+	</ul>
+
+	<div id="request">
+      <div id="request_formdiv" class="formdiv">
+      </div>
+    </div>
+
+	<div id="request-source">
+      <div id="request_schemaformdiv" class="schemaformdiv">
+      </div>
+
+      <textarea id="request_schematextarea" class="schematextarea" rows="10" cols="80">
+{"title":"Freeform JSON","type":"any"}
+      </textarea>
+
+      <form id="request_sourcetextform" class="sourcetextform">
+        <textarea id="request_sourcetextarea" rows="30" cols="80"
+                  name="request" class="sourcetextarea">
+{}
+        </textarea>
+      </form>
+    </div>
+
+	<div id="response">
+      <div id="response_formdiv" class="formdiv">
+      </div>
+    </div>
+    <div id="response-source">
+      <div id="response_schemaformdiv" class="schemaformdiv">
+      </div>
+
+      <textarea id="response_schematextarea" class="schematextarea" rows="10" cols="80">
+{"title":"Freeform JSON","type":"any"}
+      </textarea>
+
+      <form id="response_sourcetextform" class="sourcetextform">
+        <textarea id="response_sourcetextarea" rows="30" cols="80"
+                  name="response" class="sourcetextarea">
+{}
+        </textarea>
+      </form>
+    </div>
+  </div>
+
+  <div id="buttons-container" class="ui-widget">
+    <button id="request-send-button">Send Request</button>
+    <span class="request-indicator"></span>
+
+    <a href="#" id="save-template-dialog-link"
+       class="ui-state-default ui-corner-all">
+      <span class="ui-icon ui-icon-newwin"></span>
+      Save as Template...
+    </a>
+
+    <div id="save-template-dialog" title="Same as Template..." class="ui-widget">
+      <form id="save-template-form">
+        <p>
+          <label for="save-as-template">Name</label>
+          <input type="text" id="save-as-template" name="save-as-template" />
+        </p>
+      </form>
+    </div>
+  </div>
+
+
+  <div id="footer">
+    iZENEsoft 2010
+  </div>
+</body>
+</html>

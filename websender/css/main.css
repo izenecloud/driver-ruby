@@ -79,13 +79,15 @@ form p label {
 	border-color:#dddddd;
 }
 
-#schema-form {
-	float: left;
-	width: 48%;
+#page-overlay p {
+	text-align: center;
 }
-#template-form {
-	float: right;
-	width: 48%;
+#schema-form .selector {
+	float: left;
+	margin-right: 20px;
+}
+#request-description {
+	padding:10px;
 }
 
 .request_indicator {
@@ -151,6 +153,8 @@ span:hover.je_userkey {
 
 #warningdiv {
 	width: 80%;
-	padding: 10px;
-	margin: 0 auto 20px;
+	margin: 0 auto;
+}
+#tabs {
+	margin-top: 10px;
 }

@@ -1,0 +1,17 @@
+{
+  "title":"Sends mining command",
+  "type":"map",
+  "desc":"Sends mining command",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "document_count": {
+      "type":"int",
+      "desc":"Mining at most so many documents in each SCD file. It is for developer."
+    }
+  }
+}

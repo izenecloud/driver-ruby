@@ -1,0 +1,5 @@
+{
+  "title": "Freeform JSON",
+  "type": "any",
+  "desc": "Can enter any JSON and send the request. Remember to override the uri in request"
+}

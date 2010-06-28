@@ -1,7 +1,6 @@
 :Port: 18188
 :MimeTypes:
   html: text/html
-  rhtml: text/html
   js: application/x-javascript
   css: text/css
 

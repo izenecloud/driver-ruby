@@ -1,5 +1,5 @@
-require "sf1-driver/connection"
 require "rubygems"
+require "sf1-driver/connection"
 require "json"
 require "webrick"
 include WEBrick
@@ -16,7 +16,6 @@ class SenderServlet < HTTPServlet::AbstractServlet
     response_message = nil
 
     begin
-      @logger.log(1, "BODY>>> #{req.body}")
       request_message = JSON.load req.body
 
       if request_message.is_a? Hash
@@ -30,7 +29,7 @@ class SenderServlet < HTTPServlet::AbstractServlet
         if uri and !uri.empty?
           response_message = connection.send uri, request_message
         else
-          error_message["errors"] << "Request must be an Object"
+          error_message["errors"] << "Require uri."
         end
 
       else

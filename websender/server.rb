@@ -1,10 +1,13 @@
 libdir = File.join(File.dirname(File.dirname(File.expand_path(__FILE__))), "lib")
 $LOAD_PATH << libdir
 
+require "rubygems"
 require "webrick"
+require "yaml"
 include WEBrick
 
 require File.join(File.dirname(__FILE__), "sender-servlet.rb")
+require File.join(File.dirname(__FILE__), "schema-servlet.rb")
 
 def start_webrick(config = {})
   server = HTTPServer.new(config)
@@ -30,4 +33,5 @@ start_webrick(CONFIG) {|server|
   server.mount("/", HTTPServlet::FileHandler, doc_root,
                {:FancyIndexing=>true})
   server.mount("/sender", SenderServlet)
+  server.mount("/schema", SchemaServlet)
 }

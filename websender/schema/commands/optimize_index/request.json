@@ -1,0 +1,12 @@
+{
+  "title":"Sends optimize_index command",
+  "type":"map",
+  "desc":"Sends optimize_index command",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    }
+  }
+}

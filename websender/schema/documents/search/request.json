@@ -58,12 +58,6 @@
       }
     },
 
-    "search_session": {
-      "desc": "Trace last search",
-      "type": "idref",
-      "idref": "search"
-    },
-
     "group": {
       "type": "seq",
       "sequence": [{
