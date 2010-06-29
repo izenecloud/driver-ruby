@@ -1,5 +1,4 @@
 {
-  "uri": "documents",
   "collection": "SohuNews",
   "search": {
     "keywords": "北京",
@@ -7,6 +6,7 @@
   },
   "select": [
     {"property":"Title"},
-    {"property":"Content"}
-  ]
+    {"property":"Content","snippet": true}
+  ],
+  "limit": 10
 }
