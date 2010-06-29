@@ -63,7 +63,8 @@ Websender.prototype.loadSchema = function() {
   this.overlay.dialog('option', 'title', 'Loading Schema ...');
   this.overlay.dialog('open');
   var sender = this;
-  $.getJSON('schema/' + this.controller + '/' + this.action, null, function(resp) {
+  var url = 'schema/' + this.controller + '/' + this.action + '/' + this.template;
+  $.getJSON(url, function(resp) {
     $.each(resp, function(key, val) {
         sender[key] = val;
     });
@@ -80,6 +81,7 @@ Websender.prototype.renderSchema = function () {
   var template = this.template;
 
   selector.controller.html('');
+  this.controllers.sort();
   $.each(this.controllers, function(i, val) {
     var option = $('<option></option>').val(val).html(val);
     if (val == controller) {
@@ -89,6 +91,7 @@ Websender.prototype.renderSchema = function () {
   });
 
   selector.action.html('');
+  this.actions.sort();
   $.each(this.actions, function(i, val) {
     var option = $('<option></option>').val(val).html(val);
     if (val == action) {
@@ -98,9 +101,12 @@ Websender.prototype.renderSchema = function () {
   });
 
   selector.template.html('');
-  $.each(this.templates, function(key, val) {
-    var option = $('<option></option>').val(key).html(key);
-    if (key == template) {
+  var templateNames = [];
+  $.each(this.templates, function(key, val) {templateNames.push(key);});
+  templateNames.sort();
+  $.each(templateNames, function(i, val) {
+    var option = $('<option></option>').val(val).html(val);
+    if (val == template) {
       option.attr('selected', 'selected');
     }
     selector.template.append(option);
