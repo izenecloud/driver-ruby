@@ -1,0 +1,17 @@
+{
+  "collection": "ChnWiki",
+  "select": [
+    {"property": "DOCID"},
+    {"property": "Title"},
+    {"property": "Content","snippet": true, "highlight": true }
+  ],
+
+  "conditions": [
+    {"property":"DOCID", "operator":"in", "value":["115", "706"]}
+  ],
+
+  "search_session": {
+    "keywords": "america",
+    "in": ["Title", "Content"]
+  }
+}
