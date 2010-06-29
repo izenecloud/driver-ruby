@@ -1,5 +1,5 @@
 {
-  "uri": "documents",
+  "uri": "documents/get",
   "collection": "ChnWiki",
   "conditions": [
     {"property": "_id", "operator": "=", "value": 115}
