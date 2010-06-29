@@ -12,13 +12,13 @@ require 'rake/clean'
 # end
 
 sf1_driver_spec = Gem::Specification.new do |s|
-  s.version = 1.0
+  s.version = 1.1
   s.platform = Gem::Platform::RUBY
   s.summary = "Sf1 Driver Ruby Client."
   s.name = "sf1-driver"
   s.requirements << "none"
   s.require_path = "lib"
-  s.dependencies = "json"
+  s.add_dependency "json"
   s.email = "it@izenesoft.com"
   s.homepage = "http://www.izenesoft.com"
   s.files = FileList['lib/sf1-driver/**/*.rb']
