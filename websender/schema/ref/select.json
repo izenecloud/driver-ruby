@@ -1,0 +1,31 @@
+[{
+  "title": "proeprty",
+  "type": "map",
+  "mapping": {
+    "property": {
+      "type": "str",
+      "required": true,
+      "desc": "Property name"
+    },
+    "highlight": {
+      "type": "bool",
+      "desc": "Highlight search keywords in the property value"
+    },
+    "snippet": {
+      "type": "bool",
+      "desc": "Only returns snippet."
+    },
+    "summary": {
+      "type": "bool",
+      "desc": "Also select summary as another property"
+    },
+    "summary_sentence_count": {
+      "type": "int",
+      "desc": "How many sentences in summary?"
+    },
+    "summary_property_alias": {
+      "type": "str",
+      "desc": "The property alias of the summary"
+    }
+  }
+}]

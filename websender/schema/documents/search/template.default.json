@@ -5,6 +5,7 @@
     "in": ["Title", "Content"]
   },
   "select": [
+    {"property": "DOCID"},
     {"property": "Title"},
     {"property": "Content","snippet": true }
   ],

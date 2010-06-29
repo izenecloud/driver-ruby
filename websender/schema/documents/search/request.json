@@ -42,94 +42,12 @@
 
     "conditions": {
       "type": "seq",
-      "sequence": [{
-        "title": "proeprty",
-        "type": "map",
-        "mapping": {
-          "property": {
-            "type": "str",
-            "desc": "Property Name",
-            "required": true
-          },
-          "operator": {
-            "type": "str",
-            "required": true,
-            "desc": "Filtering operator",
-            "enum": [
-              "=",
-              "<>",
-              ">",
-              ">=",
-              "<",
-              "<=",
-              "in",
-              "between",
-              "starts_with",
-              "ends_with",
-              "contains"
-            ],
-            "desc_enum": {
-              "=": "Equal to",
-              "<>": "Not equal to",
-              ">": "Greater than",
-              ">=": "Greater than or equal to",
-              "<": "Less than",
-              "<=": "Less than or equal to",
-              "in": "Equal to any of the listed values",
-              "between": "Between the specified range (inclusively)",
-              "starts_with": "Starts with the specified prefix",
-              "ends_with": "Ends with the specified suffix",
-              "contains": "Contains the specified sub-string"
-            }
-          },
-          "value": {
-            "type": "seq",
-            "required": true,
-            "sequence": [{
-              "title": "operands",
-              "type": "any"
-            }]
-          }
-        }
-      }]
+      "sequence": #{conditions}
     },
 
     "select": {
       "type": "seq",
-      "sequence": [{
-        "title": "proeprty",
-        "type": "map",
-        "mapping": {
-          "property": {
-            "type": "str",
-            "required": true,
-            "desc": "Property name"
-          },
-          "highlight": {
-            "type": "bool",
-            "required": true,
-            "desc": "Highlight search keywords in the property value"
-          },
-          "snippet": {
-            "type": "bool",
-            "required": true,
-            "desc": "Only returns snippet."
-          },
-          "summary": {
-            "type": "bool",
-            "required": true,
-            "desc": "Also select summary as another property"
-          },
-          "summary_sentence_count": {
-            "type": "int",
-            "desc": "How many sentences in summary?"
-          },
-          "summary_property_alias": {
-            "type": "str",
-            "desc": "The property alias of the summary"
-          }
-        }
-      }]
+      "sequence": #{select}
     },
 
     "sort": {

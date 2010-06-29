@@ -1,0 +1,50 @@
+[{
+  "title": "proeprty",
+  "type": "map",
+  "mapping": {
+    "property": {
+      "type": "str",
+      "desc": "Property Name",
+      "required": true
+    },
+    "operator": {
+      "type": "str",
+      "required": true,
+      "desc": "Filtering operator",
+      "enum": [
+        "=",
+        "<>",
+        ">",
+        ">=",
+        "<",
+        "<=",
+        "in",
+        "between",
+        "starts_with",
+        "ends_with",
+        "contains"
+      ],
+      "desc_enum": {
+        "=": "Equal to",
+        "<>": "Not equal to",
+        ">": "Greater than",
+        ">=": "Greater than or equal to",
+        "<": "Less than",
+        "<=": "Less than or equal to",
+        "in": "Equal to any of the listed values",
+        "between": "Between the specified range (inclusively)",
+        "starts_with": "Starts with the specified prefix",
+        "ends_with": "Ends with the specified suffix",
+        "contains": "Contains the specified sub-string"
+      }
+    },
+    "value": {
+      "type": "seq",
+      "required": true,
+      "sequence": [{
+        "title": "operands",
+        "type": "any"
+      }]
+    }
+  }
+}]
