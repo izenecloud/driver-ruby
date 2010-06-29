@@ -1,14 +1,8 @@
 {
   "title":"Documents",
   "type":"map",
-  "desc":"Get documents from SF1",
+  "desc":"Search documents from SF1",
   "mapping": {
-    "uri": {
-      "type":"str",
-      "enum": ["documents"],
-      "required":true
-    },
-
     "collection": {
       "type":"str",
       "desc":"Specify a collection name",
@@ -17,45 +11,9 @@
 
     "search": {
       "type":"map",
-      "desc":"Specify a full text search",
-      "id":"search",
-      "mapping": {
-        "keywords": {
-          "type": "str",
-          "required": true,
-          "desc": "Search keywords"
-        },
-        "in": {
-          "desc": "Search in specified properties",
-          "type": "seq",
-          "required": true,
-          "sequence": [{
-            "type": "str",
-            "desc": "Property name"
-          }]
-        },
-        "ranking_model": {
-          "enum": ["plm", "kl", "bm25"]
-        },
-        "log_keywords": {
-          "type": "bool"
-        },
-        "analyzer": {
-          "desc": "Analyzer Options",
-          "type": "map",
-          "mapping": {
-            "use_synonym_extension": {
-              "type": "bool"
-            },
-            "apply_la": {
-              "type": "bool"
-            },
-            "use_original_keyword": {
-              "type": "bool"
-            }
-          }
-        }
-      }
+      "title":"Parameters for full text search",
+      "required":true,
+      "mapping": #{search}
     },
 
     "group": {
@@ -149,14 +107,17 @@
           },
           "highlight": {
             "type": "bool",
+            "required": true,
             "desc": "Highlight search keywords in the property value"
           },
           "snippet": {
             "type": "bool",
+            "required": true,
             "desc": "Only returns snippet."
           },
           "summary": {
             "type": "bool",
+            "required": true,
             "desc": "Also select summary as another property"
           },
           "summary_sentence_count": {

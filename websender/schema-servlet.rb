@@ -105,11 +105,25 @@ class SchemaServlet < HTTPServlet::AbstractServlet
     if File.exist? request_schema_file
       loaded_schema[:request_schema] = File.read(request_schema_file) rescue nil
     end
+    loaded_schema[:request_schema] = replace_ref loaded_schema[:request_schema]
+    
     response_schema_file = File.join(selected_schema_dir, "response.json")
     if File.exist? response_schema_file
       loaded_schema[:response_schema] = File.read(response_schema_file) rescue nil
     end
+    loaded_schema[:response_schema] = replace_ref loaded_schema[:response_schema]
 
     return loaded_schema
+  end
+
+  def replace_ref(schema)
+    schema.sub /#\{([^}]+)\}/ do |match|
+      begin
+        file = File.join(SCHEMA_DIR, 'ref', "#{$1}.json")
+        File.read(file)
+      rescue
+        match
+      end
+    end
   end
 end
