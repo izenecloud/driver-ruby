@@ -11,7 +11,8 @@
 
     "search_session": {
       "type":"map",
-      "title":"Trace last search. Can be used to hightlight and other features.",
+      "title":"Search Session",
+      "desc": "Trace last search. Can be used to hightlight and other features.",
       "mapping": #{search}
     },
 
