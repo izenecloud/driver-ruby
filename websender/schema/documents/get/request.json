@@ -1,5 +1,5 @@
 {
-  "title":"Documents",
+  "title":"Get Documents By ID",
   "type":"map",
   "desc":"Get documents from SF1",
   "mapping": {
@@ -11,7 +11,6 @@
 
     "search_session": {
       "type":"map",
-      "title":"Search Session",
       "desc": "Trace last search. Can be used to hightlight and other features.",
       "mapping": #{search}
     },

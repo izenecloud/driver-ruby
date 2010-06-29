@@ -1,5 +1,5 @@
 {
-  "title":"Documents",
+  "title":"Search Documents",
   "type":"map",
   "desc":"Search documents from SF1",
   "mapping": {
@@ -11,7 +11,7 @@
 
     "search": {
       "type":"map",
-      "title":"Parameters for full text search",
+      "desc":"Parameters for full text search",
       "required":true,
       "mapping": #{search}
     },
