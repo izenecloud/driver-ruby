@@ -1,0 +1,28 @@
+{
+  "title":"Documents",
+  "type":"map",
+  "desc":"Get documents from SF1",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "search_session": {
+      "type":"map",
+      "title":"Trace last search. Can be used to hightlight and other features.",
+      "mapping": #{search}
+    },
+
+    "conditions": {
+      "type": "seq",
+      "sequence": #{conditions}
+    },
+
+    "select": {
+      "type": "seq",
+      "sequence": #{select}
+    }
+  }
+}
