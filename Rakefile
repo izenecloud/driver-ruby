@@ -28,3 +28,6 @@ Rake::GemPackageTask.new(sf1_driver_spec) do |pkg|
   pkg.need_tar = true
 end
 
+task :websender do
+  ruby "websender/server.rb"
+end
