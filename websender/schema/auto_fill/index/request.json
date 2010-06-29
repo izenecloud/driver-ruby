@@ -1,0 +1,15 @@
+{
+  "title":"AutoFill",
+  "type":"map",
+  "desc":"Get list of keywords starting with specified prefix.",
+  "mapping": {
+    "prefix": {
+      "type": "str",
+      "required": true
+    },
+
+    "limit": {
+      "type": "int"
+    }
+  }
+}
