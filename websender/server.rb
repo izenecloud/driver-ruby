@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 libdir = File.join(File.dirname(File.dirname(File.expand_path(__FILE__))), "lib")
 $LOAD_PATH << libdir
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 #---
 # Author::  Ian Yang
 # Created:: <2010-06-22 17:57:06>
@@ -50,10 +51,20 @@ responses.length.times do |i|
   File.open(out_file_path, "w") do |fs|
     response = responses[i]
     if response
-      fs.write JSON.pretty_generate response
+      success = response["header"] && response["header"]["success"]
+      if success
+        puts "* #{files[i]}: Success!"
+        fs.write JSON.pretty_generate response
+      end
+
+      if response["errors"]
+        messages = response["errors"].join(" ").gsub(/[\n\r]/, "");
+        servity = (success ? "[WARN]":"[ERROR]")
+        puts "* #{files[i]}: #{servity} #{messages}"
+      end
     else
+      puts "* #{files[i]}: no response"
       fs.write "nil"
     end
   end
 end
-
