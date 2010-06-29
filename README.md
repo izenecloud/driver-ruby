@@ -100,12 +100,13 @@ files:
 
   - request.json: schema for request.
   - response.json: schema for response.
-  - template.json: default template.
   - template.*.json: named template.
 
 Template are the default request messages that can be loaded in WEB
 interface. The request also can be saved as template thought WEB
-interface. You can commit the frequently templates to the repository.
+interface. You can add your frequently used templates in the directory, or
+construct it through WEB interface and then save it. Remember to commit your
+template if you think your template is valuable to be shared.
 
 Schema file uses the syntax descried in
 [here](http://robla.net/jsonwidget/jsonschema/).
