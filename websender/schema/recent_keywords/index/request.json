@@ -1,0 +1,17 @@
+{
+  "title":"RecentKeywords",
+  "type":"map",
+  "desc":"Get list of recent used keywords.",
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "Get keywords seached on specified collection",
+      "required": true
+    },
+
+    "limit": {
+      "type": "int",
+      "desc": "Limit result count"
+    }
+  }
+}
