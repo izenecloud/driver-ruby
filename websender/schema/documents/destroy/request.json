@@ -1,0 +1,23 @@
+{
+  "title":"Destroy document",
+  "type":"map",
+  "desc":"Delete the docuemnt though driver. DOCID is the only property required",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "resource": {
+      "type":"map",
+      "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "mapping": {
+        "DOCID": {
+          "type":"str",
+          "desc":"DOCID of the document to be destroyed."
+        }
+      }
+    }
+  }
+}

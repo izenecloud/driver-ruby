@@ -1,0 +1,24 @@
+{
+  "title":"Update document",
+  "type":"map",
+  "desc":"Update docuemnt though driver. DOCID is required.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "resource": {
+      "type":"map",
+      "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "user_key": "property",
+      "mapping": {
+        "property": {
+          "type":"any",
+          "desc":"Keys is property key, value is property value"
+        }
+      }
+    }
+  }
+}
