@@ -141,6 +141,8 @@ Websender.prototype.renderTemplate = function () {
 
   $('#' + this.response_editor.htmlids.sourcetextarea).val('{}');
   this.response_editor.toggleToFormActual();
+
+  $('#tabs').tabs('select', '#request');
 };
 
 Websender.prototype.getRequestJSON = function () {
