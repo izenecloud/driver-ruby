@@ -9,7 +9,8 @@
     },
 
     "limit": {
-      "type": "int"
+      "type": "int",
+      "desc": "Limit result count"
     }
   }
 }
