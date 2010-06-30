@@ -1,8 +1,6 @@
 {
   "collection": "ChnWiki",
   "resource": {
-    "DOCID": "websender.1",
-    "Title": "websender template title",
-    "Content": "websender template content"
+    "DOCID": "websender.1"
   }
 }

@@ -13,6 +13,7 @@
       "type":"map",
       "desc": "Object representing the docuemnt. Key is property key and value is property value.",
       "user_key": "property",
+      "required": true,
       "mapping": {
         "property": {
           "type":"any",

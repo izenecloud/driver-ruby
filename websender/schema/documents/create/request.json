@@ -12,6 +12,7 @@
     "resource": {
       "type":"map",
       "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "required": true,
       "user_key": "property",
       "mapping": {
         "property": {
