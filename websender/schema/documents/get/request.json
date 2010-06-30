@@ -12,17 +12,17 @@
     "search_session": {
       "type":"map",
       "desc": "Trace last search. Can be used to hightlight and other features.",
-      "mapping": #{search}
+      "mapping": $(search)
     },
 
     "conditions": {
       "type": "seq",
-      "sequence": #{conditions}
+      "sequence": $(conditions)
     },
 
     "select": {
       "type": "seq",
-      "sequence": #{select}
+      "sequence": $(select)
     }
   }
 }

@@ -117,7 +117,7 @@ class SchemaServlet < HTTPServlet::AbstractServlet
   end
 
   def replace_ref(schema)
-    schema.gsub /#\{([^}]+)\}/ do |match|
+    schema.gsub /\$\(([^)]+)\)/ do |match|
       begin
         file = File.join(SCHEMA_DIR, 'ref', "#{$1}.json")
         File.read(file)

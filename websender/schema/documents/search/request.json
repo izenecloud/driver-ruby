@@ -13,7 +13,7 @@
       "type":"map",
       "desc":"Parameters for full text search",
       "required":true,
-      "mapping": #{search}
+      "mapping": $(search)
     },
 
     "group": {
@@ -42,12 +42,12 @@
 
     "conditions": {
       "type": "seq",
-      "sequence": #{conditions}
+      "sequence": $(conditions)
     },
 
     "select": {
       "type": "seq",
-      "sequence": #{select}
+      "sequence": $(select)
     },
 
     "sort": {
