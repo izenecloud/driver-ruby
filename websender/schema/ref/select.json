@@ -9,14 +9,17 @@
     },
     "highlight": {
       "type": "bool",
+      "required": true,
       "desc": "Highlight search keywords in the property value"
     },
     "snippet": {
       "type": "bool",
+      "required": true,
       "desc": "Only returns snippet."
     },
     "summary": {
       "type": "bool",
+      "required": true,
       "desc": "Also select summary as another property"
     },
     "summary_sentence_count": {
