@@ -197,6 +197,8 @@ jQuery(document).ready(function() {
       error: function() {
         $('#error-messages').html('<p>Failed to send the request</p>');
         $('#error-container').show();
+        $('#request-send-button').button("option", "disabled", false);
+        $('.request-indicator').html('');
       },
       success: function(json) {
         response_editor.jsondata = json;
