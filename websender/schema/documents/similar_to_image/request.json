@@ -1,0 +1,40 @@
+{
+  "title":"Similar Image Search",
+  "type":"map",
+  "desc":"Search documents similar to specified target image.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "similar_to_image": {
+      "title": "Image URI (similar_to_image)",
+      "type": "str",
+      "desc": "Image URI",
+      "required": true
+    },
+
+    "limit": {
+      "type": "int",
+      "desc": "Number of documents in page"
+    },
+
+    "offset": {
+      "type": "int",
+      "desc": "Offset of documents in current page"
+    },
+
+    "select": {
+      "type": "seq",
+      "sequence": $(select)
+    },
+
+    "search_session": {
+      "type":"map",
+      "desc": "Trace last search. Can be used to hightlight and other features.",
+      "mapping": $(search)
+    }
+  }
+}
