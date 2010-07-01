@@ -1,6 +1,6 @@
 {
   "collection": "ChnWiki",
-  "similar_to": {"DOCID":"115"},
+  "duplicate_with": {"DOCID":"115"},
 
   "select": [
     {"property": "DOCID"},
