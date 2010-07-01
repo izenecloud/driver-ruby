@@ -1,12 +1,12 @@
 {
   "collection": "ChnWiki",
+  "similar_to": {"DOCID":"115"},
+
   "select": [
     {"property": "DOCID"},
     {"property": "Title"},
     {"property": "Content","snippet": true }
   ],
-
-  "similar_to": {"DOCID":"115"},
 
   "limit": 5
 }
