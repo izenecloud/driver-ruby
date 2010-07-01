@@ -1,5 +1,16 @@
 {
   "title": "Freeform JSON",
-  "type": "any",
-  "desc": "Can enter any JSON and send the request. Remember to override the uri in request"
+  "type": "map",
+  "desc": "Can enter any JSON and send the request. Remember to override the uri in request",
+  "user_key": "parameter",
+  "mapping": {
+    "uri": {
+      "type": "str",
+      "required": true,
+      "desc": "Override the URI in the form of controller/action"
+    },
+    "parameter": {
+      "type": "any"
+    }
+  }
 }
