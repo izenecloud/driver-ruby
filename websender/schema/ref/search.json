@@ -4,6 +4,10 @@
     "required": true,
     "desc": "Search keywords"
   },
+  "taxonomy_label": {
+    "type": "str",
+    "desc": "Only get documents with this label"
+  },
   "in": {
     "desc": "Search in specified properties",
     "type": "seq",
