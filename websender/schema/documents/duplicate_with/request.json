@@ -15,7 +15,7 @@
       "mapping": $(search)
     },
 
-    "similar_to": {
+    "duplicate_with": {
       "type": "map",
       "desc": "Add exactly one DOCID or _id",
       "required": true,
