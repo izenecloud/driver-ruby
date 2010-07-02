@@ -1,0 +1,15 @@
+{
+  "collection": "ship",
+  "search": {
+    "keywords": "howling storm",
+    "in": ["Title","Title2","Description","Description2"]
+  },
+  "select": [
+    {"property": "DOCID"},
+    {"property":"Title"},
+    {"property":"Description","snippet": true},
+    {"property":"Tags"},
+    {"property":"ImgURL"}
+  ],
+  "limit": 10
+}
