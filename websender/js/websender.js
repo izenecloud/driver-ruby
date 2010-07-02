@@ -35,7 +35,7 @@ var Websender = function () {
   this.controllers = ['hello'];
   this.actions = ['index'];
   this.templates = {
-    default: '{}'
+    'default': '{}'
   };
   this.request_description = '';
 
