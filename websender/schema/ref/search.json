@@ -18,6 +18,7 @@
     }]
   },
   "ranking_model": {
+    "type": "str",
     "enum": ["plm", "kl", "bm25"]
   },
   "log_keywords": {
