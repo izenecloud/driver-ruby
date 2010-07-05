@@ -81,6 +81,16 @@
 
     "remove_duplicated_result": {
       "type": "bool"
+    },
+
+    "analyzer_result": {
+      "desc": "Whether return analyzer result.",
+      "type": "bool"
+    },
+
+    "mining_result": {
+      "desc": "Whether return mining result.",
+      "type": "bool"
     }
   }
 }
