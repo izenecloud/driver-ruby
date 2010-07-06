@@ -187,6 +187,7 @@ jQuery(document).ready(function() {
     $('#request-send-button').button("option", "disabled", true);
     $('.request-indicator').html('<img src="images/ajax-loader.gif" alt="sending ..." />');
     $('#error-container').hide();
+    $('#warning-container').hide();
 
     $.ajax({
       url: 'sender/' + websender.controller + '/' + websender.action,
@@ -210,6 +211,14 @@ jQuery(document).ready(function() {
           }
           $('#error-messages').html(error_messages);
           $('#error-container').show();
+        }
+        if (json && json.warnings && json.warnings.length > 0) {
+          var warning_messages = "";
+          for (var i = 0; i < json.warnings.length; ++i) {
+            warning_messages += '<p>' + $('<p/>').text(json.warnings[i]).html() + '<p>';
+          }
+          $('#warning-messages').html(warning_messages);
+          $('#warning-container').show();
         }
 
         response_editor.updateJSON();
