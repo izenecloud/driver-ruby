@@ -1,0 +1,12 @@
+{
+  "title":"Index and mining status",
+  "type":"map",
+  "desc":"Gets index and mining status",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    }
+  }
+}
