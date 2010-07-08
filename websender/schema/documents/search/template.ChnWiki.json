@@ -1,5 +1,8 @@
 {
   "collection": "ChnWiki",
+  "header": {
+    "check_time": true
+  },
   "search": {
     "keywords": "america",
     "in": ["Title", "Content"]

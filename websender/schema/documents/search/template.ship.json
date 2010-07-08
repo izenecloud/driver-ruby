@@ -1,5 +1,8 @@
 {
   "collection": "ship",
+  "header": {
+    "check_time": true
+  },
   "search": {
     "keywords": "howling storm",
     "in": ["Title","Title2","Description","Description2"]
