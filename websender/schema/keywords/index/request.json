@@ -23,7 +23,7 @@
       "type": "seq",
       "desc": "Select list type",
       "sequence": [{
-        "type": "string",
+        "type": "str",
         "title": "list type",
         "enum": ["recent", "popular", "realtime"]
       }]
