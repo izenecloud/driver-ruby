@@ -1,7 +1,7 @@
 {
   "title":"RecentKeywords",
   "type":"map",
-  "desc":"Get list of recent used keywords.",
+  "desc":"Get keywords list.",
   "mapping": {
     "collection": {
       "type": "str",
@@ -12,6 +12,16 @@
     "limit": {
       "type": "int",
       "desc": "Limit result count"
+    },
+
+    "select": {
+      "type": "seq",
+      "desc": "Select list type",
+      "sequence": [{
+        "type": "string",
+        "title": "list type",
+        "enum": ["recent", "popular", "realtime"]
+      }]
     }
   }
 }
