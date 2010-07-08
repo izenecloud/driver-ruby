@@ -9,6 +9,11 @@
       "required":true
     },
 
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
     "resource": {
       "type":"map",
       "desc": "Object representing the docuemnt. Key is property key and value is property value.",

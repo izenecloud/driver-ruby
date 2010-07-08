@@ -9,6 +9,11 @@
       "required":true
     },
 
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
     "search_session": {
       "type":"map",
       "desc": "Trace last search. Can be used to hightlight and other features.",

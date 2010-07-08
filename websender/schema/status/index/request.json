@@ -7,6 +7,11 @@
       "type":"str",
       "desc":"Specifie a collection name",
       "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
     }
   }
 }

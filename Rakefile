@@ -12,7 +12,7 @@ require 'rake/clean'
 # end
 
 sf1_driver_spec = Gem::Specification.new do |s|
-  s.version = "1.1.0"
+  s.version = "1.1.1"
   s.platform = Gem::Platform::RUBY
   s.summary = "Sf1 Driver Ruby Client."
   s.name = "sf1-driver"

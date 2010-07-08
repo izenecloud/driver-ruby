@@ -103,6 +103,7 @@ module Sf1Driver
         return add_batch_request(uri, request)
       end
 
+      start_time = Time.now
       remember_sequence = @sequence
       write(uri, request)
       response_sequence, response = read
@@ -117,6 +118,11 @@ module Sf1Driver
 
       if remember_sequence != response_sequence
         raise ServerError, "Unmatch sequence number"
+      end
+
+      if request["header"]["check_time"] || request["header"][:check_time]
+        response["timers"] ||= {}
+        response["timers"]["total_client_time"] = Time.now - start_time
       end
 
       return response
@@ -153,8 +159,10 @@ module Sf1Driver
       @server_errors = []
 
       remember_sequence = {}
+      timers = []
       requests.each_with_index do |uri_request, index|
         remember_sequence[@sequence] = index
+        timers << Time.now
         uri, request = uri_request
         write(uri, request)
       end
@@ -182,10 +190,19 @@ module Sf1Driver
           elsif !remember_sequence.key? response_sequence
             @server_errors << "Sequence is out of range: #{response_sequence}"
           else
-            responses[remember_sequence[response_sequence]] = response
+            request_index = remember_sequence[response_sequence]
+            request_header = requests[request_index].last["header"]
+            if request_header["check_time"] || request_header[:check_time]
+              response["timers"] ||= {}
+              response["timers"]["total_client_time"] = Time.now - timers[request_index]
+            end
+            responses[request_index] = response
           end
+
         end
       rescue => e
+        puts e
+        puts e.backtrace.join("\n")
         @server_errors << e.to_s
       end
       @server_errors += general_error_hash.keys
@@ -235,10 +252,12 @@ module Sf1Driver
         raise ArgumentError, "Require controller name."
       end
 
+      header = {}
+      header.merge!(request["header"]) if request["header"].is_a? Hash
+      header.merge!(request[:header]) if request[:header].is_a? Hash
       request.delete("header")
       request.delete(:header)
 
-      header = {}
       header["controller"] = controller
       header["action"] = action if action
 

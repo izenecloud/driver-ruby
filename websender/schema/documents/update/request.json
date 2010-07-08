@@ -3,6 +3,11 @@
   "type":"map",
   "desc":"Update docuemnt though driver. DOCID is required.",
   "mapping": {
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
     "collection": {
       "type":"str",
       "desc":"Specify a collection name",

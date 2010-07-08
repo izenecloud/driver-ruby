@@ -8,6 +8,11 @@
       "required": true
     },
 
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
     "limit": {
       "type": "int",
       "desc": "Limit result count"

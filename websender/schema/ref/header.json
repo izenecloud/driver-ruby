@@ -1,0 +1,7 @@
+{
+  "check_time": {
+    "type": "bool",
+    "required": true,
+    "desc": "Returns timers in response."
+  }
+}

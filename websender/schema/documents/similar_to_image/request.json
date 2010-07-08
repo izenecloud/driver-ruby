@@ -9,6 +9,11 @@
       "required":true
     },
 
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
     "similar_to_image": {
       "title": "Image URI (similar_to_image)",
       "type": "str",

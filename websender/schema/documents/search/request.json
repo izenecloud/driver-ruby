@@ -9,6 +9,11 @@
       "required":true
     },
 
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
     "search": {
       "type":"map",
       "desc":"Parameters for full text search",
