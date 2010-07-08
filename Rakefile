@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'rake/rdoctask'
 require 'rake/clean'
 # require 'rake/testtask'
 
@@ -26,6 +27,17 @@ end
 
 Rake::GemPackageTask.new(sf1_driver_spec) do |pkg|
   pkg.need_tar = true
+end
+
+Rake::RDocTask.new do |rd|
+  rd.main = "lib/sf1-driver/connection.rb"
+  rd.rdoc_files.include("lib/sf1-driver/**/*.rb")
+  rd.options << "--all"
+end
+
+directory "../sf1-driver-docs/html/ruby-client"
+task "rdoc:copy" => ["../sf1-driver-docs/html/ruby-client"] do
+  sh "rsync -av --del html/ ../sf1-driver-docs/html/ruby-client"
 end
 
 task :websender do

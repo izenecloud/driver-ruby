@@ -1,54 +1,57 @@
+# See Sf1Driver::Connection
+
 require 'socket'
 require 'timeout'
 require 'stringio'
-
-require 'forwardable'
 
 module Sf1Driver
 
   class ServerError < RuntimeError; end
 
-  # TODO: auto detect request type
   class Connection
     class << self
-      def num_bytes(str)
+      def num_bytes(str) #:nodoc:
         s = StringIO.new(str)
         s.seek(0, IO::SEEK_END)
         s.tell
       end
 
-      def camel(str)
+      def camel(str) #:nodoc:
         str.split("-").map{|s| s.capitalize}.join
       end
     end
-    
+
+    # sizeof(uint32)
     INT_SIZE = Connection::num_bytes([1].pack('N'))
 
+    # Max sequence number. It is also the upper limit of the number of requests
+    # in a batch request.
+    #
     # max(int32) - 1
     MAX_SEQUENCE = (1 << 31) - 2
 
-    extend Forwardable
-
-    def_delegators :@socket, :close, :close_read, :close_write
-
-    # tells the sequence number of next request
+    # Tells the sequence number of next request
     attr_reader :sequence
 
     # save errors for batch sending
     attr_reader :sever_errors
 
-    def self.open(ip, port, opts = {}, &block)
+    # Alias of new
+    def self.open(ip, port, opts = {}, &block) #:yields: self
       Connection.new(ip, port, opts, &block)
     end
 
     # Connect server listening on ip:port
     #
-    # supported opts:
+    # Parameters:
     #
-    # - timeout: timeout in seconds when connecting server.
-    # - format: select underlying writer and reader, now we have following formats:
-    #           - json
-    def initialize(ip, port, opts = {})
+    # [ip] IP of the host BA is running on.
+    # [port] Port BA is listening.
+    # [opts] Options
+    #        [timeout] timeout in seconds when connecting server.
+    #        [format] select underlying writer and reader, now only "json"
+    #                 is supported, and it is also the default format.
+    def initialize(ip, port, opts = {}) #:yields: self
       opts = {:timeout => 5, :format => "json"}.merge opts
 
       use_format(opts[:format])
@@ -66,6 +69,22 @@ module Sf1Driver
       end
     end
 
+    # Closes the connection
+    def close
+      @socket.close
+    end
+
+    # Closes read end of the connection.
+    def close_read
+      @socket.close_read
+    end
+
+    # Closes write end of the connection
+    def close_write
+      @socket.close_write
+    end
+
+    # Chooses data format. Now only "json" is supported, and it is also the default format.
     def use_format(format)
       reader_file = "sf1-driver/readers/#{format}-reader"
       writer_file = "sf1-driver/writers/#{format}-writer"
@@ -76,28 +95,39 @@ module Sf1Driver
       eval "extend #{Connection.camel(format)}Writer"
     end
 
-    def server_errors
+    def server_errors #:nodoc:
       @server_errors ||= []
     end
 
-    # Send request and wait for response.
+    # Send request.
     #
-    # In batch block, Returns the sequence number of current request. Requests are
-    # send after block is closed, then all responses are returned. See batch for details.
+    # Parameters:
     #
-    # - uri: a string with format "/controller/action". If action is "index", it can be omitted
+    # [+uri+] a string with format "/controller/action". If action is "index",
+    #         it can be omitted
+    # [+request+] just a hash
     #
-    # - request: just a hash
+    # Return:
     #
-    # e.g.
-    # request = {
-    #   :collection => "ChnWiki",
-    #   :resource => {
-    #     :DOCID => 1
-    #     :title => "SF1v5 Driver Howto"
-    #   }
-    # }
-    # send("documents/create", request)
+    # * When used in non batch mode, this function is synchronous. The request
+    #   is sent to function and wait for the response. After then, the response
+    #   is used as the return value of this function.
+    #
+    # * When send is used in batch block, the request is sent after the block is
+    #   closed. The allocated sequence number is returned immediately. Responses
+    #   are returned in function block.
+    #
+    # Examples:
+    #
+    #     request = {
+    #       :collection => "ChnWiki",
+    #       :resource => {
+    #         :DOCID => 1
+    #         :title => "SF1v5 Driver Howto"
+    #       }
+    #     }
+    #     connection.send("documents/create", request)
+    #
     def send(uri, request)
       if @batch_requests
         return add_batch_request(uri, request)
@@ -129,31 +159,35 @@ module Sf1Driver
     end
 
     # Send multiple requests
-    # Requests is an array. Every element is an array with two elements, uri and request object.
     #
-    # e.g.
+    # Parameters:
+    # [requests] An array. Every element is an array with two elements, uri and request object.
     #
-    # requests = []
-    # requests << ["documents/create", {
-    #                :collection => "ChnWiki",
-    #                :resource => {
-    #                  :DOCID => 1,
-    #                  :title => "Sf1v5 Driver Howto"
-    #                }
-    #              }]
-    # requests << ["documents/create", {
-    #                :collection => "ChnWiki",
-    #                :resource => {
-    #                  :DOCID => 2,
-    #                  :title => "Programming Ruby"
-    #                }
-    #              }]
-    #
-    # send_batch(requests)
-    #
-    # The response is also an array. It has the same size with requests and in the same sequence
+    # Return:
+    # 
+    # Response array is returned. It has the same size with requests and in the same sequence
     # of their corresponding request. Because of server error, some responses may be nil. In such
-    # situation, check server_errors
+    # situation, check server_errors.
+    #
+    # Examples:
+    #
+    #     requests = []
+    #     requests << ["documents/create", {
+    #                    :collection => "ChnWiki",
+    #                    :resource => {
+    #                      :DOCID => 1,
+    #                      :title => "Sf1v5 Driver Howto"
+    #                    }
+    #                  }]
+    #     requests << ["documents/create", {
+    #                    :collection => "ChnWiki",
+    #                    :resource => {
+    #                      :DOCID => 2,
+    #                      :title => "Programming Ruby"
+    #                    }
+    #                  }]
+    #     
+    #     send_batch(requests)
     #
     def send_batch(requests)
       @server_errors = []
@@ -236,6 +270,9 @@ module Sf1Driver
       end
     end
     private
+
+    # Stores request in array. Requests will be sent in batch after the batch
+    # block is closed.
     def add_batch_request(uri, request)
       request_sequence = @sequence + @batch_requests.length
       if request_sequence > MAX_SEQUENCE
@@ -245,6 +282,7 @@ module Sf1Driver
       request_sequence
     end
 
+    # Write request to server
     def write(uri, request)
       controller, action = uri.to_s.split("/").reject{|e| e.nil? || e.empty?}
 
@@ -266,6 +304,7 @@ module Sf1Driver
       write_raw(writer_serialize(request))
     end
 
+    # Read request to server
     def read
       response = read_raw
       if response
@@ -274,6 +313,7 @@ module Sf1Driver
       end
     end
 
+    # Write raw request to server. It is in the format specified in use_format. 
     def write_raw(request)
       bytes = [@sequence, Connection.num_bytes(request), request].pack("NNa*");
       @socket.write bytes
@@ -283,6 +323,7 @@ module Sf1Driver
       end
     end
 
+    # Read raw response from server. It is in the format specified in use_format.
     def read_raw
       form_header_buffer = @socket.read(INT_SIZE * 2)
       return unless form_header_buffer && form_header_buffer.size == INT_SIZE * 2
@@ -298,6 +339,7 @@ module Sf1Driver
 
   end
 
+  module_function
   # Helper method to print value
   def self.pp_value(value, offset = 2, level = 0)
     level += 1

@@ -12,6 +12,8 @@ environment `$LOAD_PATH`. Or, which is recommended, install the gem:
 
 ## Usage ##
 
+[RDoc](https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/ruby-client/index.html)
+
 ### Create Connection Object ###
 
     require 'sf1-driver/connection'
