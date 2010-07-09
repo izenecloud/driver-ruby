@@ -3,7 +3,7 @@ var Websender = function () {
     return arg != null && arg != '';
   });
 
-  this.controller = parameters[0] || 'hello';
+  this.controller = parameters[0] || 'schema';
   this.action = parameters[1] || 'index';
   this.template = parameters[2] || 'default';
 
@@ -32,7 +32,7 @@ var Websender = function () {
 
   this.request_schema ='{"title":"Freeform JSON","type": "any"}';
   this.response_schema = '{"title":"Freeform JSON","type": "any"}';
-  this.controllers = ['hello'];
+  this.controllers = ['schema'];
   this.actions = ['index'];
   this.templates = {
     'default': '{}'

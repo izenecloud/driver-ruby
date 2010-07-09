@@ -1,0 +1,12 @@
+{          
+  "title": "Hello",
+  "type": "map",
+  "desc": "Get detailed schema info.",
+
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "required": true
+    }
+  }
+}
