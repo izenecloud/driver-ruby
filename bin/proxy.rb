@@ -21,8 +21,8 @@ CONFIG[:Cobras].each do |cobra|
   ba = cobra[1]
   if ba.is_a? Hash
     conn = Sf1Driver::Connection.new(ba[:IP], ba[:Port])
-    response = conn.send('hello/index',{})
-    response["collections"].split(',').each do|collection|
+    response = conn.send('schema',{})
+    response["collections"].each do|collection|
       COLLECTIONMAP[collection] = cobra[0]
     end
   end 
