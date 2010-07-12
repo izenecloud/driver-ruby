@@ -20,10 +20,14 @@ CONFIG = YAML::load_file config_file
 CONFIG[:Cobras].each do |cobra|
   ba = cobra[1]
   if ba.is_a? Hash
-    conn = Sf1Driver::Connection.new(ba[:IP], ba[:Port])
-    response = conn.send('schema',{})
-    response["collections"].each do|collection|
-      COLLECTIONMAP[collection] = [cobra[0],ba[:IP],ba[:Port]]
+    begin
+      conn = Sf1Driver::Connection.new(ba[:IP], ba[:Port])
+      response = conn.send('schema',{})
+      response["collections"].each do|collection|
+        COLLECTIONMAP[collection] = [cobra[0],ba[:IP],ba[:Port]]
+      end
+    rescue => e
+      puts "Can not connect to ",ba[:IP],ba[:Port]
     end
   end 
 end
