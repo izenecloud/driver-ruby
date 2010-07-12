@@ -1,16 +1,11 @@
 {
+
   "collection": "SohuNews",
   "header": {
     "check_time": true
   },
   "search": {
-    "keywords": "北京",
-    "in": ["Title","Title2","Content","Content2"]
+    "keywords": "北京"
   },
-  "select": [
-    {"property": "DOCID"},
-    {"property":"Title"},
-    {"property":"Content","snippet": true}
-  ],
   "limit": 10
 }

@@ -4,13 +4,7 @@
     "check_time": true
   },
   "search": {
-    "keywords": "america",
-    "in": ["Title", "Content"]
+    "keywords": "america"
   },
-  "select": [
-    {"property": "DOCID"},
-    {"property": "Title"},
-    {"property": "Content","snippet": true }
-  ],
   "limit": 10
 }
