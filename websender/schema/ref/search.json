@@ -11,7 +11,6 @@
   "in": {
     "desc": "Search in specified properties",
     "type": "seq",
-    "required": true,
     "sequence": [{
       "type": "str",
       "desc": "Property name"
