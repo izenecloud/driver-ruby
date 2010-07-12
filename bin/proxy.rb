@@ -34,8 +34,19 @@ Proxy.start(:host => "0.0.0.0", :port => CONFIG[:Port], :debug => false) do |con
   conn.on_data do |data|
     request = JSON.parse(data.slice(Sf1Driver::Connection::INT_SIZE * 2,data.size))
     serverinfo = COLLECTIONMAP[request["collection"]]
-    conn.server serverinfo[0], :host => serverinfo[1], :port => serverinfo[2]
-    [data,serverinfo[0]]
+    if serverinfo.nil?
+      #collection does not exist, we forward it to any cobra
+      CONFIG[:Cobras].each do |cobra|
+        ba = cobra[1]
+        if ba.is_a? Hash
+          conn.server cobra[0], :host => ba[:IP], :port => ba[:Port]
+        end 
+      end      
+      data
+    else    
+      conn.server serverinfo[0], :host => serverinfo[1], :port => serverinfo[2]
+      [data,serverinfo[0]]
+    end
   end
  
   conn.on_response do |server, resp|
