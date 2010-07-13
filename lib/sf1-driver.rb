@@ -2,9 +2,14 @@
 # Author::  Ian Yang
 # Created:: <2010-07-13 15:10:37>
 #+++
-#
-# 
+
+require "sf1-driver/helper"
+require "sf1-driver/raw-client"
+
 class Sf1Driver
+  class ServerError < RuntimeError
+  end
+
   VERSION = "2.0.0"
 
   # Max sequence number. It is also the upper limit of the number of requests
@@ -12,4 +17,217 @@ class Sf1Driver
   #
   # max(int32) - 1
   MAX_SEQUENCE = (1 << 31) - 2
+
+  # Tells the sequence number of next request
+  attr_reader :sequence
+
+  # save error for batch sending
+  attr_reader :server_error
+
+  # Alias of new
+  def self.open(host, port, opts = {}, &block) #:yields: self
+    Sf1Driver.new(host, port, opts, &block)
+  end
+
+  # Connect server listening on host:port
+  #
+  # Parameters:
+  #
+  # [host] IP of the host BA is running on.
+  # [port] Port BA is listening.
+  # [opts] Options
+  #        [format] Select underlying writer and reader, now only "json"
+  #                 is supported, and it is also the default format.
+  def initialize(host, port, opts = {}) #:yields: self
+    opts = {:format => "json"}.merge opts
+
+    use_format(opts[:format])
+
+    @raw_client = RawClient.new(host, port)
+
+    # 0 is reserved by server
+    @sequence = 1
+
+    if block_given?
+      yield self
+      close
+    end
+  end
+
+  # Closes the connection
+  def close
+    @raw_client.close
+  end
+
+  # Chooses data format. Now only "json" is supported, and it is also the default format.
+  def use_format(format)
+    reader_file = "sf1-driver/readers/#{format}-reader"
+    writer_file = "sf1-driver/writers/#{format}-writer"
+    require reader_file
+    require writer_file
+
+    eval "extend #{Helper.camel(format)}Reader"
+    eval "extend #{Helper.camel(format)}Writer"
+  end
+
+  # Send request.
+  #
+  # Parameters:
+  #
+  # [+uri+] a string with format "/controller/action". If action is "index",
+  #         it can be omitted
+  # [+request+] just a hash
+  #
+  # Return:
+  #
+  # * When used in non batch mode, this function is synchronous. The request
+  #   is sent to function and wait for the response. After then, the response
+  #   is used as the return value of this function.
+  #
+  # * When send is used in batch block, the request is sent after the block is
+  #   closed. The allocated sequence number is returned immediately. Responses
+  #   are returned in function block.
+  #
+  # Examples:
+  #
+  #     request = {
+  #       :collection => "ChnWiki",
+  #       :resource => {
+  #         :DOCID => 1
+  #         :title => "SF1v5 Driver Howto"
+  #       }
+  #     }
+  #     connection.send("documents/create", request)
+  #
+  def call(uri, request)
+    raise "Two many requests in batch" if @batch_requests and @batch_requests.length == MAX_SEQUENCE
+    remember_sequence = @sequence
+
+    request = strinize_header_keys(request)
+    if request["header"]["check_time"]
+      start_time = Time.now
+    end
+    send_request(uri, request)
+
+    if @batch_requests
+      @batch_requests << start_time
+      remember_sequence
+    else
+      response_sequence, response = get_response(remember_sequence)
+      raise ServerError, "Unmatch sequence number" unless response_sequence == remember_sequence
+
+      if start_time
+        response["timers"] ||= {}
+        response["timers"]["total_client_time"] = Time.now - start_time
+      end
+
+      response
+    end
+  end
+
+  def send(*args)
+    puts "Warning: Sf1Driver#send is deprecated, use Sf1Driver#call instead"
+
+    call *args
+  end
+
+  # Open a block that call can used to add requests in batch.
+  #
+  # In batch block, call returns sequence number of that request
+  # immediately. Responses are returned in this function.
+  #
+  # e.g.
+  #
+  # responses = connection.batch do
+  #   connection.call "/ChnWiki/commands/create", :resource => {:command => "index"}
+  #   connection.call "/ChnWiki/commands/create", :resource => {:command => "mining"}
+  # end
+  #
+  def batch
+    raise "Cannot nest batch" if @batch_requests
+    @batch_requests = []
+    @server_error = nil
+    responses = []
+
+    begin
+      yield self
+      unless @batch_requests.empty?
+        request_count = @batch_requests.length
+        responses = Array.new(request_count)
+        if @sequence <= request_count
+          begin_index = MAX_SEQUENCE - (request_count - @sequence)
+        else
+          begin_index = @sequence - request_count
+        end
+
+        request_count.times do
+          response_sequence, resposne = get_response
+          if response_sequence < begin_index
+            index = MAX_SEQUENCE - begin_index + response_sequence
+          else
+            index = response_sequence - begin_index
+          end
+          raise ServerError, "Unmatch sequence number" unless index < request_count
+        end
+      end
+    rescue ServerError => e
+      @server_error << e.message
+      @client.close
+    rescue
+      @client.close
+      raise
+    ensure
+      @batch_requests = nil
+    end
+  end
+
+private
+  # Send request to server
+  def send_request(uri, request)
+    controller, action = uri.to_s.split("/").reject{|e| e.nil? || e.empty?}
+
+    if controller.nil?
+      raise ArgumentError, "Require controller name."
+    end
+
+    request["header"] ||= {}
+    request["header"]["controller"] = controller
+    request["header"]["action"] = action if action
+
+    @client.send_request(@sequence, writer_serialize(request))
+
+    @sequence += 1
+    if @sequence > MAX_SEQUENCE
+      @sequence = 1
+    end
+  end
+
+  # Read response from server
+  def get_response
+    response_sequence, response = @client.get_response
+    if response
+      response = reader_deserialize(response)
+    end
+
+    raise ServerError, "No response." if response_sequence.nil? || response.nil?
+    raise ServerError, "Malformed response." unless response.is_a?Hash
+
+    if response_sequence == 0
+      response["errors"] ||= ["Unknown server error."]
+      raise ServerError, response["errors"].join("\n")
+    end
+  end
+
+  def strinize_header_keys(request)
+    header = request["header"] || request[:header]
+    request.delete :header
+    if header.is_a? Hash
+      header = header.inject({}) do |h, (key, value)|
+        h[key.to_s] = value
+      end
+    end
+
+    request["header"] = header if header
+    request
+  end
 end

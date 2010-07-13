@@ -9,8 +9,8 @@ require 'json'
 
 class Sf1Driver
   module JsonWriter
-    def writer_serialize(object)
-      return JSON.dump(object)
+    def writer_serialize(data)
+      return JSON.dump(data)
     end
   end
 end

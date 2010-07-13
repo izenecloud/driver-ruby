@@ -9,8 +9,8 @@ require "sf1-driver/helper"
 require "socket"
 
 class Sf1Driver
-  # Manage the connection to Sf1 Driver
-  class Client
+  # Send raw request and get raw response
+  class RawClient
     include Helper
 
     # Host of the SF1 Driver Server (BA or proxy)
@@ -19,12 +19,6 @@ class Sf1Driver
     # Port of the SF1 Driver Server (BA or Proxy)
     attr_accessor :port
 
-    # Default constructor options
-    DEFAULT_OPTIONS = {
-      :host => "127.0.0.1",
-      :port => 18181,
-    }
-
     # Create the driver client.
     #
     # Parameters:
@@ -32,11 +26,9 @@ class Sf1Driver
     # [host] Host of the SF1 Driver Server
     # [port] Port of the SF1 Driver Server
     #
-    # Also see default values in DEFAULT_OPTIONS
-    def initialize(options = {})
-      options = DEFAULT_OPTIONS.merge options
-      @host = options[:host]
-      @port = options[:port].to_i
+    def initialize(host, port)
+      @host = host
+      @port = port
       @sock = nil
     end
 
@@ -61,15 +53,6 @@ class Sf1Driver
     def reconnect
       close
       connect
-    end
-
-    # Send a request and get the response
-    def call(sequence, request_data)
-      send_request(sequence, request_data) do
-        get_response do |sequence, response_data|
-          yield sequence, response_data if block_given?
-        end
-      end
     end
 
     # Send a request to SF1
@@ -115,13 +98,13 @@ class Sf1Driver
     end
 
   protected
-    def ensure_connected(autoconnect = true)
-      connect if autoconnect && !connected?
+    def ensure_connected
+      connect unless connected?
 
       begin
         yield
       rescue Errno::ECONNRESET, Errno::EPIPE, Errno::ECONNABORTED, Errno::ETIMEDOUT
-        if autoconnect && reconnect
+        if reconnect
           yield
         else
           raise Errno::ECONNRESET

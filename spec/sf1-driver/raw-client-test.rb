@@ -1,11 +1,11 @@
-require "sf1-driver/client"
+require "sf1-driver/raw-client"
 require "timeout"
 
-describe Sf1Driver::Client do
+describe Sf1Driver::RawClient do
   context "when created with mock server" do
     include Sf1DriverMock
     before(:each) do
-      @client = Sf1Driver::Client.new(:port => 18283)
+      @client = Sf1Driver::RawClient.new("127.0.0.1", 18283)
     end
 
     it "is not connected" do
@@ -42,8 +42,7 @@ describe Sf1Driver::Client do
 
   context "when connect to twitter.com in China" do
     it "is timeout" do
-      client = Sf1Driver::Client.new(:host => "twitter.com",
-                                     :port => 80)
+      client = Sf1Driver::RawClient.new("twitter.com", 80)
       lambda { Timeout::timeout(1) {client.connect} }.should raise_exception(Timeout::Error)
     end
   end
@@ -51,7 +50,7 @@ describe Sf1Driver::Client do
   context "when has been connected to server" do
     include Sf1DriverMock
     before(:each) do
-      @client = Sf1Driver::Client.new(:port => 18283, :timeout => 1)
+      @client = Sf1Driver::RawClient.new("127.0.0.1", 18283)
     end
   
     it "is not connected after close" do
@@ -111,23 +110,6 @@ describe Sf1Driver::Client do
         @client.send_request(1, "test")
         lambda{Timeout.timeout(1){@client.get_response}}.
           should raise_exception(Timeout::Error)
-      end
-    end
-
-    it "gets response using call" do
-      sequence = 1
-      request = "abc"
-      response = "def"
-
-      handler_mock = mock("handler_mock")
-      handler_mock.should_receive(:on_request).once.with(sequence, request).
-        and_return(response)
-
-      sf1_mock(handler_mock) do
-        @client.connect
-        actual_sequence, actual_response = @client.call(sequence, request)
-        actual_sequence.should == sequence
-        actual_response.should == response
       end
     end
   end
