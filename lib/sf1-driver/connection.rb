@@ -1,29 +1,13 @@
 # See Sf1Driver::Connection
 
-require 'socket'
-require 'timeout'
-require 'stringio'
+require "sf1-driver/helper"
+require "sf1-driver/client"
 
-module Sf1Driver
+class Sf1Driver
 
   class ServerError < RuntimeError; end
 
   class Connection
-    class << self
-      def num_bytes(str) #:nodoc:
-        s = StringIO.new(str)
-        s.seek(0, IO::SEEK_END)
-        s.tell
-      end
-
-      def camel(str) #:nodoc:
-        str.split("-").map{|s| s.capitalize}.join
-      end
-    end
-
-    # sizeof(uint32)
-    INT_SIZE = Connection::num_bytes([1].pack('N'))
-
     # Max sequence number. It is also the upper limit of the number of requests
     # in a batch request.
     #
@@ -37,28 +21,25 @@ module Sf1Driver
     attr_reader :sever_errors
 
     # Alias of new
-    def self.open(ip, port, opts = {}, &block) #:yields: self
-      Connection.new(ip, port, opts, &block)
+    def self.open(host, port, opts = {}, &block) #:yields: self
+      Connection.new(host, port, opts, &block)
     end
 
-    # Connect server listening on ip:port
+    # Connect server listening on host:port
     #
     # Parameters:
     #
-    # [ip] IP of the host BA is running on.
+    # [host] IP of the host BA is running on.
     # [port] Port BA is listening.
     # [opts] Options
-    #        [timeout] timeout in seconds when connecting server.
-    #        [format] select underlying writer and reader, now only "json"
+    #        [format] Select underlying writer and reader, now only "json"
     #                 is supported, and it is also the default format.
-    def initialize(ip, port, opts = {}) #:yields: self
-      opts = {:timeout => 5, :format => "json"}.merge opts
+    def initialize(host, port, opts = {}) #:yields: self
+      opts = {:format => "json"}.merge opts
 
       use_format(opts[:format])
 
-      Timeout::timeout(opts[:timeout].to_i) do
-        @socket = TCPSocket.new(ip, port);
-      end
+      @client = Client.new(:host => host, :port => port)
 
       # 0 is reserved by server
       @sequence = 1
@@ -71,17 +52,7 @@ module Sf1Driver
 
     # Closes the connection
     def close
-      @socket.close
-    end
-
-    # Closes read end of the connection.
-    def close_read
-      @socket.close_read
-    end
-
-    # Closes write end of the connection
-    def close_write
-      @socket.close_write
+      @client.close
     end
 
     # Chooses data format. Now only "json" is supported, and it is also the default format.
@@ -91,8 +62,8 @@ module Sf1Driver
       require reader_file
       require writer_file
 
-      eval "extend #{Connection.camel(format)}Reader"
-      eval "extend #{Connection.camel(format)}Writer"
+      eval "extend #{Helper.camel(format)}Reader"
+      eval "extend #{Helper.camel(format)}Writer"
     end
 
     def server_errors #:nodoc:
@@ -274,6 +245,7 @@ module Sf1Driver
     # Stores request in array. Requests will be sent in batch after the batch
     # block is closed.
     def add_batch_request(uri, request)
+      raise "Too many requests in batch" if @batch_requests.length > MAX_SEQUENCE
       request_sequence = @sequence + @batch_requests.length
       if request_sequence > MAX_SEQUENCE
         request_sequence -= MAX_SEQUENCE
@@ -310,36 +282,21 @@ module Sf1Driver
       if response
         response_sequence, payload = response
         return [response_sequence, reader_deserialize(payload)]
+        # return [response_sequence, payload]
       end
     end
 
     # Write raw request to server. It is in the format specified in use_format. 
     def write_raw(request)
-      bytes = [@sequence, Connection.num_bytes(request), request].pack("NNa*");
-      @socket.write bytes
-      @sequence += 1
-      if @sequence > MAX_SEQUENCE
-        @sequence = 1
-      end
+      @client.send_request(@sequence, request)
     end
 
     # Read raw response from server. It is in the format specified in use_format.
     def read_raw
-      form_header_buffer = @socket.read(INT_SIZE * 2)
-      return unless form_header_buffer && form_header_buffer.size == INT_SIZE * 2
-
-      response_sequence, response_size = form_header_buffer.unpack('NN')
-      return if response_size == 0
-
-      response_buffer = @socket.read(response_size)
-      return unless response_buffer && response_buffer.size == response_size
-
-      return [response_sequence, response_buffer]
+      @client.get_response
     end
-
   end
 
-  module_function
   # Helper method to print value
   def self.pp_value(value, offset = 2, level = 0)
     level += 1

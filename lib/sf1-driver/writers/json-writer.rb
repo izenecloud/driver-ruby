@@ -7,7 +7,7 @@
 
 require 'json'
 
-module Sf1Driver
+class Sf1Driver
   module JsonWriter
     def writer_serialize(object)
       return JSON.dump(object)

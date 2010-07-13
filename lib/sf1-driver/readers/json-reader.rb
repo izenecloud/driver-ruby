@@ -8,7 +8,7 @@
 require 'rubygems'
 require 'json'
 
-module Sf1Driver
+class Sf1Driver
   module JsonReader
     def reader_deserialize(data)
       return JSON.parse(data)
