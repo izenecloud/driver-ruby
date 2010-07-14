@@ -2,14 +2,18 @@
 
 ## Installation ##
 
-Add `lib` directory to environment variable `RUBYLIB` or ruby global
-environment `$LOAD_PATH`. Or, which is recommended, install the gem:
+sf1-driver can be install as a gem. The gem can be generated using `rake gem` in
+the code base:
 
     rake gem
     gem install pkg/sf1-driver-${VERSION}.gem
-    
+
 (Replace ${VERSION} to the latest version. You many need root privileges to
 install the gem in system path)
+
+All your installed versions can be listed by:
+
+    gem list sf1-driver
 
 ## Usage ##
 
@@ -17,29 +21,50 @@ install the gem in system path)
 
 [Driver Specification](https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html)
 
+If you cannot access these sites, ask for a package of
+`sf1-revolution/driver-docs`.
+
 ### Create Driver Client ###
 
-    require 'sf1-driver
+    require 'sf1-driver'
     sf1 = Sf1Driver.new(ba_ip, ba_port)
 
 ### Send Requests ###
 
 Send one request message:
 
-    response_message = sf1.send(uri, request_message)
+    response_message = sf1.call(uri, request_message)
 
 Send request messages in batch. The messages will not block each other.
 
-    response_messages = sf1.batch
-        connection.send(uri1, request_message1)
-        connection.send(uri2, request_message2)
-        connection.send(uri3, request_message3)
+    response_messages = sf1.batch do
+      sf1.call(uri1, request_message1)
+      sf1.call(uri2, request_message2)
+      sf1.call(uri3, request_message3)
     end
 
 The returned result is an array of all response messages. The response sequence
 is the same of the occurrence sequence of their corresponding requests. If some
 responses are nil, please check `connection.server_error`.
 
+Some examples:
+
+    # index ChnWiki
+    sf1.call "commands/index", :collection => "ChnWiki"
+
+    # search in ChnWiki and SohuNews in batch
+    responses = sf1.batch do
+      sf1.call "documents/search",
+        :collection => "ChnWiki",
+        :search => {
+          :keywords => "America"
+        }
+      sf1.call "documents/search",
+        :collection => "ShohuNews",
+        :search => {
+          :keywords => "America"
+        }
+    end
 
 ## Scripts ##
 
