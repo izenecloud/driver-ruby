@@ -12,7 +12,7 @@ class Sf1Driver
   class ServerError < RuntimeError
   end
 
-  VERSION = "2.0.0"
+  VERSION = "2.0.1"
 
   # Max sequence number. It is also the upper limit of the number of requests
   # in a batch request.
@@ -63,8 +63,8 @@ class Sf1Driver
 
   # Chooses data format. Now only "json" is supported, and it is also the default format.
   def use_format(format)
-    reader_file = "sf1-driver/readers/#{format}-reader"
-    writer_file = "sf1-driver/writers/#{format}-writer"
+    reader_file = File.join(File.dirname(__FILE__), "sf1-driver", "readers", "#{format}-reader")
+    writer_file = File.join(File.dirname(__FILE__), "sf1-driver", "writers", "#{format}-writer")
     require reader_file
     require writer_file
 
@@ -183,9 +183,12 @@ class Sf1Driver
           responses[index] = response
         end
       end
-    rescue => e
-      @server_error << e.message
+    rescue ServerError => e
+      @server_error = e
       @raw_client.close
+    rescue
+      @raw_client.close
+      raise
     ensure
       @batch_requests = nil
     end
