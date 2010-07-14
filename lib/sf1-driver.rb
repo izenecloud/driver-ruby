@@ -92,6 +92,7 @@ class Sf1Driver
   #
   # Examples:
   #
+  #     sf1 = Sf1Driver.new(host, port)
   #     request = {
   #       :collection => "ChnWiki",
   #       :resource => {
@@ -99,7 +100,7 @@ class Sf1Driver
   #         :title => "SF1v5 Driver Howto"
   #       }
   #     }
-  #     connection.send("documents/create", request)
+  #     sf1.call("documents/create", request)
   #
   def call(uri, request)
     raise "Two many requests in batch" if @batch_requests and @batch_requests.length == MAX_SEQUENCE
@@ -142,9 +143,10 @@ class Sf1Driver
   #
   # e.g.
   #
-  # responses = connection.batch do
-  #   connection.call "/ChnWiki/commands/create", :resource => {:command => "index"}
-  #   connection.call "/ChnWiki/commands/create", :resource => {:command => "mining"}
+  # sf1 = Sf1Driver.new(host, port)
+  # responses = sf1.batch do
+  #   sf1.call "/ChnWiki/commands/create", :resource => {:command => "index"}
+  #   sf1.call "/ChnWiki/commands/create", :resource => {:command => "mining"}
   # end
   #
   def batch

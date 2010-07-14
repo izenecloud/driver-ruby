@@ -1,5 +1,5 @@
 require "rubygems"
-require "sf1-driver/connection"
+require "sf1-driver"
 require "json"
 require "webrick"
 include WEBrick
@@ -27,7 +27,7 @@ class SenderServlet < HTTPServlet::AbstractServlet
         uri = uri.strip
 
         if uri and !uri.empty?
-          response_message = connection.send uri, request_message
+          response_message = sf1.call uri, request_message
         else
           error_message["errors"] << "Require uri."
         end
@@ -49,9 +49,8 @@ class SenderServlet < HTTPServlet::AbstractServlet
     raise HTTPStatus::OK
   end
 
-  def connection
-    @connnection ||= Sf1Driver::Connection.new(CONFIG[:BA][:IP],
-                                               CONFIG[:BA][:Port])
+  def sf1
+    @sf1 ||= Sf1Driver.new(CONFIG[:BA][:IP], CONFIG[:BA][:Port])
   end
   
 end

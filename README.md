@@ -14,20 +14,20 @@ environment `$LOAD_PATH`. Or, which is recommended, install the gem:
 
 [RDoc](https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/ruby-client/index.html)
 
-### Create Connection Object ###
+### Create Driver Client ###
 
-    require 'sf1-driver/connection'
-    connection = Sf1Driver::Connection.new("ba_ip", "ba_port")
+    require 'sf1-driver
+    sf1 = Sf1Driver.new(ba_ip, ba_port)
 
 ### Send Requests ###
 
 Send one request message:
 
-    response_message = connection.send(uri, request_message)
+    response_message = sf1.send(uri, request_message)
 
 Send request messages in batch. The messages will not block each other.
 
-    response_messages = connection.batch
+    response_messages = sf1.batch
         connection.send(uri1, request_message1)
         connection.send(uri2, request_message2)
         connection.send(uri3, request_message3)
@@ -35,7 +35,7 @@ Send request messages in batch. The messages will not block each other.
 
 The returned result is an array of all response messages. The response sequence
 is the same of the occurrence sequence of their corresponding requests. If some
-responses are nil, please check `connection.server_errors`.
+responses are nil, please check `connection.server_error`.
 
 
 ## Scripts ##
