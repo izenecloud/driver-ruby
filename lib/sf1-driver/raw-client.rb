@@ -61,11 +61,11 @@ class Sf1Driver
     # [sequence] sequence number of the request, it must be a unsigned 32bit integer.
     # [request_data] Request data
     def send_request(sequence, request_data)
+      connect unless connected?
+
       bytes = [sequence, num_bytes(request_data), request_data].pack("NNa*")
-      ensure_connected do
-        @sock.write bytes
-        yield if block_given?
-      end
+      @sock.write bytes
+      yield if block_given?
     end
 
     # Get a response from SF1
@@ -75,7 +75,7 @@ class Sf1Driver
     # [sequence] Sequence number of the corresponding request or 0 for server error.
     # [response_data] Response data
     def get_response
-      return unless @sock
+      return unless connected?
 
       form_header_buffer = @sock.read(header_size)
       unless form_header_buffer and form_header_buffer.length == header_size
@@ -98,20 +98,6 @@ class Sf1Driver
     end
 
   protected
-    def ensure_connected
-      connect unless connected?
-
-      begin
-        yield
-      rescue Errno::ECONNRESET, Errno::EPIPE, Errno::ECONNABORTED, Errno::ETIMEDOUT
-        if reconnect
-          yield
-        else
-          raise Errno::ECONNRESET
-        end
-      end
-    end
-
     def server_name
       "Sf1 Driver Server on #{host}:#{port}"
     end

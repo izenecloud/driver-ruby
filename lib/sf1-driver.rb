@@ -43,7 +43,7 @@ class Sf1Driver
 
     use_format(opts[:format])
 
-    @raw_client = RawClient.new(host, port)
+    @raw_client = opts[:client] || RawClient.new(host, port)
 
     # 0 is reserved by server
     @sequence = 1
@@ -103,17 +103,18 @@ class Sf1Driver
     raise "Two many requests in batch" if @batch_requests and @batch_requests.length == MAX_SEQUENCE
     remember_sequence = @sequence
 
-    request = strinize_header_keys(request)
+    request = stringize_header_keys(request)
     if request["header"]["check_time"]
       start_time = Time.now
     end
-    send_request(uri, request)
 
     if @batch_requests
+      send_request(uri, request)
       @batch_requests << start_time
       remember_sequence
     else
-      response_sequence, response = get_response
+      response_sequence, response = send_request_and_get_response(uri, request)
+
       raise ServerError, "Unmatch sequence number" unless response_sequence == remember_sequence
 
       if start_time
@@ -168,6 +169,13 @@ class Sf1Driver
             index = response_sequence - begin_index
           end
           raise ServerError, "Unmatch sequence number" unless index < request_count
+
+          if @batch_requests[index]
+            response["timers"] ||= {}
+            response["timers"]["total_client_time"] = Time.now - @batch_requests[index]
+          end
+
+          responses[index] = response
         end
       end
     rescue ServerError => e
@@ -182,23 +190,41 @@ class Sf1Driver
   end
 
 private
-  # Send request to server
-  def send_request(uri, request)
-    controller, action = uri.to_s.split("/").reject{|e| e.nil? || e.empty?}
+  def auto_connect
+    begin
+      yield
+    rescue Errno::ECONNRESET, Errno::EPIPE, Errno::ECONNABORTED, Errno::ETIMEDOUT
+      if @client.reconnect
+        yield
+      else
+        raise Errno::ECONNRESET
+      end
+    end
+  end
 
-    if controller.nil?
-      raise ArgumentError, "Require controller name."
+  def send_request_and_get_response(uri, request)
+    request = parse_uri(uri, request)
+
+    response = nil
+    begin
+      auto_connect do
+        @raw_client.send_request(@sequence, writer_serialize(request))
+        response = get_response
+      end
+    ensure
+      increase_sequence
     end
 
-    request["header"] ||= {}
-    request["header"]["controller"] = controller
-    request["header"]["action"] = action if action
+    response
+  end
 
-    @raw_client.send_request(@sequence, writer_serialize(request))
-
-    @sequence += 1
-    if @sequence > MAX_SEQUENCE
-      @sequence = 1
+  # Send request to server
+  def send_request(uri, request)
+    begin
+      request = parse_uri(uri, request)
+      @raw_client.send_request(@sequence, writer_serialize(request))
+    ensure
+      increase_sequence
     end
   end
 
@@ -221,7 +247,27 @@ private
     response
   end
 
-  def strinize_header_keys(request)
+  def increase_sequence
+    @sequence += 1
+    if @sequence > MAX_SEQUENCE
+      @sequence = 1
+    end
+  end
+
+  def parse_uri(uri, request)
+    controller, action = uri.to_s.split("/").reject{|e| e.nil? || e.empty?}
+
+    if controller.nil?
+      raise ArgumentError, "Require controller name."
+    end
+
+    request["header"]["controller"] = controller
+    request["header"]["action"] = action if action
+
+    request
+  end
+  
+  def stringize_header_keys(request)
     header = request["header"] || request[:header] || {}
     request.delete :header
     if header.is_a? Hash
