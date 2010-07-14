@@ -8,11 +8,14 @@ environment `$LOAD_PATH`. Or, which is recommended, install the gem:
     rake gem
     gem install pkg/sf1-driver-${VERSION}.gem
     
-(Replace ${VERSION} to the latest version)
+(Replace ${VERSION} to the latest version. You many need root privileges to
+install the gem in system path)
 
 ## Usage ##
 
 [RDoc](https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/ruby-client/index.html)
+
+[Driver Specification](https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html)
 
 ### Create Driver Client ###
 
