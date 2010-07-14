@@ -58,9 +58,11 @@ responses.length.times do |i|
       end
 
       if response["errors"]
-        messages = response["errors"].join(" ").gsub(/[\n\r]/, "");
-        servity = (success ? "[WARN]":"[ERROR]")
-        puts "* #{files[i]}: #{servity} #{messages}"
+        messages += response["errors"].join(" ").gsub(/[\n\r]/, "");
+        puts "* #{files[i]}: [ERROR] #{messages}"
+      elsif response["warnings"]
+        messages = response["warnings"].join(" ").gsub(/[\n\r]/, "");
+        puts "* #{files[i]}: [WARN] #{messages}"
       end
     else
       puts "* #{files[i]}: no response"
