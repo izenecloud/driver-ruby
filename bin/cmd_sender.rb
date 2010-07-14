@@ -45,9 +45,9 @@ if response.nil? or !response["header"]["success"]
     STDERR.puts response["errors"].join("\n")
   end
   exit 1
-elsif response["errors"]
+elsif response["warnings"]
   puts "WARNING!"
-  puts response["errors"].join("\n")
+  puts response["warnings"].join("\n")
 else
   puts "Sent!"
 end
