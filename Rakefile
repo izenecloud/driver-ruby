@@ -60,3 +60,44 @@ end
 task :websender do
   ruby "websender/server.rb"
 end
+
+task :package_doc do
+  mkdir "sf1-driver-docs" rescue nil
+  sh_markdown = <<SH
+cat README.md | sed 's;https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/;;' | markdown
+SH
+  body = `#{sh_markdown}`.sub(/<h1>.*<\/h1>/, "")
+
+  File.open("sf1-driver-docs/index.html", "w") do |fs|
+    fs.write <<HEADER
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>SF1 Driver</title>
+<link href="html/tabs.css" rel="stylesheet" type="text/css"/>
+<link href="html/doxygen.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div class="header">
+  <div class="headertitle">
+    <h1>SF1 Driver Ruby</h1>
+  </div>
+</div>
+
+<div class="contents">
+HEADER
+
+    fs.write body
+
+    fs.write <<FOOTER
+</div>
+</body>
+</html>
+FOOTER
+  end
+
+  sh "rsync -av --del ../sf1-driver-docs/html/ sf1-driver-docs/html"
+
+  sh "zip -r sf1-driver-docs sf1-driver-docs"
+end

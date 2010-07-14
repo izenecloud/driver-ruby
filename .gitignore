@@ -3,3 +3,5 @@ pkg
 bin/config.yml
 websender/server.yml
 html
+/sf1-driver-docs
+/sf1-driver-docs.zip
