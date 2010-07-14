@@ -162,7 +162,7 @@ class Sf1Driver
         end
 
         request_count.times do
-          response_sequence, resposne = get_response
+          response_sequence, response = get_response
           if response_sequence < begin_index
             index = MAX_SEQUENCE - begin_index + response_sequence
           else
@@ -178,15 +178,14 @@ class Sf1Driver
           responses[index] = response
         end
       end
-    rescue ServerError => e
+    rescue => e
       @server_error << e.message
       @raw_client.close
-    rescue
-      @raw_client.close
-      raise
     ensure
       @batch_requests = nil
     end
+
+    responses
   end
 
 private
