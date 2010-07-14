@@ -12,7 +12,7 @@ LIBDIR = File.join(File.dirname(BINDIR), "lib").freeze
 
 $LOAD_PATH << LIBDIR
 
-require "sf1-driver/connection"
+require "sf1-driver"
 require "yaml"
 config_file = File.join(BINDIR, "config.yml")
 unless File.exist? config_file
@@ -22,5 +22,5 @@ end
 CONFIG = YAML::load_file config_file
 
 def create_connection
-  Sf1Driver::Connection.new(CONFIG["ba"]["ip"], CONFIG["ba"]["port"])
+  Sf1Driver.new(CONFIG["ba"]["ip"], CONFIG["ba"]["port"])
 end

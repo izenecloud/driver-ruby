@@ -61,7 +61,7 @@ loop {
                 n_request["search"]["keywords"] = keyword
 #                 puts n_request["search"]["keywords"]
                 begin
-                    conn.send(n_request["uri"], n_request)
+                    conn.call(n_request["uri"], n_request)
                 rescue => e
                     $stderr.puts "Exception : #{e}"
                 end

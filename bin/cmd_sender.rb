@@ -37,7 +37,7 @@ if command.nil? or request[:collection].nil?
 end
 
 conn = create_connection
-response = conn.send("commands/#{command}", request)
+response = conn.call("commands/#{command}", request)
 
 if response.nil? or !response["header"]["success"]
   STDERR.puts "ERROR!"

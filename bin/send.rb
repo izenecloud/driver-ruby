@@ -36,7 +36,7 @@ responses = conn.batch do
           $stderr.puts "Must set the uri in request: #{file_path}"
         end
 
-        conn.send(request["uri"], request)
+        conn.call(request["uri"], request)
       end
     rescue => e
       $stderr.puts "Exception for file #{file_path}: #{e}"
