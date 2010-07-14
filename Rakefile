@@ -47,8 +47,8 @@ Rake::GemPackageTask.new(sf1_driver_spec) do |pkg|
 end
 
 Rake::RDocTask.new do |rd|
-  rd.main = "lib/sf1-driver/connection.rb"
-  rd.rdoc_files.include("lib/sf1-driver/**/*.rb")
+  rd.main = "lib/sf1-driver.rb"
+  rd.rdoc_files.include("lib/sf1-driver.rb", "lib/sf1-driver/**/*.rb")
   rd.options << "--all"
 end
 

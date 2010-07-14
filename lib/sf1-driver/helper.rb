@@ -1,7 +1,7 @@
-#---
+#--
 # Author::  Ian Yang
 # Created:: <2010-07-13 16:41:10>
-#+++
+#++
 #
 # Helper methods
 

@@ -1,7 +1,7 @@
-#---
+#--
 # Author::  Ian Yang
 # Created:: <2010-06-12 17:14:39>
-#+++
+#++
 #
 # write data into JSON
 

@@ -1,8 +1,7 @@
-# See Sf1Driver::Connection
-
 require "sf1-driver"
 
 class Sf1Driver
+  # *Deprecated*. See Sf1Driver
   class Connection < Sf1Driver
     def open(*args, &block)
       Connection.new(*args, &block)

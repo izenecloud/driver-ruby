@@ -1,11 +1,13 @@
-#---
+#--
 # Author::  Ian Yang
 # Created:: <2010-07-13 15:10:37>
-#+++
+#++
+# See Sf1Driver
 
 require "sf1-driver/helper"
 require "sf1-driver/raw-client"
 
+# Driver client
 class Sf1Driver
   class ServerError < RuntimeError
   end
@@ -126,6 +128,7 @@ class Sf1Driver
     end
   end
 
+  # Deprecated. Use call instead.
   def send(*args)
     puts "Warning: Sf1Driver#send is deprecated, use Sf1Driver#call instead"
 

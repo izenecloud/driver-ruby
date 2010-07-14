@@ -1,7 +1,7 @@
-#---
+#--
 # Author::  Ian Yang
 # Created:: <2010-06-12 17:12:56>
-#+++
+#++
 #
 # read data from JSON
 
