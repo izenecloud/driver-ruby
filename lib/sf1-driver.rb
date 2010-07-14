@@ -113,7 +113,7 @@ class Sf1Driver
       @batch_requests << start_time
       remember_sequence
     else
-      response_sequence, response = get_response(remember_sequence)
+      response_sequence, response = get_response
       raise ServerError, "Unmatch sequence number" unless response_sequence == remember_sequence
 
       if start_time
@@ -128,7 +128,7 @@ class Sf1Driver
   def send(*args)
     puts "Warning: Sf1Driver#send is deprecated, use Sf1Driver#call instead"
 
-    call *args
+    call(*args)
   end
 
   # Open a block that call can used to add requests in batch.
@@ -172,9 +172,9 @@ class Sf1Driver
       end
     rescue ServerError => e
       @server_error << e.message
-      @client.close
+      @raw_client.close
     rescue
-      @client.close
+      @raw_client.close
       raise
     ensure
       @batch_requests = nil
@@ -194,7 +194,7 @@ private
     request["header"]["controller"] = controller
     request["header"]["action"] = action if action
 
-    @client.send_request(@sequence, writer_serialize(request))
+    @raw_client.send_request(@sequence, writer_serialize(request))
 
     @sequence += 1
     if @sequence > MAX_SEQUENCE
@@ -204,22 +204,25 @@ private
 
   # Read response from server
   def get_response
-    response_sequence, response = @client.get_response
+    response = @raw_client.get_response
     if response
-      response = reader_deserialize(response)
+      response[1] = reader_deserialize(response.last)
+    else
+      raise ServerError, "No response."
     end
 
-    raise ServerError, "No response." if response_sequence.nil? || response.nil?
-    raise ServerError, "Malformed response." unless response.is_a?Hash
+    raise ServerError, "Malformed response." unless response[1].is_a?Hash
 
-    if response_sequence == 0
-      response["errors"] ||= ["Unknown server error."]
-      raise ServerError, response["errors"].join("\n")
+    if response[0] == 0
+      response[1]["errors"] ||= ["Unknown server error."]
+      raise ServerError, response[1]["errors"].join("\n")
     end
+
+    response
   end
 
   def strinize_header_keys(request)
-    header = request["header"] || request[:header]
+    header = request["header"] || request[:header] || {}
     request.delete :header
     if header.is_a? Hash
       header = header.inject({}) do |h, (key, value)|
@@ -227,7 +230,7 @@ private
       end
     end
 
-    request["header"] = header if header
+    request["header"] = header
     request
   end
 end

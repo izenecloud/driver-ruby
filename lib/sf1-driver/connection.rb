@@ -1,7 +1,6 @@
 # See Sf1Driver::Connection
 
-require "sf1-driver/helper"
-require "sf1-driver/client"
+require "sf1-driver"
 
 class Sf1Driver
   class Connection < Sf1Driver
