@@ -7,6 +7,8 @@
 require "sf1-driver/helper"
 require "sf1-driver/raw-client"
 
+require 'pp'
+
 # Driver client
 class Sf1Driver
   class ServerError < RuntimeError
@@ -280,10 +282,12 @@ private
     if header.is_a? Hash
       header = header.inject({}) do |h, (key, value)|
         h[key.to_s] = value
+        h
       end
     end
 
     request["header"] = header
+    pp request
     request
   end
 end
