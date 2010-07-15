@@ -5,7 +5,7 @@ require "rubygems"
 require "yaml"
 require "json"
 require "em-proxy"
-require "sf1-driver/connection"
+require "sf1-driver"
 
 current_dir = File.dirname(File.expand_path(__FILE__)).freeze
 
@@ -21,8 +21,8 @@ CONFIG[:Cobras].each do |cobra|
   ba = cobra[1]
   if ba.is_a? Hash
     begin
-      conn = Sf1Driver::Connection.new(ba[:IP], ba[:Port])
-      response = conn.send('schema',{})
+      conn = Sf1Driver.new(ba[:IP], ba[:Port])
+      response = conn.call('schema',{})
       response["collections"].each do|collection|
         COLLECTIONMAP[collection] = [cobra[0],ba[:IP],ba[:Port]]
       end
@@ -36,7 +36,7 @@ Proxy.start(:host => "0.0.0.0", :port => CONFIG[:Port], :debug => false) do |con
   @start = Time.now
   
   conn.on_data do |data|
-    request = JSON.parse(data.slice(Sf1Driver::Connection::INT_SIZE * 2,data.size))
+    request = JSON.parse(data.slice(Sf1Driver::Helper::header_size,data.size))
     serverinfo = COLLECTIONMAP[request["collection"]]
     if serverinfo.nil?
       #collection does not exist, we forward it to any cobra
