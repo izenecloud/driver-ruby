@@ -1,3 +1,4 @@
+require File.join(File.dirname(__FILE__), "../spec-helper.rb")
 require "sf1-driver/raw-client"
 require "timeout"
 

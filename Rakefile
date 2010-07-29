@@ -8,14 +8,25 @@ require 'rake/clean'
 $:.unshift File.join(File.dirname(__FILE__), 'lib')
 require 'sf1-driver'
 
+namespace :hudson do
+  task :spec => ["hudson:setup:rspec", 'rake:spec']
+
+  namespace :setup do
+    task :pre_ci do
+      ENV["CI_REPORTS"] = 'hudson/reports/spec/'
+      gem 'ci_reporter'
+      require 'ci/reporter/rake/rspec'
+    end
+    task :rspec => [:pre_ci, "ci:setup:rspec"]
+  end
+end
+
 begin
   require 'spec/rake/spectask'
 
   desc "Run all examples"
-  Spec::Rake::SpecTask.new do |t|
+  Spec::Rake::SpecTask.new(:spec) do |t|
     t.spec_files = FileList['spec/**/*-test.rb']
-    t.spec_opts = ["--require", File.expand_path(File.join("spec", "spec-helper.rb")),
-                   "--format", "nested"]
   end
 rescue LoadError
   desc 'Spec task not available'
