@@ -8,6 +8,14 @@
     "type": "str",
     "desc": "Only get documents with this label"
   },
+  "name_entity_item": {
+    "type": "str",
+    "desc": "Only get documents from this name entity item. The type is specified in name_entity_type"
+  },
+  "name_entity_type": {
+    "type": "str",
+    "desc": "Only get documents from specified name entity item. Used with name_entity_item."
+  },
   "in": {
     "desc": "Search in specified properties",
     "type": "seq",
