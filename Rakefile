@@ -4,12 +4,24 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'rake/clean'
+require 'rexml/document'
 
 $:.unshift File.join(File.dirname(__FILE__), 'lib')
 require 'sf1-driver'
 
 namespace :hudson do
-  task :spec => ["hudson:setup:rspec", 'rake:spec']
+  task :spec => ["hudson:setup:rspec", 'rake:spec', 'hudson:post_spec']
+
+  task :post_spec do
+    Dir["hudson/reports/spec/*.xml"].each do |xml_file|
+      document = REXML::Document.new(File.read(xml_file))
+      document.elements.each("//[@name]") do |node|
+        node.attributes["name"] = node.attributes["name"].gsub(/\./, "_")
+      end
+
+      File.open(xml_file, "w") {|fs| document.write(fs)}
+    end
+  end
 
   namespace :setup do
     task :pre_ci do
