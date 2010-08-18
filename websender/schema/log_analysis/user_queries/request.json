@@ -1,0 +1,39 @@
+{
+  "title":"User Queries",
+  "type":"map",
+  "desc":"Get user queries.",
+  "mapping": {
+    "conditions": {
+      "type": "seq",
+      "sequence": $(conditions)
+    },
+
+    "sort": {
+      "type": "seq",
+      "sequence": [{
+        "title": "proeprty",
+        "type": "map",
+        "mapping": {
+          "property": {
+            "type": "str",
+            "required": true,
+            "desc": "Property name"
+          },
+          "order": {
+            "type": "str",
+            "enum": ["ASC", "DESC"]
+          }
+        }
+      }]
+    },
+
+    "select": {
+      "type": "seq",
+      "desc": "Select fields",
+      "sequence": [{
+        "type": "str",
+        "title": "field"
+      }]
+    }
+  }
+}
