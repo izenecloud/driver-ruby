@@ -1,0 +1,29 @@
+{
+  "title":"Faceted Click",
+  "type":"map",
+  "desc":"click on the faceted category",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "category_id": {
+      "type":"int",
+      "desc":"The cateogory id.",
+      "required":true
+    },
+
+    "docid_list": {
+      "type":"str",
+      "desc":"comma seperated search result.",
+      "required":true
+    }
+  }
+}
