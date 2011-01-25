@@ -27,7 +27,7 @@ class SenderServlet < HTTPServlet::AbstractServlet
         uri = uri.strip
 
         if uri and !uri.empty?
-          response_message = sf1.call uri, request_message
+          response_message = sf1.call uri, request_message, req["X_IZENESOFT_ACL_TOKENS"]
         else
           error_message["errors"] << "Require uri."
         end

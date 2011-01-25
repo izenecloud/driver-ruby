@@ -85,6 +85,7 @@ form p label {
 #schema-form .selector {
 	float: left;
 	margin-right: 20px;
+	margin-bottom: 10px;
 }
 #request-description {
 	padding:10px;

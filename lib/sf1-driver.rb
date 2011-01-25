@@ -104,7 +104,7 @@ class Sf1Driver
   #     }
   #     sf1.call("documents/create", request)
   #
-  def call(uri, request)
+  def call(uri, request, tokens = "")
     raise "Two many requests in batch" if @batch_requests and @batch_requests.length == MAX_SEQUENCE
     remember_sequence = @sequence
 
@@ -113,12 +113,13 @@ class Sf1Driver
       start_time = Time.now
     end
 
+    tokens ||= ""
     if @batch_requests
-      send_request(uri, request)
+      send_request(uri, request, tokens)
       @batch_requests << start_time
       remember_sequence
     else
-      response_sequence, response = send_request_and_get_response(uri, request)
+      response_sequence, response = send_request_and_get_response(uri, request, tokens)
 
       raise ServerError, "Unmatch sequence number" unless response_sequence == remember_sequence
 
@@ -211,8 +212,8 @@ private
     end
   end
 
-  def send_request_and_get_response(uri, request)
-    request = parse_uri(uri, request)
+  def send_request_and_get_response(uri, request, tokens)
+    request = parse_uri(uri, request, tokens)
 
     response = nil
     begin
@@ -228,9 +229,9 @@ private
   end
 
   # Send request to server
-  def send_request(uri, request)
+  def send_request(uri, request, tokens)
     begin
-      request = parse_uri(uri, request)
+      request = parse_uri(uri, request, tokens)
       @raw_client.send_request(@sequence, writer_serialize(request))
     ensure
       increase_sequence
@@ -263,7 +264,7 @@ private
     end
   end
 
-  def parse_uri(uri, request)
+  def parse_uri(uri, request, tokens)
     controller, action = uri.to_s.split("/").reject{|e| e.nil? || e.empty?}
 
     if controller.nil?
@@ -272,6 +273,7 @@ private
 
     request["header"]["controller"] = controller
     request["header"]["action"] = action if action
+    request["header"]["acl_tokens"] = tokens
 
     request
   end
