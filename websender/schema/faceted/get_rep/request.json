@@ -1,0 +1,24 @@
+{
+  "title":"Faceted Representation",
+  "type":"map",
+  "desc":"faceted representation by search result.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+
+    "docid_list": {
+      "type":"str",
+      "desc":"comma seperated search result.",
+      "required":true
+    }
+  }
+}

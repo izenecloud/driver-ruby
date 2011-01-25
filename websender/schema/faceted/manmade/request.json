@@ -1,0 +1,19 @@
+{
+  "title":"Manmade",
+  "type":"map",
+  "desc":"Set predefined categories for documents",
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "set on specified collection",
+      "required": true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+
+
+  }
+}
