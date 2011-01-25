@@ -1,0 +1,17 @@
+{
+  "title":"QueryCorrection",
+  "type":"map",
+  "desc":"Get the right words for the query having wrong spelling.",
+  "mapping": {
+    "keywords": {
+      "type": "str",
+      "required": true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+
+  }
+}
