@@ -45,7 +45,7 @@ File.open(query_fname, "r") do |fs|
             if response["header"] && response["header"]["success"]
             total_time += response["timers"]["process_time"]
             query_num += 1
-            puts "#{response["timers"]["process_time"]}, current query num: #{query_num}, current total time: %.2f, current average time: %.4f" % [total_time, total_time / query_num]
+            puts "#{response["timers"]["process_time"]}, total count: #{response["total_count"]}, current query num: #{query_num}, current total time: %.2f, current average time: %.4f" % [total_time, total_time / query_num]
             end
 
             if response["errors"]
