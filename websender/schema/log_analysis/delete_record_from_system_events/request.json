@@ -1,0 +1,11 @@
+{
+  "title":"Delete Record from System Events",
+  "type":"map",
+  "desc":"delete record from system events.",
+  "mapping": {
+    "conditions": {
+      "type": "seq",
+      "sequence": $(conditions)
+    }    
+  }
+}
