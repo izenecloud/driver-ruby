@@ -1,0 +1,6 @@
+{  
+  "conditions": [
+    {"property":"timestamp", "operator":"between", "value":[1.0, 10.0]},
+    {"property":"level", "operator":"in", "value":["warn", "error"]}
+  ]
+}

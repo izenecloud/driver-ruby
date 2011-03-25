@@ -193,6 +193,9 @@ jQuery(document).ready(function() {
       url: 'sender/' + websender.controller + '/' + websender.action,
       contentType: 'application/json',
       dataType: 'json',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('X_IZENESOFT_ACL_TOKENS', $('#acl_tokens').val())
+      },
       data: websender.getRequestJSON(),
       type: 'POST',
       error: function() {

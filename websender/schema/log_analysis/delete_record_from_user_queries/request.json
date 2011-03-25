@@ -1,0 +1,11 @@
+{
+  "title":"Delete Record from User Queries",
+  "type":"map",
+  "desc":"delete record from user queries.",
+  "mapping": {
+    "conditions": {
+      "type": "seq",
+      "sequence": $(conditions)
+    }
+  }
+}
