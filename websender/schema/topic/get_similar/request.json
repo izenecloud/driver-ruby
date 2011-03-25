@@ -1,0 +1,29 @@
+{
+  "title":"Similar Topics",
+  "type":"map",
+  "desc":"Search topics similar to specified target topic",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "similar_to": {
+      "type": "map",
+      "desc": "Add exactly one DOCID or _id",
+      "required": true,
+      "mapping": {
+        "id": {
+          "type":"int",
+          "desc":"Specify topic ID."
+        }
+      }
+    }
+  }
+}
