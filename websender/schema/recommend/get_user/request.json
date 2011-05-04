@@ -1,0 +1,30 @@
+{
+  "title":"Get User",
+  "type":"map",
+  "desc":"get user attribute by user id.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        }
+      },
+      "desc":"Specifie user id",
+      "required":true
+    }
+  }
+}

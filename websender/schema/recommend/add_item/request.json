@@ -1,0 +1,42 @@
+{
+  "title":"Add Item",
+  "type":"map",
+  "desc":"Add a new item.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "ITEMID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique item id"
+        },
+        "name": {
+          "type": "str",
+          "desc": "the item name"
+        },
+        "link": {
+          "type": "str",
+          "desc": "the URL link of the item"
+        },
+        "category": {
+          "type": "str",
+          "desc": "the category of the item"
+        }
+      },
+      "desc":"Specifie the attributes of new item",
+      "required":true
+    }
+  }
+}

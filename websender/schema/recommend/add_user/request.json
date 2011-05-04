@@ -1,0 +1,42 @@
+{
+  "title":"Add User",
+  "type":"map",
+  "desc":"Add a new user.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        },
+        "gender": {
+          "type": "str",
+          "desc": "the user gender"
+        },
+        "age": {
+          "type": "str",
+          "desc": "the user age"
+        },
+        "area": {
+          "type": "str",
+          "desc": "the place where the user lives"
+        }
+      },
+      "desc":"Specifie the attributes of new user",
+      "required":true
+    }
+  }
+}

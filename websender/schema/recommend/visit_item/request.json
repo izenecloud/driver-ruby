@@ -1,0 +1,35 @@
+{
+  "title":"Add Visit Item Event",
+  "type":"map",
+  "desc":"Add the user behavior of visiting item.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        },
+        "ITEMID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique item id"
+        }
+      },
+      "desc":"Specifie user id and item id",
+      "required":true
+    }
+  }
+}

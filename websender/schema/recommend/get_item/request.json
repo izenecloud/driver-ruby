@@ -1,0 +1,30 @@
+{
+  "title":"Get Item",
+  "type":"map",
+  "desc":"get item attributes by item id.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "ITEMID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique item id"
+        }
+      },
+      "desc":"Specifie item id",
+      "required":true
+    }
+  }
+}

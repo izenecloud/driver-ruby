@@ -1,0 +1,10 @@
+{
+  "collection": "example",
+  "resource": {
+    "rec_type_id": "2",
+    "max_count": 10,
+    "input_items": [
+      {"ITEMID": "item_001"}
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "title":"Get recommendation result",
+  "type":"map",
+  "desc":"Get the result of recommendation.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "rec_type_id": {
+          "type": "str",
+          "required": true,
+          "desc": "the recommend type"
+        },
+        "USERID": {
+          "type": "str",
+          "desc": "the unique user id"
+        },
+        "max_count": {
+          "type": "int",
+          "desc": "the max number of recommended result"
+        },
+        "input_items": {
+          "type": "seq",
+          "sequence": [{
+            "title": "item",
+            "type": "map",
+            "mapping": {
+              "ITEMID": {
+                "type": "str",
+                "required": true,
+                "desc": "the unique item id"
+              }
+            }
+          }],
+          "required": true,
+          "desc": "the recommended result is based on the input items"
+        }
+      },
+      "desc":"Specifiy recommend request",
+      "required":true
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "collection": "example",
+  "resource": {
+    "USERID": "user_001",
+    "gender": "male",
+    "age": "23",
+    "area": "Beijing"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "collection": "example",
+  "resource": {
+    "rec_type_id": "3",
+    "USERID": "user_002",
+    "max_count": 10
+  }
+}

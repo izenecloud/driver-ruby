@@ -1,0 +1,58 @@
+{
+  "title":"Add Purchase Item Event",
+  "type":"map",
+  "desc":"Add the user behavior of purchasing item.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        },
+        "items": {
+          "type": "seq",
+          "sequence": [{
+            "title": "item",
+            "type": "map",
+            "mapping": {
+              "ITEMID": {
+                "type": "str",
+                "required": true,
+                "desc": "the unique item id"
+              },
+              "price": {
+                "type": "str",
+                "desc": "the price of each item"
+              },
+              "quantity": {
+                "type": "int",
+                "desc": "the number of items purchased"
+              }
+            }
+          }],
+          "required": true,
+          "desc": "the items purchased by the user"
+        },
+        "order_id": {
+          "type": "str",
+          "desc": "the order id"
+        }
+      },
+      "desc":"Specify purchase event",
+      "required":true
+    }
+  }
+}
