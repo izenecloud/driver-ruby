@@ -1,7 +1,7 @@
 {
   "collection": "example",
   "resource": {
-    "rec_type_id": "1",
+    "rec_type": "BAB",
     "max_count": 10,
     "input_items": [
       {"ITEMID": "item_001"}

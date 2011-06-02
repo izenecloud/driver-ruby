@@ -17,7 +17,7 @@
     "resource": {
       "type":"map",
       "mapping": {
-        "rec_type_id": {
+        "rec_type": {
           "type": "str",
           "required": true,
           "desc": "the recommend type"
