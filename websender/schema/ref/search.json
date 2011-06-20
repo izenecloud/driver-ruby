@@ -4,6 +4,10 @@
     "required": true,
     "desc": "Search keywords"
   },
+  "USERID": {
+    "type": "str",
+    "desc": "User ID"
+  },
   "taxonomy_label": {
     "type": "str",
     "desc": "Only get documents with this label"
