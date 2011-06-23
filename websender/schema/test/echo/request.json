@@ -1,0 +1,13 @@
+{
+  "title":"Test",
+  "type":"map",
+  "desc":"Get echo message.",
+  "mapping": {
+    "message": {
+    "type":"str",
+    "desc":"Specifie the message",
+    "required":true
+    } 
+    
+  }
+}

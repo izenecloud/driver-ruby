@@ -1,0 +1,13 @@
+{
+  "title":"Test",
+  "type":"map",
+  "desc":"Sleep.",
+  "mapping": {
+    "message": {
+    "type":"int",
+    "desc":"Specify the sleeping time",
+    "required":true
+    } 
+    
+  }
+}
