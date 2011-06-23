@@ -1,7 +1,7 @@
 {
   "collection": "example",
   "resource": {
-    "rec_type_id": "2",
+    "rec_type": "VAV",
     "max_count": 10,
     "input_items": [
       {"ITEMID": "item_001"}
