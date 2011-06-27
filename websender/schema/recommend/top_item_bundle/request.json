@@ -1,0 +1,35 @@
+{
+  "title":"Top item bundle",
+  "type":"map",
+  "desc":"Get the most frequent item bundles.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "max_count": {
+          "type": "int",
+          "required": true,
+          "desc": "bundle number"
+        },
+        
+        "min_freq": {
+          "type": "int",
+          "required": true,
+          "desc": "min frequency"
+      },
+      "desc":"Specify the recommend resource",
+      "required":true
+    }
+  }
+}
