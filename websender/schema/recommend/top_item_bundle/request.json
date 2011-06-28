@@ -1,11 +1,11 @@
 {
-  "title":"Top item bundle",
+  "title":"Top Item Bundle",
   "type":"map",
   "desc":"Get the most frequent item bundles.",
   "mapping": {
     "collection": {
       "type":"str",
-      "desc":"Specifie a collection name",
+      "desc":"Specify a collection name",
       "required":true
     },
 
@@ -20,15 +20,15 @@
         "max_count": {
           "type": "int",
           "required": true,
-          "desc": "bundle number"
+          "desc": "the max number of recommended result"
         },
-        
         "min_freq": {
           "type": "int",
           "required": true,
           "desc": "min frequency"
+        }
       },
-      "desc":"Specify the recommend resource",
+      "desc":"Specifiy recommend request",
       "required":true
     }
   }
