@@ -12,8 +12,35 @@
     "header": {
       "type":"map",
       "mapping": $(header)
-    }
+    },
 
+    "manmade": {
+      "type": "seq",
+      "sequence": [{
+        "title": "item",
+        "type": "map",
+        "mapping": {
+          "_id": {
+            "type": "int",
+            "desc": "Document internal id"
+          },
+          "docid": {
+            "type": "str",
+            "desc": "The string docid"
+          },
+          "cid": {
+            "type": "int",
+            "desc": "The id of category"
+          },
+          "cname": {
+            "type": "str",
+            "desc": "category name"
+          }
+        }
+      }],
+      "required": true,
+      "desc": "Each item is a manmade docid to category map"
+    }
 
   }
 }
