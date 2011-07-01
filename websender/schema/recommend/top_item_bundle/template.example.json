@@ -1,0 +1,7 @@
+{
+  "collection": "example",
+  "resource": {
+    "max_count": 20,
+    "min_freq": 10
+  }
+}

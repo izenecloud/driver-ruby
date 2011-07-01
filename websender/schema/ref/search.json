@@ -20,6 +20,46 @@
     "type": "str",
     "desc": "Only get documents from specified name entity item. Used with name_entity_item."
   },
+  "group_label": {
+    "desc": "Only get documents in the specified property groups",
+    "type": "seq",
+    "sequence": [{
+      "title": "item",
+      "type": "map",
+      "mapping": {
+        "property": {
+          "type": "str",
+          "required": true,
+          "desc": "the property name"
+        },
+        "value": {
+          "type": "str",
+          "required": true,
+          "desc": "the property value"
+        }
+      }
+    }]
+  },
+  "attr_label": {
+    "desc": "Only get documents in the specified attribute groups",
+    "type": "seq",
+    "sequence": [{
+      "title": "item",
+      "type": "map",
+      "mapping": {
+        "attr_name": {
+          "type": "str",
+          "required": true,
+          "desc": "the attribute name"
+        },
+        "attr_value": {
+          "type": "str",
+          "required": true,
+          "desc": "the attribute value"
+        }
+      }
+    }]
+  },
   "in": {
     "desc": "Search in specified properties",
     "type": "seq",

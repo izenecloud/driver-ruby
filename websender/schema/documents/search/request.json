@@ -28,21 +28,26 @@
         "type": "map",
         "mapping": {
           "property": {
-            "required": true,
-            "type": "str"
-          },
-          "from": {
-            "type": "any"
-          },
-          "to": {
-            "type": "any"
-          },
-          "group_count": {
-            "type": "int",
-            "desc": "How many groups are splited between \"from\" and \"to\""
+          "type": "str",
+          "required": true,
+          "desc": "the property name"
           }
         }
       }]
+    },
+
+    "attr": {
+      "type": "map",
+      "mapping": {
+        "attr_result": {
+          "type": "bool",
+          "desc": "whether return group results by attribute values"
+        },
+        "attr_top": {
+          "type": "int",
+          "desc": "the number of group results to return"
+        }
+      }
     },
 
     "conditions": {
