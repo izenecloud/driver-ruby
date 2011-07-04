@@ -3,6 +3,12 @@
   "type":"map",
   "desc":"Get user queries.",
   "mapping": {
+    "collection": {
+    "type":"str",
+    "desc":"Specifie a collection name",
+    "required":true
+    },
+    
     "conditions": {
       "type": "seq",
       "sequence": $(conditions)
@@ -29,11 +35,36 @@
 
     "select": {
       "type": "seq",
-      "desc": "Select fields",
+      "sequence": [{
+        "title": "property",
+        "type": "map",
+        "mapping": {
+            "property": {
+                "type": "str",
+                "required": true,
+                "desc": "Property name"
+            },
+            "func": {
+                "type": "str",
+                "enum": ["COUNT", "SUM", "MAX"]  
+            } 
+         }       
+      }]
+    },
+    
+    "groupby": {
+      "type": "seq",
+      "desc": "Select properties",
       "sequence": [{
         "type": "str",
-        "title": "field"
+        "title": "property"
       }]
+    },
+    
+    "limit": {
+      "type": "int",
+      "desc": "Number of records for return"
     }
+    
   }
 }
