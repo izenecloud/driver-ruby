@@ -1,6 +1,7 @@
 {
   "collection": "example",
   "resource": {
+    "session_id": "session_001",
     "USERID": "user_001",
     "ITEMID": "item_001"
   }

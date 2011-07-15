@@ -17,6 +17,11 @@
     "resource": {
       "type":"map",
       "mapping": {
+        "session_id": {
+          "type": "str",
+          "required": true,
+          "desc": "the session id"
+        },
         "USERID": {
           "type": "str",
           "required": true,
