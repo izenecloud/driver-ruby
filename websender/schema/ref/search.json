@@ -75,6 +75,9 @@
   "log_keywords": {
     "type": "bool"
   },
+  "log_group_labels": {
+    "type": "bool"
+  },
   "analyzer": {
     "desc": "Analyzer Options",
     "type": "map",

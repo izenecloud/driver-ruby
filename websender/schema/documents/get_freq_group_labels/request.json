@@ -1,0 +1,40 @@
+{
+  "title":"Get Frequent Group Labels",
+  "type":"map",
+  "desc":"Get the group labels clicked most frequently by user given a specific query",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type": "map",
+      "desc": "Specify the query and property name",
+      "required": true,
+      "mapping": {
+        "keywords": {
+          "type":"str",
+          "desc":"Specify the user query",
+          "required": true
+        },
+        "group_property": {
+          "type":"str",
+          "desc":"Specify the the group property name",
+          "required": true
+        },
+        "limit": {
+          "type":"int",
+          "desc":"Limit the count of returned labels",
+        }
+      }
+    }
+
+  }
+}
