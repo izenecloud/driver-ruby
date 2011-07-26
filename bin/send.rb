@@ -58,11 +58,13 @@ responses.length.times do |i|
       end
 
       if response["errors"]
-        messages += response["errors"].join(" ").gsub(/[\n\r]/, "");
+        messages = response["errors"].join(" ").gsub(/[\n\r]/, "");
         puts "* #{files[i]}: [ERROR] #{messages}"
+        fs.write JSON.pretty_generate response
       elsif response["warnings"]
         messages = response["warnings"].join(" ").gsub(/[\n\r]/, "");
         puts "* #{files[i]}: [WARN] #{messages}"
+        fs.write JSON.pretty_generate response
       end
     else
       puts "* #{files[i]}: no response"
