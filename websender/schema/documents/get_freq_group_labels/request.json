@@ -31,7 +31,7 @@
         },
         "limit": {
           "type":"int",
-          "desc":"Limit the count of returned labels",
+          "desc":"Limit the count of returned labels"
         }
       }
     }
