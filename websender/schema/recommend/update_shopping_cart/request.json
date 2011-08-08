@@ -1,0 +1,45 @@
+{
+  "title":"Add Shopping Cart Event",
+  "type":"map",
+  "desc":"Add the user behavior of updating shopping cart.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        },
+        "items": {
+          "type": "seq",
+          "sequence": [{
+            "title": "item",
+            "type": "map",
+            "mapping": {
+              "ITEMID": {
+                "type": "str",
+                "required": true,
+                "desc": "the unique item id"
+              }
+            }
+          }],
+          "desc": "each is an item in shopping cart"
+        }
+      },
+      "desc":"Specifie user id and item ids",
+      "required":true
+    }
+  }
+}
