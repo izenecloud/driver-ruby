@@ -1,0 +1,40 @@
+{
+  "title":"Set group label",
+  "type":"map",
+  "desc":"Set the most frequently clicked group label.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "keywords": {
+          "type": "str",
+          "required": true,
+          "desc": "user query"
+        },
+        "group_property": {
+          "type": "str",
+          "required": true,
+          "desc": "the group property name"
+        },
+        "group_label": {
+          "type": "str",
+          "required": true,
+          "desc": "the group property value of the group label"
+        }        
+      },
+      "desc":"Set the most frequently clicked group label",
+      "required":true
+    }
+  }
+}
