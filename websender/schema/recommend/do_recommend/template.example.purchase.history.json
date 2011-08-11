@@ -1,8 +1,0 @@
-{
-  "collection": "example",
-  "resource": {
-    "rec_type": "BOP",
-    "USERID": "user_002",
-    "max_count": 10
-  }
-}

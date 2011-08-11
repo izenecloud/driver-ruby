@@ -1,0 +1,14 @@
+{
+  "collection":"example",
+  "resource":
+  {
+    "rec_type":"VAV",
+    "max_count":10,
+    "input_items":
+    [
+      {
+        "ITEMID":"item_001"
+      }
+    ]
+  }
+}
