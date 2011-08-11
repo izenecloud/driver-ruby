@@ -30,6 +30,10 @@
           "type": "int",
           "desc": "the max number of recommended result"
         },
+        "session_id": {
+          "type": "str",
+          "desc": "the session id"
+        },
         "input_items": {
           "type": "seq",
           "sequence": [{
@@ -43,8 +47,58 @@
               }
             }
           }],
-          "required": true,
           "desc": "the recommended result is based on the input items"
+        },
+        "include_items": {
+          "type": "seq",
+          "sequence": [{
+            "title": "item",
+            "type": "map",
+            "mapping": {
+              "ITEMID": {
+                "type": "str",
+                "required": true,
+                "desc": "the unique item id"
+              }
+            }
+          }],
+          "desc": "the items must be included in recommendation result"
+        },
+        "exclude_items": {
+          "type": "seq",
+          "sequence": [{
+            "title": "item",
+            "type": "map",
+            "mapping": {
+              "ITEMID": {
+                "type": "str",
+                "required": true,
+                "desc": "the unique item id"
+              }
+            }
+          }],
+          "desc": "the items must be excluded in recommendation result"
+        },
+        "condition": {
+          "title": "condition",
+          "type": "map",
+          "mapping": {
+            "property": {
+              "type": "str",
+              "required": true,
+              "desc": "item property name"
+            },
+            "value": {
+              "type": "seq",
+              "sequence": [{
+                "title": "value",
+                "type": "str",
+                "desc": "item property value"
+              }],
+              "desc": "the property values, each recommendation result must match one of the property value in this array"
+            }
+          },
+          "desc": "specify the condition that recommendation results must meet"
         }
       },
       "desc":"Specifiy recommend request",

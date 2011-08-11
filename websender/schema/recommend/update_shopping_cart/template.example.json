@@ -1,0 +1,10 @@
+{
+  "collection": "example",
+  "resource": {
+    "USERID": "user_001",
+    "items": [
+      {"ITEMID": "item_001"},
+      {"ITEMID": "item_002"}
+    ]
+  }
+}
