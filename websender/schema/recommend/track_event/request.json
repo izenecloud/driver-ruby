@@ -1,0 +1,44 @@
+{
+  "title":"Track an event of user behavior",
+  "type":"map",
+  "desc":"Add the user behavior",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "is_add": {
+          "type": "bool",
+          "desc": "true for add this event, false for remove this event"
+        },
+        "event": {
+          "type": "str",
+          "required": true,
+          "desc": "the event type"
+        },
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        },
+        "ITEMID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique item id"
+        }
+      },
+      "desc":"Specifie user behavior",
+      "required":true
+    }
+  }
+}

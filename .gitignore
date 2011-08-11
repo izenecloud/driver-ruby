@@ -1,4 +1,5 @@
 pkg
+*.swp
 *.out.json
 bin/config.yml
 websender/server.yml
