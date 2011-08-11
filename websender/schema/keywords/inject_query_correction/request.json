@@ -1,0 +1,26 @@
+{
+  "title":"Inject Query Correction",
+  "type":"map",
+  "desc":"Inject Query Correction.",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type": "seq",
+      "desc": "all inject items",
+      "sequence": [{
+        "type": "map",
+        "title": "the inject item, (query-result)",
+        "mapping": {
+	   "query" : {"type" : "str", "desc" : "query string" },
+           "result" : {"type" : "str", "desc" : "result string" }
+
+	}
+      }]
+    }
+  }
+}
