@@ -33,9 +33,13 @@
           "desc": "the property name"
         },
         "value": {
-          "type": "str",
+          "type": "seq",
           "required": true,
-          "desc": "the property value"
+          "desc": "the label path",
+          "sequence": [{
+            "type": "str",
+            "desc": "the node value"
+          }]
         }
       }
     }]
