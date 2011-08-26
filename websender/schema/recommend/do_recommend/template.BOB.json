@@ -1,0 +1,10 @@
+{
+  "collection":"example",
+  "resource":
+  {
+    "rec_type":"BOB",
+    "max_count":10,
+    "USERID":"user_001",
+    "session_id":"session_001"
+  }
+}

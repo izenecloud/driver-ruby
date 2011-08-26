@@ -1,0 +1,6 @@
+{
+  "collection": "intel", 
+  "resource": [
+    { "query" : "佳能", "result" : "佳能打印机|佳能相机" }
+   ]
+}

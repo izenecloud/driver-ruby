@@ -1,0 +1,9 @@
+{
+  "collection":"example",
+  "resource":
+  {
+    "rec_type":"BOE",
+    "USERID":"user_001",
+    "max_count":10
+  }
+}

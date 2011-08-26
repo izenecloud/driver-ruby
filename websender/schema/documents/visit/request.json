@@ -1,0 +1,29 @@
+{
+  "title":"Visit document",
+  "type":"map",
+  "desc":"Visist document (to update click-through rate). DOCID is the only property required",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "required": true,
+      "mapping": {
+        "DOCID": {
+          "type":"str",
+          "desc":"DOCID of the document to be visited."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "collection": "example",
+  "resource": {
+    "event": "wish_list",
+    "USERID": "user_001",
+    "ITEMID": "item_001"
+  }
+}
