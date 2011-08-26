@@ -54,6 +54,16 @@
       "type": "seq",
       "sequence": $(conditions)
     },
+    
+     "range": {
+      "type": "map",
+      "mapping": {
+        "property": {
+          "type": "str",
+          "desc": "property name for returning its value range"
+        }
+      }
+    },
 
     "select": {
       "type": "seq",
