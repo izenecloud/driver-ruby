@@ -28,9 +28,13 @@
         "type": "map",
         "mapping": {
           "property": {
-          "type": "str",
-          "required": true,
-          "desc": "the property name"
+            "type": "str",
+            "required": true,
+            "desc": "the property name"
+          },
+          "range": {
+            "type": "bool",
+            "desc": "whether return group results in range form"
           }
         }
       }]
