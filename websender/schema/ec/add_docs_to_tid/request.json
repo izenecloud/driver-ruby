@@ -1,0 +1,33 @@
+{
+  "title":"add_new_add_docs_to_tid",
+  "type":"map",
+  "desc":"add documents id to specify tid.",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    },
+
+    "tid": {
+      "type": "int",
+      "desc": "tid",
+      "required": true
+    },
+
+    "docid_list": {
+      "type": "seq",
+      "desc": "docid_list",
+      "sequence": [{
+        "type": "int",
+        "title": "docid"
+      }]
+    }
+  }
+}

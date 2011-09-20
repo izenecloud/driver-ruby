@@ -1,0 +1,24 @@
+{
+  "title":"Get docs by tid",
+  "type":"map",
+  "desc":"Get documents id by tid.",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    },
+
+    "tid": {
+      "type": "int",
+      "desc": "tid",
+      "required": true
+    }
+  }
+}
