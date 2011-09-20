@@ -4,6 +4,6 @@
   {
     "keywords":"iphone4",
     "group_property":"Category",
-    "group_label": "手机"
+    "group_label": ["手机"]
   }
 }

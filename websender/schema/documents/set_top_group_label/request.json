@@ -28,9 +28,13 @@
           "desc": "the group property name"
         },
         "group_label": {
-          "type": "str",
+          "type": "seq",
           "required": true,
-          "desc": "the group property value of the group label"
+          "desc": "the group label path",
+          "sequence": [{
+            "type": "str",
+            "desc": "the node value"
+          }]
         }        
       },
       "desc":"Set the most frequently clicked group label",
