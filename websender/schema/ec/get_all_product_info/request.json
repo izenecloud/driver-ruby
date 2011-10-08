@@ -1,0 +1,18 @@
+{
+  "title":"get_all_product_info",
+  "type":"map",
+  "desc":"get all products categories and count.",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    }
+  }
+}
