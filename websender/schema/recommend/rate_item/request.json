@@ -1,0 +1,44 @@
+{
+  "title":"Rate an item",
+  "type":"map",
+  "desc":"Add the user rating behavior",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "is_add": {
+          "type": "bool",
+          "desc": "true for add this rating, false for remove this rating"
+        },
+        "USERID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique user id"
+        },
+        "ITEMID": {
+          "type": "str",
+          "required": true,
+          "desc": "the unique item id"
+        },
+        "star": {
+          "type": "int",
+          "required": true,
+          "desc": "the rating star"
+        }
+      },
+      "desc":"Specifie rating behavior",
+      "required":true
+    }
+  }
+}
