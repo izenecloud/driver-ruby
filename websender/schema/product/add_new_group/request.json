@@ -1,7 +1,7 @@
 {
-  "title":"add_new_add_docs_to_tid",
+  "title":"add_new_group",
   "type":"map",
-  "desc":"add documents id to specify tid.",
+  "desc":"add new groups.",
   "mapping": {
 
     "header": {
@@ -12,12 +12,6 @@
     "collection": {
       "type": "str",
       "desc": "collection name",
-      "required": true
-    },
-
-    "tid": {
-      "type": "int",
-      "desc": "tid",
       "required": true
     },
 
