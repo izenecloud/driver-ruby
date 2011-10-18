@@ -3,6 +3,12 @@
   "type":"map",
   "desc":"Get list of keywords starting with specified prefix.",
   "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name",
+      "required":true
+    },
+
     "prefix": {
       "type": "str",
       "required": true
