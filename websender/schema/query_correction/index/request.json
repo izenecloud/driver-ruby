@@ -3,6 +3,11 @@
   "type":"map",
   "desc":"Get the right words for the query having wrong spelling.",
   "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specifie a collection name"
+    },
+
     "keywords": {
       "type": "str",
       "required": true
