@@ -5,7 +5,7 @@
   "mapping": {
     "collection": {
       "type":"str",
-      "desc":"Specifie a collection name",
+      "desc":"Specify a collection name",
       "required":true
     },
 
@@ -37,7 +37,7 @@
           "desc": "the rating star"
         }
       },
-      "desc":"Specifie rating behavior",
+      "desc":"Specify rating behavior",
       "required":true
     }
   }

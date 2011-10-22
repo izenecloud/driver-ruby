@@ -5,7 +5,7 @@
   "mapping": {
     "collection": {
       "type":"str",
-      "desc":"Specifie a collection name",
+      "desc":"Specify a collection name",
       "required":true
     },
 
@@ -35,7 +35,7 @@
           "desc": "the category of the item"
         }
       },
-      "desc":"Specifie the attributes of new item",
+      "desc":"Specify the attributes of new item",
       "required":true
     }
   }

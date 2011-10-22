@@ -5,7 +5,7 @@
   "mapping": {
     "collection": {
       "type":"str",
-      "desc":"Specifie a collection name",
+      "desc":"Specify a collection name",
       "required":true
     },
 
@@ -35,7 +35,7 @@
           "desc": "the place where the user lives"
         }
       },
-      "desc":"Specifie the attributes of new user",
+      "desc":"Specify the attributes of new user",
       "required":true
     }
   }

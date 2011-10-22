@@ -5,7 +5,7 @@
   "mapping": {
     "message": {
     "type":"str",
-    "desc":"Specifie the message",
+    "desc":"Specify the message",
     "required":true
     } 
     
