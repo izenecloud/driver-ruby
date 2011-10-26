@@ -1,0 +1,9 @@
+{
+  "collection": "example",
+  "resource": {
+    "is_add": true,
+    "USERID": "user_001",
+    "ITEMID": "item_001",
+    "star": 5
+  }
+}

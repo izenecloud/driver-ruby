@@ -5,7 +5,7 @@
   "mapping": {
     "collection": {
       "type":"str",
-      "desc":"Specifie a collection name",
+      "desc":"Specify a collection name",
       "required":true
     },
 
@@ -38,7 +38,7 @@
           "desc": "each is an item in shopping cart"
         }
       },
-      "desc":"Specifie user id and item ids",
+      "desc":"Specify user id and item ids",
       "required":true
     }
   }

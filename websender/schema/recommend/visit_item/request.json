@@ -5,7 +5,7 @@
   "mapping": {
     "collection": {
       "type":"str",
-      "desc":"Specifie a collection name",
+      "desc":"Specify a collection name",
       "required":true
     },
 
@@ -33,7 +33,7 @@
           "desc": "the unique item id"
         }
       },
-      "desc":"Specifie user id and item id",
+      "desc":"Specify user id and item id",
       "required":true
     }
   }

@@ -3,6 +3,10 @@
   "type":"map",
   "desc":"Inject Query Correction.",
   "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "On specified collection"
+    },
 
     "header": {
       "type":"map",

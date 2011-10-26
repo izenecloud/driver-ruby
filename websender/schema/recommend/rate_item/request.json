@@ -1,7 +1,7 @@
 {
-  "title":"Add User",
+  "title":"Rate an item",
   "type":"map",
-  "desc":"Add a new user.",
+  "desc":"Add the user rating behavior",
   "mapping": {
     "collection": {
       "type":"str",
@@ -17,25 +17,27 @@
     "resource": {
       "type":"map",
       "mapping": {
+        "is_add": {
+          "type": "bool",
+          "desc": "true for add this rating, false for remove this rating"
+        },
         "USERID": {
           "type": "str",
           "required": true,
           "desc": "the unique user id"
         },
-        "gender": {
+        "ITEMID": {
           "type": "str",
-          "desc": "the user gender"
+          "required": true,
+          "desc": "the unique item id"
         },
-        "age": {
-          "type": "str",
-          "desc": "the user age"
-        },
-        "area": {
-          "type": "str",
-          "desc": "the place where the user lives"
+        "star": {
+          "type": "int",
+          "required": true,
+          "desc": "the rating star"
         }
       },
-      "desc":"Specify the attributes of new user",
+      "desc":"Specify rating behavior",
       "required":true
     }
   }
