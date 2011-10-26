@@ -1,0 +1,12 @@
+{
+  "title":"Sends index_query_log command",
+  "type":"map",
+  "desc":"Sends index_query_log command",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+  }
+}
