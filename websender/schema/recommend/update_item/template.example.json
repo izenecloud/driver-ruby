@@ -1,9 +1,0 @@
-{
-  "collection": "example",
-  "resource": {
-    "ITEMID": "item_001",
-    "name": "item_001",
-    "link": "http://www.yihaodian.com/product/0001",
-    "category": "食品"
-  }
-}

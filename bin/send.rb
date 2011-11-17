@@ -51,20 +51,19 @@ responses.length.times do |i|
   File.open(out_file_path, "w") do |fs|
     response = responses[i]
     if response
+      fs.write JSON.pretty_generate response
+
       success = response["header"] && response["header"]["success"]
       if success
         puts "* #{files[i]}: Success!"
-        fs.write JSON.pretty_generate response
       end
 
       if response["errors"]
         messages = response["errors"].join(" ").gsub(/[\n\r]/, "");
         puts "* #{files[i]}: [ERROR] #{messages}"
-        fs.write JSON.pretty_generate response
       elsif response["warnings"]
         messages = response["warnings"].join(" ").gsub(/[\n\r]/, "");
         puts "* #{files[i]}: [WARN] #{messages}"
-        fs.write JSON.pretty_generate response
       end
     else
       puts "* #{files[i]}: no response"
