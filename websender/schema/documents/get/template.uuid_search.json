@@ -1,0 +1,14 @@
+{
+  "collection":"b5mm",
+  "conditions":
+  [
+    {
+      "property":"uuid",
+      "operator":"=",
+      "value":
+      [
+        "e91487c3-7db1-4aa1-8b1e-f782cd270986"
+      ]
+    }
+  ]
+}

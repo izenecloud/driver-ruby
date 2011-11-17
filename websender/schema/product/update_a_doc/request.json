@@ -1,0 +1,30 @@
+{
+  "title":"Update document for A",
+  "type":"map",
+  "desc":"Update doc for A product collection.",
+  "mapping": {
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "resource": {
+      "type":"map",
+      "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "user_key": "property",
+      "required": true,
+      "mapping": {
+        "property": {
+          "type":"any",
+          "desc":"Keys is property key, value is property value"
+        }
+      }
+    }
+  }
+}

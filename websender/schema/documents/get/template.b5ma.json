@@ -1,0 +1,14 @@
+{
+  "collection":"b5ma",
+  "conditions":
+  [
+    {
+      "property":"DOCID",
+      "operator":"=",
+      "value":
+      [
+        "0b87c3c4-a945-42e8-83cd-98bbe93237e0"
+      ]
+    }
+  ]
+}

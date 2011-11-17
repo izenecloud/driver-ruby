@@ -1,0 +1,33 @@
+{
+  "title":"remove_from_group",
+  "type":"map",
+  "desc":"remove_from_group.",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    },
+
+    "uuid": {
+      "type": "str",
+      "desc": "uuid",
+      "required": true
+    },
+
+    "docid_list": {
+      "type": "seq",
+      "desc": "docid_list",
+      "sequence": [{
+        "type": "int",
+        "title": "docid"
+      }]
+    }
+  }
+}
