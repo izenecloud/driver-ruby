@@ -1,0 +1,49 @@
+{
+  "title":"get_multi_price_history",
+  "type":"map",
+  "desc":"get_multi_price_history",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    },
+
+    "str_docid_list": {
+      "type": "seq",
+      "desc": "docid_list",
+      "sequence": [{
+        "type": "str",
+        "title": "docid"
+      }]
+    },
+
+    "date_range": {
+      "type": "map",
+      "desc": "specify the date range",
+      "required": true,
+      "mapping": {
+        "start": {
+          "type":"str",
+          "desc":"start date."
+        },
+
+         "end": {
+          "type":"str",
+          "desc":"end date."
+        }
+      }
+    },
+
+    "range": {
+        "type": "bool",
+        "desc": "whether return price range or complete price history"
+    }
+  }
+}
