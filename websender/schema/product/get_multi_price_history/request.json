@@ -15,7 +15,7 @@
       "required": true
     },
 
-    "str_docid_list": {
+    "docid_list": {
       "type": "seq",
       "desc": "docid_list",
       "sequence": [{
