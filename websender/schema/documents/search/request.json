@@ -58,7 +58,7 @@
       "type": "seq",
       "sequence": $(conditions)
     },
-    
+
      "range": {
       "type": "map",
       "mapping": {
@@ -73,29 +73,29 @@
       "type": "seq",
       "sequence": $(select)
     },
-    
+
     "custom_rank": {
-	  "type": "map",
-	  "mapping": {
-	    "params": {
-		  "type": "seq",
-		  "sequence": [{
-		    "type": "map",
-			"mapping": {
-			  "name": { "required": true, "type": "str" },
-			  "type": { "required": true, "type": "str", "enum": ["CONSTANT", "PROPERTY"] },
-			  "value": { "required": true, "type": "str" }
-			}
-		  }]
-		},
-		"expression": {
-		  "required": true,
-		  "type": "str",
-		  "desc": "Arithmetic expression for evaluating custom ranking score"
-		}
-	  }
-	},
-    
+      "type": "map",
+      "mapping": {
+        "params": {
+          "type": "seq",
+          "sequence": [{
+            "type": "map",
+            "mapping": {
+              "name": { "required": true, "type": "str" },
+              "type": { "required": true, "type": "str", "enum": ["CONSTANT", "PROPERTY"] },
+              "value": { "required": true, "type": "str" }
+            }
+          }]
+        },
+        "expression": {
+          "required": true,
+          "type": "str",
+          "desc": "Arithmetic expression for evaluating custom ranking score"
+        }
+      }
+    },
+
     "sort": {
       "type": "seq",
       "sequence": [{
