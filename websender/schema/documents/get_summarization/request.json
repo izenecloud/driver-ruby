@@ -1,7 +1,7 @@
 {
-  "title":"Get Topic",
+  "title":"Get summarization",
   "type":"map",
-  "desc":"Get all topic list of specific document",
+  "desc":"Get summarization for specific document",
   "mapping": {
     "collection": {
       "type":"str",
@@ -26,6 +26,5 @@
       }
     }
 
-    
   }
 }
