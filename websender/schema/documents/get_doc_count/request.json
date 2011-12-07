@@ -1,0 +1,17 @@
+{
+  "title":"Get indexed documents count",
+  "type":"map",
+  "desc":"Get indexed documents count",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+  }
+}
