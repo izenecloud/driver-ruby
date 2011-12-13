@@ -1,0 +1,20 @@
+{
+  "title":"Synonym list",
+  "type":"map",
+  "desc":"Delete a set of synonym.",
+  "mapping": {  
+    "synonym_list": {
+      "type": "seq",
+      "desc": "synonym tokens need to be deleted",
+      "sequence": [{
+        "type": "str",
+        "title": "synonym token"
+      }]
+    },
+    
+   "synonym_list_id": {
+      "type": "int",
+      "desc": "id of synonym list that need to be deleted"
+    }    
+  }
+}

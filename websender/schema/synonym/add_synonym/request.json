@@ -1,0 +1,15 @@
+{
+  "title":"Synonym list",
+  "type":"map",
+  "desc":"Add a set of synonym.",
+  "mapping": {  
+    "synonym_list": {
+      "type": "seq",
+      "desc": "add synonym tokens",
+      "sequence": [{
+        "type": "str",
+        "title": "synonym token"
+      }]
+    } 
+  }
+}
