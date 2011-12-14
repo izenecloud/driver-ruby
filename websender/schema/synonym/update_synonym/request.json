@@ -19,11 +19,6 @@
         "type": "str",
         "title": "synonym token"
       }]
-    },
-    
-    "old_synonym_list_id": {
-      "type": "int",
-      "desc": "id of synonym list that need to be updated"
-    }    
+    }
   }
 }
