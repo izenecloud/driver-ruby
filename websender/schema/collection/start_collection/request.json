@@ -12,12 +12,6 @@
     "header": {
       "type":"map",
       "mapping": $(header)
-    },
-
-    "config_file": {
-      "type":"str",
-      "desc":"Specify a collection config file name",
-      "required":true     
-    }
+    }   
   }
 }
