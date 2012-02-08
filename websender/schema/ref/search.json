@@ -76,6 +76,10 @@
     "type": "str",
     "enum": ["plm", "kl", "bm25"]
   },
+  "searching_mode": {
+    "type": "str",
+    "enum": ["and", "or", "verbose", "knn"]
+  },
   "log_keywords": {
     "type": "bool"
   },

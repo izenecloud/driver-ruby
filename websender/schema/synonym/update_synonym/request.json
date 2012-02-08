@@ -1,0 +1,24 @@
+{
+  "title":"Synonym list",
+  "type":"map",
+  "desc":"Update a set of synonym.",
+  "mapping": {  
+    "new_synonym_list": {
+      "type": "seq",
+      "desc": "synonym tokens need to be added to dictionary",
+      "sequence": [{
+        "type": "str",
+        "title": "synonym token"
+      }]
+    },
+    
+    "old_synonym_list": {
+      "type": "seq",
+      "desc": "synonym tokens need to be deleted to dictionary",
+      "sequence": [{
+        "type": "str",
+        "title": "synonym token"
+      }]
+    }
+  }
+}
