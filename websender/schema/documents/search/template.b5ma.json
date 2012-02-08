@@ -2,7 +2,7 @@
   "collection":"b5ma",
   "search":
   {
-    "keywords":"iphone"
+    "keywords":"*"
   },
   "select":
   [
@@ -32,6 +32,18 @@
     },
     {
       "property":"Content",
+      "highlight":false,
+      "snippet":false,
+      "summary":false
+    },
+    {
+      "property":"Category",
+      "highlight":false,
+      "snippet":false,
+      "summary":false
+    },
+    {
+      "property":"Source",
       "highlight":false,
       "snippet":false,
       "summary":false

@@ -1,8 +1,16 @@
 {
   "collection":"b5mm",
+  "resource":
+  {
+
+  },
   "docid_list":
   [
-    3856,
-    7052
-  ]
+    32982,
+    25569
+  ],
+  "option":
+  {
+    "force":false
+  }
 }

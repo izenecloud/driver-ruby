@@ -289,7 +289,6 @@ private
     end
 
     request["header"] = header
-    pp request
     request
   end
 end
