@@ -23,14 +23,17 @@
 
     "old_prefix": {
       "type": "str",
-      "desc": "old key prefix",
-      "required": true
+      "desc": "old key prefix"
     },
 
     "new_prefix": {
       "type": "str",
-      "desc": "new key prefix",
-      "required": true
+      "desc": "new key prefix"
+    },
+
+    "start": {
+      "type": "int",
+      "desc": "first docid to be processed"
     }
   }
 }
