@@ -1,0 +1,36 @@
+{
+  "title":"get_multi_price_history",
+  "type":"map",
+  "desc":"get_multi_price_history",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    },
+
+    "new_keyspace": {
+      "type": "str",
+      "desc": "new keyspace name",
+      "required": true
+    },
+
+    "old_prefix": {
+      "type": "str",
+      "desc": "old key prefix",
+      "required": true
+    },
+
+    "new_prefix": {
+      "type": "str",
+      "desc": "new key prefix",
+      "required": true
+    }
+  }
+}
