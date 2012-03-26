@@ -76,9 +76,19 @@
     "type": "str",
     "enum": ["plm", "kl", "bm25"]
   },
-  "searching_mode": {
-    "type": "str",
-    "enum": ["and", "or", "verbose", "knn"]
+  "searching_mode": {    
+    "desc": "Searching mode Options",
+    "type": "map",
+    "mapping": {
+       "mode": {
+         "type": "str",
+         "desc": "Searching mode name"
+       },
+       "threshold": {
+         "type": "str",
+         "desc": "threshold corresponding to  the mode"
+       }
+    }
   },
   "log_keywords": {
     "type": "bool"
