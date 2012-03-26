@@ -3,6 +3,11 @@
   "type":"map",
   "desc":"Sends index_query_log command",
   "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
 
     "header": {
       "type":"map",

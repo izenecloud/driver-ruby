@@ -28,6 +28,17 @@
         "type": "int",
         "title": "docid"
       }]
+    },
+
+    "option": {
+      "type":"map",
+      "desc": "Edit options.",
+      "mapping": {
+        "force": {
+          "type":"bool",
+          "desc":"If force to execute"
+        }
+      }
     }
   }
 }

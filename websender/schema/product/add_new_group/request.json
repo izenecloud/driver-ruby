@@ -22,6 +22,30 @@
         "type": "int",
         "title": "docid"
       }]
+    },
+
+    "resource": {
+      "type":"map",
+      "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "user_key": "property",
+      "required": true,
+      "mapping": {
+        "property": {
+          "type":"any",
+          "desc":"Keys is property key, value is property value"
+        }
+      }
+    },
+
+    "option": {
+      "type":"map",
+      "desc": "Edit options.",
+      "mapping": {
+        "force": {
+          "type":"bool",
+          "desc":"If force to execute"
+        }
+      }
     }
   }
 }

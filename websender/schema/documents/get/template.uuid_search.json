@@ -7,8 +7,35 @@
       "operator":"=",
       "value":
       [
-        "e91487c3-7db1-4aa1-8b1e-f782cd270986"
+        "1531eac56aa5284daf45a0e8a65f07fd_uuid"
       ]
+    }
+  ],
+  "select":
+  [
+    {
+      "property":"Price",
+      "highlight":false,
+      "snippet":false,
+      "summary":false
+    },
+    {
+      "property":"DOCID",
+      "highlight":false,
+      "snippet":false,
+      "summary":false
+    },
+    {
+      "property":"Title",
+      "highlight":false,
+      "snippet":false,
+      "summary":false
+    },
+    {
+      "property":"Url",
+      "highlight":false,
+      "snippet":false,
+      "summary":false
     }
   ]
 }
