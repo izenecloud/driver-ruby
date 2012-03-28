@@ -42,7 +42,7 @@ class ScdParser
         if property_name == 'DOCID'
           if doc.size>0 
             yield doc
-            doc.clear
+            doc = {}
           end
         end
         doc[property_name] = property_value

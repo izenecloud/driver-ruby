@@ -2,8 +2,9 @@
 class ScdWriter
   
   def initialize(dir, type = 'I')
+    sleep(1.0/100.0)
     time = Time::now
-    filename = time.strftime("B-00-%Y%m%d%H%M-%S000-#{type}-C.SCD")
+    filename = time.strftime("B-00-%Y%m%d%H%M-%S%3N-#{type}-C.SCD")
     f = dir+"/"+filename
     @o_file = File.new(f, "w")
   end
