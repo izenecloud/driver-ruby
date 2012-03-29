@@ -1,6 +1,11 @@
 
 
 class ScdParser
+
+  NOT_SCD = 0
+  INSERT_SCD = 1
+  UPDATE_SCD = 2
+  DELETE_SCD = 3
   
   include Enumerable
 
@@ -9,6 +14,22 @@ class ScdParser
     @max_property_name_len = 15
     @property_name_regex = Regexp.new("^[A-Za-z]{1,#{@max_property_name_len}}$")
     
+  end
+
+  def self.scd_type(scd_file)
+    filename = File.basename(scd_file, ".SCD")
+    return NOT_SCD if filename.length()!=27
+    type_str = filename[24]
+    type = NOT_SCD
+    if type_str=="I"
+      type = INSERT_SCD
+    elsif type_str=="U"
+      type = UPDATE_SCD
+    elsif type_str=="D"
+      type = DELETE_SCD
+    end
+    
+    type
   end
   
   def each
