@@ -10,9 +10,12 @@ class ScdWriter
   end
   
   def append(doc)
-    @o_file.puts "<DOCID>#{doc['DOCID']}"
+    docid = doc[:DOCID]
+    docid = doc['DOCID'] if docid.nil?
+    return if docid.nil?
+    @o_file.puts "<DOCID>#{docid}"
     doc.each do |key, value|
-      if key=="DOCID"
+      if key.to_s=="DOCID"
         next
       end
       @o_file.puts "<#{key}>#{value}"

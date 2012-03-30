@@ -17,6 +17,7 @@ class ScdParser
   end
 
   def self.scd_type(scd_file)
+    return NOT_SCD unless File.file?(scd_file)
     filename = File.basename(scd_file, ".SCD")
     return NOT_SCD if filename.length()!=27
     type_str = filename[24]
@@ -30,6 +31,22 @@ class ScdParser
     end
     
     type
+  end
+
+  def self.get_scd_list(path)
+    scd_list = []
+    if File.file?(path)
+      if scd_type(path)!=NOT_SCD
+        scd_list << path
+      end
+    elsif File.directory?(path)
+      Dir.foreach(path) do |f|
+        file = File.join(path, f)
+        if scd_type(file)!=NOT_SCD
+          scd_list << file
+        end
+      end
+    end
   end
   
   def each
