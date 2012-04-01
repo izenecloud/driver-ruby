@@ -47,6 +47,9 @@ class ScdParser
         end
       end
     end
+    scd_list.sort!
+
+    scd_list
   end
   
   def each
