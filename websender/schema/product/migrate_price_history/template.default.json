@@ -1,6 +1,4 @@
 {
   "collection" : "b5mm",
-  "new_keyspace" : "B5M",
-  "old_prefix" : "b5mm",
-  "new_prefix" : ""
+  "new_keyspace" : "B5MO"
 }
