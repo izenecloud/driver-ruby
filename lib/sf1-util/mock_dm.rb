@@ -3,6 +3,7 @@ require_relative 'scd_parser'
 class MockDm
 
   attr_reader :docs, :count
+  attr_accessor :name
 
   def initialize(index_keys = [])
     @docs = []
@@ -12,7 +13,9 @@ class MockDm
       @index_map[key] = {}
     end
     @count = 0
+    @name = ""
   end
+
 
   def insert(doc)
     docid = doc[:DOCID]
