@@ -31,8 +31,8 @@ opts.parse!
 
 command, request[:collection] = ARGV
 
-if command.nil? or request[:collection].nil?
-  STDERR.puts "Require command and collection."
+if command.nil?
+  STDERR.puts "Require command."
   exit 1
 end
 
