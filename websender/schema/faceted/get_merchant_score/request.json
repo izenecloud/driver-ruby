@@ -1,0 +1,27 @@
+{
+  "title":"Get Merchant's Score",
+  "type":"map",
+  "desc":"get merchant score",
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "Specify a collection name",
+      "required": true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "merchants": {
+      "type": "seq",
+      "desc": "the array of merchant names",
+      "sequence": [{
+        "type": "str",
+        "desc": "the merchant name"
+      }]
+    }
+
+  }
+}
