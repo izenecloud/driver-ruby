@@ -120,7 +120,7 @@ class MockDm
     end
     return nil if index.nil?
 
-    @docs[index]
+    @docs[index].clone
   end
 
   def search(key, value)
