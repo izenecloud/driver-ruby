@@ -1,0 +1,12 @@
+{
+  "collection": "ChnWiki",
+  "resource": [
+    { "merchant": "京东",
+      "score": 8,
+      "category_score": [
+        { "category": "家用电器", "score": 9.2 },
+        { "category": "数码", "score": 8.5 }
+      ]
+    }
+  ]
+}
