@@ -8,6 +8,10 @@
     "type": "str",
     "desc": "User ID"
   },
+  "session_id": {
+    "type": "str",
+    "desc": "Session ID"
+  },
   "taxonomy_label": {
     "type": "str",
     "desc": "Only get documents with this label"
