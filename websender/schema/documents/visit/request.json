@@ -22,6 +22,28 @@
         "DOCID": {
           "type":"str",
           "desc":"DOCID of the document to be visited."
+        },
+        "USERID": {
+          "type":"str",
+          "desc":"user id"
+        },
+        "session_id": {
+          "type":"str",
+          "desc":"session id"
+        },
+        "context": {
+          "type":"map",
+          "desc": "Context information for the visitation",
+          "mapping": {
+            "query": {
+              "type":"str",
+              "desc":"query keyword."
+            },
+            "rank": {
+              "type":"str",
+              "desc":"rank position."
+            }
+          }
         }
       }
     }
