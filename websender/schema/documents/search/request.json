@@ -35,6 +35,14 @@
           "range": {
             "type": "bool",
             "desc": "whether return group results in range form"
+          },
+          "sub_property": {
+            "type": "str",
+            "desc": "to get 2nd level group results"
+          },
+          "unit": {
+            "type": "str",
+            "desc": "group unit for datetime property"
           }
         }
       }]
