@@ -1,0 +1,7 @@
+{
+  "collection": "ChnWiki",
+  "resource": {
+    "keywords": "iphone",
+    "select": ["DOCID", "Title"]
+  }
+}

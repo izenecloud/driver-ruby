@@ -1,0 +1,18 @@
+{
+  "title":"Set custom rankings for docs",
+  "type":"map",
+  "desc":"set custom rankings",
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "Specify a collection name",
+      "required": true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+
+  }
+}
