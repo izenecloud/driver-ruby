@@ -1,0 +1,39 @@
+{
+  "title":"Get custom rankings for docs",
+  "type":"map",
+  "desc":"get custom rankings",
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "Specify a collection name",
+      "required": true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "keywords": {
+          "type": "str",
+          "desc": "user query",
+          "required": true
+        },
+
+        "select": {
+          "type": "seq",
+          "desc": "the array of property names",
+          "sequence": [{
+            "type": "str",
+            "desc": "property name"
+          }]
+        }
+
+      }
+    }
+
+  }
+}
