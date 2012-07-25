@@ -91,6 +91,10 @@
        "threshold": {
          "type": "str",
          "desc": "threshold corresponding to  the mode"
+       },
+       "original_query": {
+          "type": "bool",
+          "desc": "option to use original query or modified query"
        }
     }
   },
