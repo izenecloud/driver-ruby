@@ -23,9 +23,19 @@
           "required": true
         },
 
-        "docid_list": {
+        "top_docid_list": {
           "type": "seq",
-          "desc": "the array of doc ids",
+          "desc": "the array of top doc ids",
+          "required": true,
+          "sequence": [{
+            "type": "str",
+            "desc": "doc id"
+          }]
+        },
+
+        "exclude_docid_list": {
+          "type": "seq",
+          "desc": "the array of doc ids to exclude in search results",
           "required": true,
           "sequence": [{
             "type": "str",
