@@ -2,6 +2,7 @@
   "collection": "ChnWiki",
   "resource": {
     "keywords": "iphone",
-    "docid_list": ["1122", "3344", "5566"]
+    "top_docid_list": ["111", "222", "333"],
+    "exclude_docid_list": ["444", "555", "666"]
   }
 }
