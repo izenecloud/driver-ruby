@@ -1,0 +1,9 @@
+{
+  "collection": "ChnWiki",
+  "resource": {
+    "DOCID": "websender.1",
+    "update": [
+    { "op": "add", "property":"item", "opvalue": "1"}
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "collection":"b5mp",
+  "resource":
+  {
+    "DOCID":"033a26ddbc2c01265ce725a19e83b8c6",
+    "update":
+    [
+      {
+        "op":"add",
+        "property":"itemcount",
+        "opvalue":"1"
+      },
+      {
+        "op":"add",
+        "property":"Price",
+        "opvalue":"2.5"
+      }
+    ]
+  }
+}
