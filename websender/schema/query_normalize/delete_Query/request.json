@@ -1,0 +1,16 @@
+{
+  "title":"QueryNormalize",
+  "type":"map",
+  "desc":"input the query need to normalize like iphone#4s#4#",
+  "mapping": {
+    "NormalizeQuery": {
+      "type":"str",
+      "desc":"sss",
+      "required":true
+    },
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+  }
+}
