@@ -41,6 +41,10 @@
             },
             "rank": {
               "type":"str",
+              "desc":"rank approach."
+            },
+            "pos": {
+              "type":"str",
               "desc":"rank position."
             }
           }

@@ -67,7 +67,7 @@
       "sequence": $(conditions)
     },
 
-     "range": {
+    "range": {
       "type": "map",
       "mapping": {
         "property": {

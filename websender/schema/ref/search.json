@@ -68,6 +68,14 @@
       }
     }]
   },
+  "count": {
+    "desc": "Count specified properties",
+    "type": "seq",
+    "sequence": [{
+      "type": "str",
+      "desc": "Property name"
+    }]
+  },
   "in": {
     "desc": "Search in specified properties",
     "type": "seq",
