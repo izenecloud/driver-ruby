@@ -1,0 +1,50 @@
+{
+  "title":"Set custom rankings for docs",
+  "type":"map",
+  "desc":"set custom rankings",
+  "mapping": {
+    "collection": {
+      "type": "str",
+      "desc": "Specify a collection name",
+      "required": true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "keywords": {
+          "type": "str",
+          "desc": "user query",
+          "required": true
+        },
+
+        "top_docid_list": {
+          "type": "seq",
+          "desc": "the array of top doc ids",
+          "required": true,
+          "sequence": [{
+            "type": "str",
+            "desc": "doc id"
+          }]
+        },
+
+        "exclude_docid_list": {
+          "type": "seq",
+          "desc": "the array of doc ids to exclude in search results",
+          "required": true,
+          "sequence": [{
+            "type": "str",
+            "desc": "doc id"
+          }]
+        }
+
+      }
+    }
+
+  }
+}

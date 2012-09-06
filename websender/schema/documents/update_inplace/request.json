@@ -1,0 +1,55 @@
+{
+  "title":"Update document in place",
+  "type":"map",
+  "desc":"Update docuemnt in place though driver. DOCID is required.",
+  "mapping": {
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "resource": {
+      "type":"map",
+      "desc": "Object representing the docuemnt. Key is property key and value is property value.",
+      "required": true,
+      "mapping": {
+          "DOCID": {
+              "type":"str",
+              "desc":"Sepcify a document id",
+              "required":true
+          },
+          "update": {
+              "type":"seq",
+              "required":true,
+              "sequence": [{
+                  "type":"map",
+                  "desc":"the update string for the property",
+                  "mapping": {
+                      "op": {
+                          "type":"str",
+                          "desc": "the operation on the property value",
+                          "required":true
+                      },
+                      "property": {
+                          "type":"str",
+                          "desc":"the property name",
+                          "required":true
+                      },
+                      "opvalue": {
+                          "type":"str",
+                          "desc": "the operation value that would be done",
+                          "required":true
+                      }
+                  }
+              }]
+          }
+      }
+    }
+  }
+}

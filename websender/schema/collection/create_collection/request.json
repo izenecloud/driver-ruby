@@ -1,0 +1,22 @@
+{
+  "title":"Create collection",
+  "type":"map",
+  "desc":"Create docuemnt though driver. DOCID is required.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+    "collection_config": {
+      "type":"str",
+      "desc":"Collection config file content",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }   
+  }
+}

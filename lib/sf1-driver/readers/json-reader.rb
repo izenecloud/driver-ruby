@@ -11,7 +11,7 @@ require 'json'
 class Sf1Driver
   module JsonReader
     def reader_deserialize(data)
-      return JSON.parse(data)
+      return JSON.parse!(data)
     end
   end
 end

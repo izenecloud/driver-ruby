@@ -8,6 +8,10 @@
     "type": "str",
     "desc": "User ID"
   },
+  "session_id": {
+    "type": "str",
+    "desc": "Session ID"
+  },
   "taxonomy_label": {
     "type": "str",
     "desc": "Only get documents with this label"
@@ -64,6 +68,14 @@
       }
     }]
   },
+  "count": {
+    "desc": "Count specified properties",
+    "type": "seq",
+    "sequence": [{
+      "type": "str",
+      "desc": "Property name"
+    }]
+  },
   "in": {
     "desc": "Search in specified properties",
     "type": "seq",
@@ -87,6 +99,10 @@
        "threshold": {
          "type": "str",
          "desc": "threshold corresponding to  the mode"
+       },
+       "original_query": {
+          "type": "bool",
+          "desc": "option to use original query or modified query"
        }
     }
   },

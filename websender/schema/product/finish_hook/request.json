@@ -1,0 +1,18 @@
+{
+  "title":"finish_hook",
+  "type":"map",
+  "desc":"finish_hook.",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    }
+  }
+}

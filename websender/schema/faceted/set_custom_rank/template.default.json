@@ -1,0 +1,8 @@
+{
+  "collection": "ChnWiki",
+  "resource": {
+    "keywords": "iphone",
+    "top_docid_list": ["111", "222", "333"],
+    "exclude_docid_list": ["444", "555", "666"]
+  }
+}
