@@ -11,7 +11,7 @@ class ScdParser
 
   def initialize(file)
     @file = file
-    @max_property_name_len = 15
+    @max_property_name_len = 20
     @property_name_regex = Regexp.new("^[A-Za-z]{1,#{@max_property_name_len}}$")
     
   end
