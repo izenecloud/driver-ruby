@@ -1,0 +1,27 @@
+{
+  "title":"Set KV",
+  "type":"map",
+  "desc":"Set key-value for specific collection",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+    "key": {
+      "type":"str",
+      "desc":"key",
+      "required":true
+    },
+    "value": {
+      "type":"str",
+      "desc":"value",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }   
+  }
+}

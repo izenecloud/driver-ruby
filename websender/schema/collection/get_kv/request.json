@@ -1,0 +1,22 @@
+{
+  "title":"Get KV",
+  "type":"map",
+  "desc":"Get key-value for specific collection",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+    "key": {
+      "type":"str",
+      "desc":"key",
+      "required":true
+    },
+    
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }   
+  }
+}
