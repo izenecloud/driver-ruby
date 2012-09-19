@@ -8,7 +8,7 @@
     "desc":"Specify a collection name",
     "required":true
     },
-    
+
     "conditions": {
       "type": "seq",
       "sequence": $(conditions)
@@ -17,7 +17,7 @@
     "sort": {
       "type": "seq",
       "sequence": [{
-        "title": "proeprty",
+        "title": "property",
         "type": "map",
         "mapping": {
           "property": {
@@ -46,12 +46,12 @@
             },
             "func": {
                 "type": "str",
-                "enum": ["COUNT", "SUM", "MAX"]  
-            } 
-         }       
+                "enum": ["COUNT", "SUM", "MAX"]
+            }
+         }
       }]
     },
-    
+
     "groupby": {
       "type": "seq",
       "desc": "Select properties",
@@ -60,11 +60,11 @@
         "title": "property"
       }]
     },
-    
+
     "limit": {
       "type": "int",
       "desc": "Number of records for return"
     }
-    
+
   }
 }

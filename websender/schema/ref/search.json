@@ -88,22 +88,26 @@
     "type": "str",
     "enum": ["plm", "kl", "bm25"]
   },
-  "searching_mode": {    
+  "searching_mode": {
     "desc": "Searching mode Options",
     "type": "map",
     "mapping": {
-       "mode": {
-         "type": "str",
-         "desc": "Searching mode name"
-       },
-       "threshold": {
-         "type": "str",
-         "desc": "threshold corresponding to  the mode"
-       },
-       "original_query": {
-          "type": "bool",
-          "desc": "option to use original query or modified query"
-       }
+      "mode": {
+        "type": "str",
+        "desc": "Searching mode name"
+      },
+      "threshold": {
+        "type": "str",
+        "desc": "threshold corresponding to wand mode"
+      },
+      "lucky": {
+        "type": "str",
+        "desc": "largest number of documents to return"
+      },
+      "original_query": {
+        "type": "bool",
+        "desc": "option to use original query or modified query"
+      }
     }
   },
   "log_keywords": {
