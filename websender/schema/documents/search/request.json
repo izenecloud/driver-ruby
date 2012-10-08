@@ -107,7 +107,7 @@
     "sort": {
       "type": "seq",
       "sequence": [{
-        "title": "proeprty",
+        "title": "property",
         "type": "map",
         "mapping": {
           "property": {
