@@ -1,12 +1,18 @@
 {
-  "title":"Create document",
+  "title":"Stop collection",
   "type":"map",
-  "desc":"Create docuemnt though driver. DOCID is required.",
+  "desc":"stop collection by specific name.",
   "mapping": {
     "collection": {
       "type":"str",
       "desc":"Specify a collection name",
       "required":true
+    },
+
+    "clear": {
+      "type":"bool",
+      "desc":"whether clear the data",
+      "required":false
     },
 
     "header": {
