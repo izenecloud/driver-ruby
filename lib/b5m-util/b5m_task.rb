@@ -32,7 +32,15 @@ class B5mTask
       @config["sf1_instance"].each do |si|
         strs.each do |str|
           next if si[str].nil?
-          si[str] = File.expand_path(si[str])
+          path = si[str]
+          if path.is_a? Array
+            path.each_with_index do |p,i|
+              path[i] = File.expand_path(p)
+            end
+          else
+            path = [File.expand_path(path)]
+          end
+          si[str] = path
         end
       end
     end

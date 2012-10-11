@@ -154,12 +154,14 @@ class B5mSf1Instance
       scd_list = ScdParser.get_scd_list(scd_path)
       next if scd_list.empty?
       dest = @params["#{str}_scd"]
-      FileUtils.mkdir_p(dest) unless File.exist?(dest)
-      cmd = "rm -rf #{dest}/*.SCD"
-      system(cmd)
-      scd_list.each do |scd|
-        puts "copying #{scd}"
-        FileUtils.cp_r(scd, dest)
+      dest.each do |d|
+        FileUtils.mkdir_p(d) unless File.exist?(d)
+        cmd = "rm -rf #{d}/*.SCD"
+        system(cmd)
+        scd_list.each do |scd|
+          puts "copying #{scd}"
+          FileUtils.cp_r(scd, d)
+        end
       end
     end
   end
