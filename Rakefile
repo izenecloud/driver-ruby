@@ -62,7 +62,7 @@ sf1_driver_spec = Gem::Specification.new do |s|
   s.add_dependency "json"
   s.add_dependency "eventmachine"
   s.homepage = "https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html"
-  s.files = %w(README.md Rakefile lib/sf1-driver.rb) + Dir.glob("lib/sf1-driver/**/*") + Dir.glob("lib/sf1-util/*")
+  s.files = %w(README.md Rakefile lib/sf1-driver.rb) + Dir.glob("lib/sf1-driver/**/*") + Dir.glob("lib/sf1-util/*") + Dir.glob("lib/b5m-util/*")
  
 end
 
