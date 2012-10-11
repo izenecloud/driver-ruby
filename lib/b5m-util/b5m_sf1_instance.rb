@@ -8,7 +8,10 @@ class B5mSf1Instance
   def initialize(params, name="b5m")
     @params = params
     @name = name
-    @collections = ["#{name}o", "#{name}p", "#{name}c"]
+    @collections = ["#{name}p", "#{name}o"]
+    unless @params[:b5mc_scd].nil?
+      @collections << "#{name}c"
+    end
   end
 
   def self.test
@@ -150,10 +153,11 @@ class B5mSf1Instance
   def local_scd_post(mdb_instance)
     strs = ['b5mo', 'b5mp', 'b5mc']
     strs.each do |str|
+      dest = @params["#{str}_scd"]
+      next if dest.nil?
       scd_path = File.join(mdb_instance, str)
       scd_list = ScdParser.get_scd_list(scd_path)
       next if scd_list.empty?
-      dest = @params["#{str}_scd"]
       dest.each do |d|
         FileUtils.mkdir_p(d) unless File.exist?(d)
         cmd = "rm -rf #{d}/*.SCD"
