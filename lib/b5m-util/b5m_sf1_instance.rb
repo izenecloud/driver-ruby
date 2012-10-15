@@ -186,11 +186,11 @@ class B5mSf1Instance
 
   def b5m_server_ips
 
-    if @@test
-      return ['localhost', '127.0.0.1']
-    end
+    #if @@test
+      #return ['localhost', '127.0.0.1']
+    #end
 
-    ['10.10.1.106', '10.10.1.107']
+    server_ips
   end
 
   def b5m_server_scd_post(mdb_instance)
