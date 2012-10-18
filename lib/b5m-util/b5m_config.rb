@@ -35,6 +35,9 @@ class B5mConfig
           end
           si[str] = path
         end
+        path = si['indicator_file']
+        next if path.nil?
+        si['indicator_file'] = File.expand_path(path)
       end
     end
   end
@@ -51,6 +54,11 @@ class B5mConfig
     end
 
     r
+  end
+
+  def no_comment?
+
+    path_of('comment_scd').nil?
   end
 
   def sf1_instances

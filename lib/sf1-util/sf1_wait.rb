@@ -15,12 +15,8 @@ class Sf1Wait
         request = {:collection => coll, :clear => true} #stop and clear
         #stop collection
         puts "stopping and clearing #{coll}"
-        begin
-          response = @conn.call("collection/stop_collection", request)
-          puts response
-        rescue
-          puts "stop_collection on #{coll} fail"
-        end
+        response = @conn.call("collection/stop_collection", request)
+        puts response
 
       end
       @collections.each do |coll|
@@ -28,12 +24,8 @@ class Sf1Wait
         #stop collection
         #restart collection
         puts "starting #{coll}"
-        begin
-          response = @conn.call("collection/start_collection", request)
-          puts response
-        rescue
-          puts "start collection on #{coll} fail"
-        end
+        response = @conn.call("collection/start_collection", request)
+        puts response
       end
     end
     status_before_list = []

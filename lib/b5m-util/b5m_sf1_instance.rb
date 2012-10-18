@@ -5,12 +5,14 @@ class B5mSf1Instance
   @@test = false
   attr_reader :name, :collections
   attr_accessor :test
-  def initialize(params, name="b5m")
+  def initialize(params, name="b5m", nocomment = false)
     @params = params
     @name = name
     @collections = ["#{name}p", "#{name}o"]
-    unless @params[:b5mc_scd].nil?
+    @strs = ['b5mp', 'b5mo']
+    unless nocomment
       @collections << "#{name}c"
+      @strs << 'b5mc'
     end
   end
 
@@ -31,6 +33,14 @@ class B5mSf1Instance
   def inspect
 
     ip
+  end
+
+  def port
+    if @params['port'].nil?
+      return default_port
+    else
+      return @params['port']
+    end
   end
 
   def local?
@@ -151,8 +161,7 @@ class B5mSf1Instance
   end
 
   def local_scd_post(mdb_instance)
-    strs = ['b5mo', 'b5mp', 'b5mc']
-    strs.each do |str|
+    @strs.each do |str|
       dest = @params["#{str}_scd"]
       next if dest.nil?
       scd_path = File.join(mdb_instance, str)
@@ -193,6 +202,19 @@ class B5mSf1Instance
     server_ips
   end
 
+  def default_indicator_file
+
+    "/opt/cdn-image/upload/keepalived"
+  end
+
+  def server_indicator_file
+    if @params['indicator_file'].nil?
+      return default_indicator_file
+    else
+      return @params['indicator_file']
+    end
+  end
+
   def b5m_server_scd_post(mdb_instance)
     ips = b5m_server_ips
     ips.each do |ip|
@@ -201,14 +223,19 @@ class B5mSf1Instance
   end
 
   def remote_scd_post(mdb_instance, ip)
-    strs = ['b5mo', 'b5mp', 'b5mc']
-    strs.each_with_index do |str, i|
+    @strs.each_with_index do |str, i|
       scd_path = File.join(mdb_instance, str)
       scd_list = ScdParser.get_scd_list(scd_path)
+      puts "#{str} scd size #{scd_list.size}"
       next if scd_list.empty?
       scd_list.each do |scd|
-        cname = collections[i]
-        system("curl -s -T #{scd} ftp://#{ip}/ --user #{cname}:#{cname}")
+        cname = @collections[i]
+        cmd = "curl -s -T #{scd} ftp://#{ip}/ --user #{cname}:#{cname}"
+        puts cmd
+        system(cmd)
+        unless $?.success?
+          raise "curl #{scd} on #{ip} with #{cname} error"
+        end
       end
     end
   end
@@ -220,8 +247,13 @@ class B5mSf1Instance
     if mode>0 #reindex
       clear = true
     end
+    puts "index with clear=#{clear}"
     sf1 = Sf1Wait.new(conn, @collections, clear)
-    sf1.index_finish(3600*24)
+    begin
+      sf1.index_finish(3600*24)
+    rescue Exception => e
+      puts "index error #{e}"
+    end
   end
 
   def b5m_server_index(mode)
@@ -237,9 +269,10 @@ class B5mSf1Instance
 
   def b5m_server_reindex
     ips = b5m_server_ips
-    ifile = "/opt/cdn-image/upload/keepalived"
+    ifile = server_indicator_file
     map = {"b5m-d1" => ips[0], "b5m-d2" => ips[1]}
     switch_map = {"b5m-d1" => "b5m-d2", "b5m-d2" => "b5m-d1"}
+    puts "loading #{ifile}"
     flag = `cat #{ifile}`
     flag.strip!
     puts "current flag #{flag}"

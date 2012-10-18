@@ -14,7 +14,7 @@ class B5mTask
     @config = B5mConfig.new(file)
     @instance_list = []
     @config.sf1_instances.each do |si|
-      instance = B5mSf1Instance.new(si, @config.name)
+      instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
       @instance_list << instance
     end
     #if mode>0
