@@ -28,6 +28,7 @@ class Sf1Wait
         puts response
       end
     end
+    yield if block_given?
     status_before_list = []
     @collections.each do |collection|
       request = {:collection => collection}
@@ -64,6 +65,13 @@ class Sf1Wait
         ready
       end
     end
+  end
+
+  private
+
+  def puts(str)
+
+    $stderr.puts "#{@conn.host} #{Time.now} #{str}"
   end
 
   def wait(timeout, interval = 1)

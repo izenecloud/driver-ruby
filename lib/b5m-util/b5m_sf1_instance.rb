@@ -5,7 +5,7 @@ class B5mSf1Instance
   @@test = false
   attr_reader :name, :collections
   attr_accessor :test
-  def initialize(params, name="b5m", nocomment = false)
+  def initialize(params, name, nocomment = false)
     @params = params
     @name = name
     @collections = ["#{name}p", "#{name}o"]
@@ -27,12 +27,12 @@ class B5mSf1Instance
 
   def to_s
 
-    ip
+    "#{ip}:#{server_ips}"
   end
 
-  def inspect
+  def puts(str)
 
-    ip
+    $stderr.puts "#{to_s} #{Time.now} #{str}"
   end
 
   def port
@@ -52,21 +52,21 @@ class B5mSf1Instance
     return (ip=="b5m_server")
   end
 
-  def scd_post(mdb_instance)
+  def scd_post(mdb_instance_list)
     if local?
-      local_scd_post(mdb_instance)
+      local_scd_post(mdb_instance_list)
     elsif b5m_server?
-      b5m_server_scd_post(mdb_instance)
+      b5m_server_scd_post(mdb_instance_list)
     else
-      remote_scd_post(mdb_instance, ip)
+      remote_scd_post(mdb_instance_list, ip)
     end
   end
 
-  def index(mode)
+  def index(mdb_instance_list, mode)
     if b5m_server?
-      b5m_server_index(mode)
+      b5m_server_index(mdb_instance_list, mode)
     else
-      normal_index(mode, ip, port)
+      normal_index(mdb_instance_list, mode, ip, port)
     end
   end
 
@@ -160,20 +160,30 @@ class B5mSf1Instance
     min_time
   end
 
-  def local_scd_post(mdb_instance)
+  def local_scd_post(mdb_instance_list)
+    #delete scd/index/*SCD firstly on local post
     @strs.each do |str|
       dest = @params["#{str}_scd"]
       next if dest.nil?
-      scd_path = File.join(mdb_instance, str)
-      scd_list = ScdParser.get_scd_list(scd_path)
-      next if scd_list.empty?
       dest.each do |d|
         FileUtils.mkdir_p(d) unless File.exist?(d)
         cmd = "rm -rf #{d}/*.SCD"
         system(cmd)
-        scd_list.each do |scd|
-          puts "copying #{scd}"
-          FileUtils.cp_r(scd, d)
+      end
+    end
+    mdb_instance_list.each do |mdb_instance|
+      @strs.each do |str|
+        dest = @params["#{str}_scd"]
+        next if dest.nil?
+        scd_path = File.join(mdb_instance, str)
+        scd_list = ScdParser.get_scd_list(scd_path)
+        next if scd_list.empty?
+        dest.each do |d|
+          FileUtils.mkdir_p(d) unless File.exist?(d)
+          scd_list.each do |scd|
+            puts "copying #{scd}"
+            FileUtils.cp_r(scd, d)
+          end
         end
       end
     end
@@ -215,32 +225,34 @@ class B5mSf1Instance
     end
   end
 
-  def b5m_server_scd_post(mdb_instance)
+  def b5m_server_scd_post(mdb_instance_list)
     ips = b5m_server_ips
     ips.each do |ip|
-      remote_scd_post(mdb_instance, ip)
+      remote_scd_post(mdb_instance_list, ip)
     end
   end
 
-  def remote_scd_post(mdb_instance, ip)
-    @strs.each_with_index do |str, i|
-      scd_path = File.join(mdb_instance, str)
-      scd_list = ScdParser.get_scd_list(scd_path)
-      puts "#{str} scd size #{scd_list.size}"
-      next if scd_list.empty?
-      scd_list.each do |scd|
-        cname = @collections[i]
-        cmd = "curl -s -T #{scd} ftp://#{ip}/ --user #{cname}:#{cname}"
-        puts cmd
-        system(cmd)
-        unless $?.success?
-          raise "curl #{scd} on #{ip} with #{cname} error"
+  def remote_scd_post(mdb_instance_list, ip)
+    mdb_instance_list.each do |mdb_instance|
+      @strs.each_with_index do |str, i|
+        scd_path = File.join(mdb_instance, str)
+        scd_list = ScdParser.get_scd_list(scd_path)
+        puts "#{mdb_instance} #{str} scd size #{scd_list.size}"
+        next if scd_list.empty?
+        scd_list.each do |scd|
+          cname = @collections[i]
+          cmd = "curl -s -T #{scd} ftp://#{ip}/ --user #{cname}:#{cname}"
+          puts cmd
+          system(cmd)
+          unless $?.success?
+            raise "curl #{scd} on #{ip} with #{cname} error"
+          end
         end
       end
     end
   end
   
-  def normal_index(mode, ip, port)
+  def normal_index(mdb_instance_list, mode, ip, port)
     conn = Sf1Driver.new(ip, port)
     clear = false
 
@@ -250,24 +262,24 @@ class B5mSf1Instance
     puts "index with clear=#{clear}"
     sf1 = Sf1Wait.new(conn, @collections, clear)
     begin
-      sf1.index_finish(3600*24)
+      sf1.index_finish(3600*24) { scd_post(mdb_instance_list) }
     rescue Exception => e
       puts "index error #{e}"
     end
   end
 
-  def b5m_server_index(mode)
+  def b5m_server_index(mdb_instance_list, mode)
     if mode==0
       ips = b5m_server_ips
       ips.each do |ip|
-        normal_index(mode, ip, default_port)
+        normal_index(mdb_instance_list, mode, ip, default_port)
       end
     else
-      b5m_server_reindex
+      b5m_server_reindex(mdb_instance_list)
     end
   end
 
-  def b5m_server_reindex
+  def b5m_server_reindex(mdb_instance_list)
     ips = b5m_server_ips
     ifile = server_indicator_file
     map = {"b5m-d1" => ips[0], "b5m-d2" => ips[1]}
@@ -283,7 +295,7 @@ class B5mSf1Instance
     sflag = switch_map[flag]
     ip = map[sflag]
     puts "so work on #{sflag} #{ip}"
-    normal_index(1, ip, default_port)
+    normal_index(mdb_instance_list, 1, ip, default_port)
     #now do switch
     puts "output #{sflag}"
     system("echo #{sflag} > #{ifile}")
@@ -292,7 +304,7 @@ class B5mSf1Instance
     sleep(sm) #sleep 2 minutes
     ip = map[flag]
     puts "now work on #{flag} #{ip}"
-    normal_index(1, ip, default_port)
+    normal_index(mdb_instance_list, 1, ip, default_port)
   end
 
 end

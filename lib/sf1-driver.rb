@@ -63,6 +63,16 @@ class Sf1Driver
     @raw_client.close
   end
 
+  def host
+
+    @raw_client.host
+  end
+
+  def port
+
+    @raw_client.port
+  end
+
   # Chooses data format. Now only "json" is supported, and it is also the default format.
   def use_format(format)
     reader_file = File.join(File.dirname(__FILE__), "sf1-driver", "readers", "#{format}-reader")
