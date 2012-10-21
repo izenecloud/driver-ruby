@@ -251,6 +251,9 @@ class B5mSf1Instance
       end
     end
   end
+
+  def do_scd_post(mdb_instance_list, ip)
+  end
   
   def normal_index(mdb_instance_list, mode, ip, port)
     conn = Sf1Driver.new(ip, port)
@@ -262,7 +265,13 @@ class B5mSf1Instance
     puts "index with clear=#{clear}"
     sf1 = Sf1Wait.new(conn, @collections, clear)
     begin
-      sf1.index_finish(3600*24) { scd_post(mdb_instance_list) }
+      sf1.index_finish(3600*24) do 
+        unless b5m_server?
+          scd_post(mdb_instance_list)
+        else
+          remote_scd_post(mdb_instance_list, ip)
+        end
+      end
     rescue Exception => e
       puts "index error #{e}"
     end
