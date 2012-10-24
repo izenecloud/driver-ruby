@@ -15,7 +15,7 @@ class B5mDaemon
     while true
       sleep 2
       begin
-        result = @mq.receive(2, 504, IPC_NOWAIT)
+        result = @mq.receive(2, 1004, IPC_NOWAIT)
         p = result.index("\x00")
         unless p.nil?
           result = result[0, p]
