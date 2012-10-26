@@ -104,6 +104,10 @@
         "type": "str",
         "desc": "largest number of documents to return"
       },
+      "use_fuzzy": {
+        "type": "bool",
+        "desc": "option to use fuzzy search to get more results for fm-index"
+      },
       "original_query": {
         "type": "bool",
         "desc": "option to use original query or modified query"
