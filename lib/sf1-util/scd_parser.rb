@@ -33,6 +33,11 @@ class ScdParser
     type
   end
 
+  def self.get_doc_count(scd_file)
+    scount = `grep -c '<DOCID>' #{scd_file}`
+    return scount.to_i
+  end
+
   def self.get_scd_list(path)
     scd_list = []
     if File.file?(path)
