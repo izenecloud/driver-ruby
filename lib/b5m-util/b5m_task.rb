@@ -64,7 +64,7 @@ class B5mTask
         mdb_instance_post = []
         if !use_scd_time and !mdb_instance.nil?
           mdb_instance_post << mdb_instance
-        else
+        elsif mode==0
           start_scd_time = instance.get_scd_time
           if start_scd_time.nil?
             start_scd_time = mi_list.first
@@ -75,6 +75,10 @@ class B5mTask
             if mi>=start_scd_time
               mdb_instance_post << mi
             end
+          end
+        else #rebuild
+          mi_list.each do |mi|
+            mdb_instance_post << mi
           end
         end
         if mdb_instance_post.empty?
