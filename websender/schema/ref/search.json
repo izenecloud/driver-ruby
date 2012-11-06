@@ -108,10 +108,6 @@
         "type": "bool",
         "desc": "option to use fuzzy search to get more results for fm-index"
       },
-      "use_filterstr": {
-        "type": "str",
-        "desc": "option to use filter string to filter some results for fuzzy searching"
-      },
       "original_query": {
         "type": "bool",
         "desc": "option to use original query or modified query"
