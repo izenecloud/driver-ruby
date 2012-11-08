@@ -1,40 +1,32 @@
-require 'SysVIPC'
-include SysVIPC
+require 'net/http'
 
 class B5mDaemon
 
-  def initialize(path)
-    file = File.expand_path(path)
-    key = ftok(file, 0)
-    @mq = MessageQueue.new(key, IPC_CREAT | 0660)
+  attr_reader :ip, :port
+
+  def initialize(ip="0.0.0.0",port=18190)
+    @ip=ip
+    @port = port
   end
 
   def run(cmd)
-    @mq.send(1, cmd)
-    puts "sent #{cmd}"
-    while true
-      sleep 2
-      begin
-        result = @mq.receive(2, 1004, IPC_NOWAIT)
-        p = result.index("\x00")
-        unless p.nil?
-          result = result[0, p]
-        end
-        break
-      rescue SystemCallError => e
-        if e.errno==Errno::ENOMSG::Errno
-          next
-        else
-          raise e
-        end
+
+    puts "commiting #{cmd}"
+    uri_str = "http://#{ip}:#{port}/?cmd=#{cmd}"
+    uri_str = URI.escape(uri_str)
+    uri = URI(uri_str)
+    #puts "uri:#{uri_str}"
+    begin
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        http.read_timeout = 3600*48
+        request = Net::HTTP::Get.new(uri.request_uri)
+        res = http.request(request)
+        return res.is_a?(Net::HTTPSuccess)
       end
+    rescue Exception => e
+      puts "daemon run exception : #{e}"
+      return false
     end
-
-    return (result=="succ")
-  end
-
-  def close
-    @mq.rm
   end
 
 end
