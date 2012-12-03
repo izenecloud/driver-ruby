@@ -18,6 +18,11 @@
       "type":"str",
       "desc":"Specify contenti to be detected",
       "required":true
+    },
+
+    "limit": {
+      "type":"int",
+      "desc":"Specify topic limit returned."
     }
   }
 }
