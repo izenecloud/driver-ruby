@@ -114,6 +114,9 @@
       }
     }
   },
+  "is_random_rank": {
+    "type": "bool"
+  },
   "log_keywords": {
     "type": "bool"
   },
