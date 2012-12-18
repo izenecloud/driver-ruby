@@ -1,0 +1,17 @@
+{
+  "title":"load license file",
+  "type":"map",
+  "desc":"reload license file. path is required.",
+  "mapping": {
+    "path": {
+      "type":"str",
+      "desc":"Specify the license file path",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }   
+  }
+}
