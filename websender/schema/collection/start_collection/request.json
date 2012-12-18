@@ -1,7 +1,7 @@
 {
-  "title":"Create document",
+  "title":"Start collection",
   "type":"map",
-  "desc":"Create docuemnt though driver. DOCID is required.",
+  "desc":"start collection by specific name.",
   "mapping": {
     "collection": {
       "type":"str",
