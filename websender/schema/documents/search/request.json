@@ -43,6 +43,10 @@
           "unit": {
             "type": "str",
             "desc": "group unit for datetime property"
+          },
+          "grouptop": {
+              "type": "int",
+              "desc": "the top number of root group needed"
           }
         }
       }]
