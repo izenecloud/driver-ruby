@@ -117,6 +117,9 @@
   "is_random_rank": {
     "type": "bool"
   },
+  "query_source": {
+    "type": "str"
+  },
   "log_keywords": {
     "type": "bool"
   },
