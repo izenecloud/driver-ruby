@@ -257,23 +257,29 @@ class B5mSf1Instance
   
   def normal_index(mdb_instance_list, mode, ip, port)
     conn = Sf1Driver.new(ip, port)
-    clear = false
+    @collections.each_with_index do |coll, i|
+      collections = [coll]
+      clear = false
 
-    if mode>0 #reindex
-      clear = true
-    end
-    puts "index with clear=#{clear}"
-    sf1 = Sf1Wait.new(conn, @collections, clear)
-    begin
-      sf1.index_finish(3600*24) do 
-        unless b5m_server?
-          scd_post(mdb_instance_list)
-        else
-          remote_scd_post(mdb_instance_list, ip)
-        end
+      if i<=1 and mode>0 #reindex for o,p
+        clear = true
       end
-    rescue Exception => e
-      puts "index error #{e}"
+      if i==2 and mode>1 #reindex for comment
+        clear = true
+      end
+      puts "indexing #{coll} with clear=#{clear}"
+      sf1 = Sf1Wait.new(conn, collections, clear)
+      begin
+        sf1.index_finish(3600*24*7) do 
+          unless b5m_server?
+            scd_post(mdb_instance_list)
+          else
+            remote_scd_post(mdb_instance_list, ip)
+          end
+        end
+      rescue Exception => e
+        puts "index error #{e}"
+      end
     end
   end
 
