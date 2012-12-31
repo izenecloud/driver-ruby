@@ -1,11 +1,11 @@
 {
-  "title":"Start collection",
+  "title":"load license file",
   "type":"map",
-  "desc":"start collection by specific name.",
+  "desc":"reload license file. path is required.",
   "mapping": {
-    "collection": {
+    "path": {
       "type":"str",
-      "desc":"Specify a collection name",
+      "desc":"Specify the license file path",
       "required":true
     },
 
