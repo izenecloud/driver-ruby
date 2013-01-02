@@ -27,6 +27,14 @@ class Sf1Wait
         response = @conn.call("collection/start_collection", request)
         puts response
       end
+    else
+      #do connectioin test
+      @collections.each do |coll|
+        request = {:message => "incremental index test connection"}
+        puts "incremental index test conn on #{coll}"
+        response = @conn.call("test/echo", request)
+        puts response
+      end
     end
     yield if block_given?
     status_before_list = []

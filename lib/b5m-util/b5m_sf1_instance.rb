@@ -1,6 +1,8 @@
 require 'sf1-driver'
 require 'sf1-util/sf1_wait'
 
+B5mCollection = Struct.new(:coll_name, :str)
+
 class B5mSf1Instance
   @@test = false
   attr_reader :name, :collections
@@ -8,11 +10,10 @@ class B5mSf1Instance
   def initialize(params, name, nocomment = false)
     @params = params
     @name = name
-    @collections = ["#{name}p", "#{name}o"]
-    @strs = ['b5mp', 'b5mo']
+    @collections = [ B5mCollection.new("#{name}p", "b5mp"), 
+      B5mCollection.new("#{name}o", "b5mo") ]
     unless nocomment
-      @collections << "#{name}c"
-      @strs << 'b5mc'
+      @collections << B5mCollection.new("#{name}c", "b5mc")
     end
   end
 
@@ -52,13 +53,13 @@ class B5mSf1Instance
     return (ip=="b5m_server")
   end
 
-  def scd_post(mdb_instance_list)
+  def scd_post(mdb_instance_list, index=-1)
     if local?
-      local_scd_post(mdb_instance_list)
+      local_scd_post(mdb_instance_list,index)
     elsif b5m_server?
-      b5m_server_scd_post(mdb_instance_list)
+      b5m_server_scd_post(mdb_instance_list,index)
     else
-      remote_scd_post(mdb_instance_list, ip)
+      remote_scd_post(mdb_instance_list, ip,index)
     end
   end
 
@@ -160,19 +161,29 @@ class B5mSf1Instance
     min_time
   end
 
-  def local_scd_post(mdb_instance_list)
+  def local_scd_post(mdb_instance_list, index=-1)
     #delete scd/index/*SCD firstly on local post
-    @strs.each do |str|
-      dest = @params["#{str}_scd"]
+    collections = @collections
+    if index>=0
+      collections = []
+      collection = @collections[index]
+      unless collection.nil?
+        collections = [collection]
+      end
+    end
+    collections.each do |collection|
+      dest = @params["#{collection.str}_scd"]
       next if dest.nil?
       dest.each do |d|
         FileUtils.mkdir_p(d) unless File.exist?(d)
         cmd = "rm -rf #{d}/*.SCD"
+        puts cmd
         system(cmd)
       end
     end
     mdb_instance_list.each do |mdb_instance|
-      @strs.each do |str|
+      collections.each do |collection|
+        str = collection.str
         dest = @params["#{str}_scd"]
         next if dest.nil?
         scd_path = File.join(mdb_instance, str)
@@ -181,7 +192,7 @@ class B5mSf1Instance
         dest.each do |d|
           FileUtils.mkdir_p(d) unless File.exist?(d)
           scd_list.each do |scd|
-            puts "copying #{scd}"
+            puts "copying #{scd} to #{d}"
             FileUtils.cp_r(scd, d)
           end
         end
@@ -225,22 +236,30 @@ class B5mSf1Instance
     end
   end
 
-  def b5m_server_scd_post(mdb_instance_list)
+  def b5m_server_scd_post(mdb_instance_list, index=-1)
     ips = b5m_server_ips
     ips.each do |ip|
-      remote_scd_post(mdb_instance_list, ip)
+      remote_scd_post(mdb_instance_list, ip, index)
     end
   end
 
-  def remote_scd_post(mdb_instance_list, ip)
+  def remote_scd_post(mdb_instance_list, ip, index=-1)
+    collections = @collections
+    if index>=0
+      collection = @collections[index]
+      unless collection.nil?
+        collections = [collection]
+      end
+    end
     mdb_instance_list.each do |mdb_instance|
-      @strs.each_with_index do |str, i|
+      collections.each do |collection|
+        str = collection.str
         scd_path = File.join(mdb_instance, str)
         scd_list = ScdParser.get_scd_list(scd_path)
         puts "#{mdb_instance} #{str} scd size #{scd_list.size}"
         next if scd_list.empty?
         scd_list.each do |scd|
-          cname = @collections[i]
+          cname = collection.coll_name
           cmd = "curl -s -T #{scd} ftp://#{ip}/ --user #{cname}:#{cname}"
           puts cmd
           system(cmd)
@@ -257,7 +276,8 @@ class B5mSf1Instance
   
   def normal_index(mdb_instance_list, mode, ip, port)
     conn = Sf1Driver.new(ip, port)
-    @collections.each_with_index do |coll, i|
+    @collections.each_with_index do |collection, i|
+      coll = collection.coll_name
       collections = [coll]
       clear = false
 
@@ -267,18 +287,18 @@ class B5mSf1Instance
       if i==2 and mode>1 #reindex for comment
         clear = true
       end
-      puts "indexing #{coll} with clear=#{clear}"
+      puts "indexing #{coll} with clear=#{clear}, index #{i}"
       sf1 = Sf1Wait.new(conn, collections, clear)
       begin
         sf1.index_finish(3600*24*7) do 
           unless b5m_server?
-            scd_post(mdb_instance_list)
+            scd_post(mdb_instance_list,i)
           else
-            remote_scd_post(mdb_instance_list, ip)
+            remote_scd_post(mdb_instance_list, ip,i)
           end
         end
       rescue Exception => e
-        puts "index error #{e}"
+        puts "instance index error #{e}"
       end
     end
   end

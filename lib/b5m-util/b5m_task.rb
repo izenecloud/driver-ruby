@@ -91,8 +91,10 @@ class B5mTask
             mdb_instance_post_path << File.join(mdb, mdb_post)
           end
           if doindex
+            puts "do index"
             instance.index(mdb_instance_post_path, mode)
           else
+            puts "do scd_post"
             instance.scd_post(mdb_instance_post_path)
           end
           instance.set_scd_time(end_scd_time)
