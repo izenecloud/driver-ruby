@@ -95,11 +95,11 @@ class B5mTask
           if doindex
             puts "do index"
             instance.index(mdb_instance_post_path, mode)
+            instance.set_scd_time(end_scd_time)
           else
             puts "do scd_post"
             instance.scd_post(mdb_instance_post_path)
           end
-          instance.set_scd_time(end_scd_time)
         end
       end
       threads << t
