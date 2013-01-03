@@ -53,8 +53,10 @@ class B5mTask
   end
 
   def dispatch(opt={})
-    use_scd_time = opt[:use_scd_time] || false
-    doindex = opt[:do_index] || true
+    use_scd_time = opt[:use_scd_time]
+    use_scd_time = false if use_scd_time.nil?
+    doindex = opt[:do_index]
+    doindex = true if doindex.nil?
 
     mi_list = mdb_instance_list
     threads = []
