@@ -1,4 +1,5 @@
 require 'sf1-driver'
+require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_wait'
 
 B5mCollection = Struct.new(:coll_name, :str)

@@ -65,7 +65,12 @@ class B5mTask
         puts "dispatching to #{instance}"
         mdb_instance_post = []
         if !use_scd_time and !mdb_instance.nil?
-          mdb_instance_post << mdb_instance
+          instance_path = File.join(mdb, mdb_instance)
+          if File.directory? instance_path
+            mdb_instance_post << mdb_instance
+          else
+            puts "#{mdb_instance} dir does not exists"
+          end
         elsif mode==0
           start_scd_time = instance.get_scd_time
           if start_scd_time.nil?
