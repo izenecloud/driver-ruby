@@ -1,33 +1,131 @@
-require 'b5m-util/b5m_config.rb'
-require 'b5m-util/b5m_sf1_instance.rb'
+require_relative 'b5m_config.rb'
+require_relative 'b5m_sf1_instance.rb'
+require_relative 'b5m_m.rb'
 
 class B5mTask
 
-  attr_accessor :mdb_instance, :mode
-  attr_reader :config, :instance_list
+  attr_reader :config, :instance_list, :m, :m_list, :last_m, :last_rebuild_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
 
-  Sf1Instance = Struct.new(:user, :ip, :port)
-
-
-  def initialize(file)
-    @mode = 0
-    @config = B5mConfig.new(file)
+  def initialize(config)
+    if config.is_a? String
+      @config = B5mConfig.new(config)
+    else
+      @config = config
+    end
     @instance_list = []
     @config.sf1_instances.each do |si|
       instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
       @instance_list << instance
     end
-    #if mode>0
-      #@instance_list = @instance_list[0,1]
-      #@instance_list[0].ip = "localhost"
-    #end
-    @mdb_instance = nil
+    unless File.exists? mdb
+      FileUtils.mkdir_p(mdb)
+    end
+    gen
   end
 
+  def gen
+    #do broken clean
+    @m_list = []
+    Dir.foreach(mdb) do |m|
+      next unless m =~ /\d{14}/
+      mm = File.join(mdb, m)
+      next unless File.directory?(mm)
+      b5m_m = B5mM.new(mm)
+      if b5m_m.broken?
+        b5m_m.delete
+        next
+      end
+      @m_list << b5m_m
+    end
+    @m_list.sort!
+    #assign last_m, last_odb, last_codb, last_cdb
+    @last_m = @m_list.last
+    @last_odb = nil
+    @last_db_m = nil
+    unless @last_m.nil?
+      @last_odb = @last_m.odb
+      @last_db_m = @last_m
+    end
+    @last_codb = nil
+    @last_cdb = nil
+    @last_c_m = nil
+    @m_list.reverse_each do |em|
+      if em.cmode>=0 #do b5mc
+        @last_codb = em.odb
+        @last_cdb = em.cdb
+        @last_db_m = em
+        @last_c_m = em
+        break
+      end
+    end
+    @last_rebuild_m = nil
+    @m_list.reverse_each do |em|
+      if em.mode>0
+        @last_rebuild_m = em
+        break
+      end
+    end
+    check_db_valid @last_odb
+    check_db_valid @last_codb
+    check_db_valid @last_cdb
+  end
+
+  def print_last
+    puts "last_m #{@last_m}"
+    puts "last_db_m #{@last_db_m}"
+    puts "last_odb #{@last_odb}"
+    puts "last_codb #{@last_codb}"
+    puts "last_cdb #{@last_cdb}"
+    puts "last_c_m #{@last_c_m}"
+    puts "last_rebuild_m #{@last_rebuild_m}"
+  end
+
+  def copy_m(from_m)
+    target_m = File.join(mdb, from_m.name)
+    if File.exists? target_m
+      puts "#{target_m} exists, copy_m failed"
+      return false
+    end
+    puts "copy #{from_m.path} to #{target_m}"
+    FileUtils.cp_r from_m.path, target_m
+    puts "copied"
+    return true
+  end
+
+  def m_release
+    return if @last_rebuild_m.nil?
+    puts "last_rebuild_m #{@last_rebuild_m}"
+    gap = @last_rebuild_m
+    unless @last_db_m.nil?
+      puts "last_db_m #{@last_db_m}"
+      gap = [@last_rebuild_m, @last_db_m].min
+    end
+    puts "m_release gap #{gap}"
+    new_m_list = []
+    @m_list.each do |m|
+      if m<gap
+        puts "releasing #{m}"
+        m.delete
+      else
+        new_m_list << m
+      end
+    end
+    @m_list = new_m_list
+  end
 
   def work_dir
 
     config.path_of('work_dir')
+  end
+
+  def knowledge
+
+    File.join(work_dir, "knowledge")
+  end
+
+  def bdb
+
+    File.join(knowledge, 'bdb')
   end
 
   def db
@@ -40,76 +138,109 @@ class B5mTask
     File.join(db, "mdb")
   end
 
-  def mdb_instance_list
-    list = []
-    Dir.foreach(mdb) do |m|
-      next unless m =~ /\d{14}/
-      mm = File.join(mdb, m)
-      next unless File.directory?(mm)
-      list << m
-    end
 
-    list.sort!
+  def matcher_start(m)
+    @m = m
+    if m.exists?
+      raise "m #{@m} already exists"
+    end
+    m.create
+    m.status = "matching"
+    m.flush
+    #then copy related db to the new m
+    if m.mode==0 and !last_odb.nil?
+      puts "copy #{last_odb} to #{m.odb}"
+      FileUtils.cp_r(last_odb, m.odb)
+    end
+    if m.cmode==0 and !last_cdb.nil?
+      puts "copy #{last_cdb} to #{m.cdb}"
+      FileUtils.cp_r(last_cdb, m.cdb)
+    end
+    @scd = config.path_of('scd')
+    if m.mode==0 #incremental
+      @scd = File.join(@scd, "incremental")
+    else
+      @scd = File.join(@scd, "rebuild")
+    end
+    unless File.directory?(@scd)
+      @scd = config.path_of('scd')
+    end
+    @comment_scd = config.path_of('comment_scd')
+    puts "offer-scd:#{@scd}"
+    puts "comment-scd:#{@comment_scd}"
+
   end
 
-  def dispatch(opt={})
-    use_scd_time = opt[:use_scd_time]
-    use_scd_time = false if use_scd_time.nil?
+  def matcher_finish
+    @m.status = "matched"
+    @m.flush
+    gen
+  end
+
+  def apply(m, opt={})
+    #use_scd_time = opt[:use_scd_time]
+    #use_scd_time = false if use_scd_time.nil?
     doindex = opt[:do_index]
     doindex = true if doindex.nil?
+    @m = m
 
-    mi_list = mdb_instance_list
     threads = []
     instance_list.each do |instance|
       t = Thread.new do
-        puts "dispatching to #{instance}"
-        mdb_instance_post = []
-        if !use_scd_time and !mdb_instance.nil?
-          instance_path = File.join(mdb, mdb_instance)
-          if File.directory? instance_path
-            mdb_instance_post << mdb_instance
-          else
-            puts "#{mdb_instance} dir does not exists"
-          end
-        elsif mode==0
-          start_scd_time = instance.get_scd_time
-          if start_scd_time.nil?
-            start_scd_time = mi_list.first
-          else
-            start_scd_time = (start_scd_time.to_i+1).to_s
-          end
-          mi_list.each do |mi|
-            if mi>=start_scd_time
-              mdb_instance_post << mi
-            end
-          end
-        else #rebuild
-          mi_list.each do |mi|
-            mdb_instance_post << mi
-          end
-        end
-        if mdb_instance_post.empty?
+        puts "applying to #{instance}"
+        #m_post = []
+        #if !use_scd_time and !m.nil?
+          #if m.exists?
+            #m_post << m
+          #else
+            #puts "m #{m} does not exists"
+          #end
+        #elsif mode==0
+          #start_scd_time = instance.get_scd_time
+          #if start_scd_time.nil?
+            #start_scd_time = m_list.first.name
+          #else
+            #start_scd_time = (start_scd_time.to_i+1).to_s
+          #end
+          #m_list.each do |mi|
+            #if mi.name>=start_scd_time
+              #m_post << mi
+            #end
+          #end
+        #else #rebuild
+          #m_post = m_list
+        #end
+        m_post = [m]
+        if m_post.empty?
           puts "#{instance} has no more mdb instance to be processed"
         else
-          puts "#{instance} has #{mdb_instance_post.size} mdb instances to be processed"
-          end_scd_time = mdb_instance_post.last
-          mdb_instance_post_path = []
-          mdb_instance_post.each do |mdb_post|
-            mdb_instance_post_path << File.join(mdb, mdb_post)
-          end
+          puts "#{instance} has #{m_post.size} mdb instances to be processed"
+          end_scd_time = m_post.last.name
           if doindex
             puts "do index"
-            instance.index(mdb_instance_post_path, mode)
+            instance.index(m_post)
             instance.set_scd_time(end_scd_time)
           else
             puts "do scd_post"
-            instance.scd_post(mdb_instance_post_path)
+            instance.scd_post(m_post)
           end
         end
       end
       threads << t
     end
     threads.each {|t| t.join}
+    m.status = "finished"
+    m.flush
+    m.release
+  end
+
+private
+  def check_db_valid path
+    unless path.nil?
+      unless File.directory? path
+        raise "#{path} not a valid db path"
+      end
+    end
   end
 
 

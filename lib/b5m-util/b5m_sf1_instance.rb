@@ -54,7 +54,7 @@ class B5mSf1Instance
     return (ip=="b5m_server")
   end
 
-  def scd_post(mdb_instance_list, index=-1)
+  def scd_post(m_list, index=-1)
     if local?
       local_scd_post(mdb_instance_list,index)
     elsif b5m_server?
@@ -64,12 +64,8 @@ class B5mSf1Instance
     end
   end
 
-  def index(mdb_instance_list, mode)
-    if b5m_server?
-      b5m_server_index(mdb_instance_list, mode)
-    else
-      normal_index(mdb_instance_list, mode, ip, port)
-    end
+  def index(m_list)
+    normal_index(m_list, ip, port)
   end
 
   def get_scd_time()
@@ -162,7 +158,7 @@ class B5mSf1Instance
     min_time
   end
 
-  def local_scd_post(mdb_instance_list, index=-1)
+  def local_scd_post(m_list, index=-1)
     #delete scd/index/*SCD firstly on local post
     collections = @collections
     if index>=0
@@ -182,12 +178,12 @@ class B5mSf1Instance
         system(cmd)
       end
     end
-    mdb_instance_list.each do |mdb_instance|
+    m_list.each do |m|
       collections.each do |collection|
         str = collection.str
         dest = @params["#{str}_scd"]
         next if dest.nil?
-        scd_path = File.join(mdb_instance, str)
+        scd_path = File.join(m.path, str)
         scd_list = ScdParser.get_scd_list(scd_path)
         next if scd_list.empty?
         dest.each do |d|
@@ -244,7 +240,7 @@ class B5mSf1Instance
     end
   end
 
-  def remote_scd_post(mdb_instance_list, ip, index=-1)
+  def remote_scd_post(m_list, ip, index=-1)
     collections = @collections
     if index>=0
       collection = @collections[index]
@@ -252,10 +248,10 @@ class B5mSf1Instance
         collections = [collection]
       end
     end
-    mdb_instance_list.each do |mdb_instance|
+    m_list.each do |m|
       collections.each do |collection|
         str = collection.str
-        scd_path = File.join(mdb_instance, str)
+        scd_path = File.join(m.path, str)
         scd_list = ScdParser.get_scd_list(scd_path)
         puts "#{mdb_instance} #{str} scd size #{scd_list.size}"
         next if scd_list.empty?
@@ -272,21 +268,24 @@ class B5mSf1Instance
     end
   end
 
-  def do_scd_post(mdb_instance_list, ip)
-  end
-  
-  def normal_index(mdb_instance_list, mode, ip, port)
+  def normal_index(m_list, ip, port)
     conn = Sf1Driver.new(ip, port)
+    last_m = m_list.last
     @collections.each_with_index do |collection, i|
       coll = collection.coll_name
       collections = [coll]
       clear = false
 
-      if i<=1 and mode>0 #reindex for o,p
+      if i<=1 and last_m.mode>0 #reindex for o,p
         clear = true
       end
-      if i==2 and mode>1 #reindex for comment
-        clear = true
+      if i==2 #for comment
+        if last_m.cmode>0
+          clear = true
+        elsif last_m.cmode<0
+          puts "#{coll} mode<0, ignore"
+          next
+        end
       end
       puts "indexing #{coll} with clear=#{clear}, index #{i}"
       sf1 = Sf1Wait.new(conn, collections, clear)

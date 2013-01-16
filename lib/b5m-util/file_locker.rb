@@ -1,7 +1,8 @@
 
 class FileLocker
 
-  def initialize(file_path)
+  attr_reader :value
+  def initialize(file_path, lock_const = File::LOCK_EX)
     @logger = Logger.new(STDERR)
     begin
       file_path = File.expand_path(file_path)
@@ -18,7 +19,7 @@ class FileLocker
       if File.exists?(file_path)
         @lock_file = File.new(file_path)
         @logger.info "FileLocker on #{file_path}..."
-        @lock_file.flock(File::LOCK_EX)
+        @value = @lock_file.flock(lock_const)
         @logger.info "file lock got"
       else
         raise "#{file_path} not exists"
