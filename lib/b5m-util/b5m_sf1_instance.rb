@@ -56,11 +56,11 @@ class B5mSf1Instance
 
   def scd_post(m_list, index=-1)
     if local?
-      local_scd_post(mdb_instance_list,index)
+      local_scd_post(m_list,index)
     elsif b5m_server?
-      b5m_server_scd_post(mdb_instance_list,index)
+      b5m_server_scd_post(m_list,index)
     else
-      remote_scd_post(mdb_instance_list, ip,index)
+      remote_scd_post(m_list, ip,index)
     end
   end
 
@@ -233,10 +233,10 @@ class B5mSf1Instance
     end
   end
 
-  def b5m_server_scd_post(mdb_instance_list, index=-1)
+  def b5m_server_scd_post(m_list, index=-1)
     ips = b5m_server_ips
     ips.each do |ip|
-      remote_scd_post(mdb_instance_list, ip, index)
+      remote_scd_post(m_list, ip, index)
     end
   end
 
@@ -253,7 +253,7 @@ class B5mSf1Instance
         str = collection.str
         scd_path = File.join(m.path, str)
         scd_list = ScdParser.get_scd_list(scd_path)
-        puts "#{mdb_instance} #{str} scd size #{scd_list.size}"
+        puts "#{scd_path} scd size #{scd_list.size}"
         next if scd_list.empty?
         scd_list.each do |scd|
           cname = collection.coll_name
@@ -292,9 +292,9 @@ class B5mSf1Instance
       begin
         sf1.index_finish(3600*24*7) do 
           unless b5m_server?
-            scd_post(mdb_instance_list,i)
+            scd_post(m_list,i)
           else
-            remote_scd_post(mdb_instance_list, ip,i)
+            remote_scd_post(m_list, ip,i)
           end
         end
       rescue Exception => e
@@ -303,18 +303,18 @@ class B5mSf1Instance
     end
   end
 
-  def b5m_server_index(mdb_instance_list, mode)
+  def b5m_server_index(m_list, mode)
     if mode==0
       ips = b5m_server_ips
       ips.each do |ip|
-        normal_index(mdb_instance_list, mode, ip, default_port)
+        normal_index(m_list, mode, ip, default_port)
       end
     else
-      b5m_server_reindex(mdb_instance_list)
+      b5m_server_reindex(m_list)
     end
   end
 
-  def b5m_server_reindex(mdb_instance_list)
+  def b5m_server_reindex(m_list)
     ips = b5m_server_ips
     ifile = server_indicator_file
     map = {"b5m-d1" => ips[0], "b5m-d2" => ips[1]}
@@ -330,7 +330,7 @@ class B5mSf1Instance
     sflag = switch_map[flag]
     ip = map[sflag]
     puts "so work on #{sflag} #{ip}"
-    normal_index(mdb_instance_list, 1, ip, default_port)
+    normal_index(m_list, 1, ip, default_port)
     #now do switch
     puts "output #{sflag}"
     system("echo #{sflag} > #{ifile}")
@@ -339,7 +339,7 @@ class B5mSf1Instance
     sleep(sm) #sleep 2 minutes
     ip = map[flag]
     puts "now work on #{flag} #{ip}"
-    normal_index(mdb_instance_list, 1, ip, default_port)
+    normal_index(m_list, 1, ip, default_port)
   end
 
 end
