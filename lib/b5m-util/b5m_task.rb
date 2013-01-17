@@ -4,7 +4,7 @@ require_relative 'b5m_m.rb'
 
 class B5mTask
 
-  attr_reader :config, :instance_list, :m, :m_list, :last_m, :last_rebuild_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
+  attr_reader :config, :instance_list, :m, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
 
   def initialize(config)
     if config.is_a? String
@@ -25,6 +25,7 @@ class B5mTask
 
   def gen
     #do broken clean
+    return if config.schema=="ticket"
     @m_list = []
     Dir.foreach(mdb) do |m|
       next unless m =~ /\d{14}/
@@ -40,11 +41,14 @@ class B5mTask
     @m_list.sort!
     #assign last_m, last_odb, last_codb, last_cdb
     @last_m = @m_list.last
+    @last_o_m = nil
     @last_odb = nil
-    @last_db_m = nil
-    unless @last_m.nil?
-      @last_odb = @last_m.odb
-      @last_db_m = @last_m
+    @m_list.reverse_each do |em|
+      if em.mode>=0 #do o/p
+        @last_o_m = em
+        @last_odb = @last_o_m.odb
+        break
+      end
     end
     @last_codb = nil
     @last_cdb = nil
@@ -53,10 +57,17 @@ class B5mTask
       if em.cmode>=0 #do b5mc
         @last_codb = em.odb
         @last_cdb = em.cdb
-        @last_db_m = em
         @last_c_m = em
         break
       end
+    end
+    @last_db_m = nil
+    if @last_o_m.nil?
+      @last_db_m = @last_c_m
+    elsif @last_c_m.nil?
+      @last_db_m = @last_o_m
+    else
+      @last_db_m = [@last_o_m, @last_c_m].min
     end
     @last_rebuild_m = nil
     @m_list.reverse_each do |em|
@@ -72,12 +83,13 @@ class B5mTask
 
   def print_last
     puts "last_m #{@last_m}"
+    puts "last_o_m #{@last_o_m}"
+    puts "last_c_m #{@last_c_m}"
+    puts "last_rebuild_m #{@last_rebuild_m}"
     puts "last_db_m #{@last_db_m}"
     puts "last_odb #{@last_odb}"
     puts "last_codb #{@last_codb}"
     puts "last_cdb #{@last_cdb}"
-    puts "last_c_m #{@last_c_m}"
-    puts "last_rebuild_m #{@last_rebuild_m}"
   end
 
   def copy_m(from_m)
