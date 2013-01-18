@@ -84,12 +84,8 @@ class B5mM
 
   def create
     FileUtils.mkdir(path)
-    #FileUtils.mkdir(log)
-    pid = Process.pid
-    start_time = Time.now
-    #File.open(pid, 'w') do |f|
-      #f.puts(Process.pid)
-    #end
+    @property['pid'] = Process.pid
+    @property['start_time'] = Time.now
   end
 
   def release
