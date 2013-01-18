@@ -46,6 +46,12 @@ class B5mConfig
     end
   end
 
+  def first_ip
+    return nil if @config["sf1_instance"].empty?
+
+    return @config["sf1_instance"].first["ip"]
+  end
+
   def path_of(key)
 
     config['path_of'][key]

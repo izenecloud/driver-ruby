@@ -92,11 +92,20 @@ class B5mM
 
   end
 
+  def b5mo
+
+    File.join(path, "b5mo")
+  end
+
+  def b5mp
+
+    File.join(path, "b5mp")
+  end
+
   def b5mc
 
     File.join(path, "b5mc")
   end
-
 
   def odb
 
@@ -113,11 +122,6 @@ class B5mM
     File.join(path, "bdb")
   end
 
-  #def log
-    #File.join(path, "log")
-  #end
-  #def pid
-    #File.join(log, "pid")
-  #end
+
 end
 

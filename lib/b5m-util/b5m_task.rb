@@ -1,12 +1,17 @@
 require_relative 'b5m_config.rb'
 require_relative 'b5m_sf1_instance.rb'
 require_relative 'b5m_m.rb'
+require_relative 'b5m_mail.rb'
+require 'sf1-util/scd_parser'
+require 'net/smtp'
 
 class B5mTask
 
+  attr_accessor :email
   attr_reader :config, :instance_list, :m, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
 
   def initialize(config)
+    @email = false
     if config.is_a? String
       @config = B5mConfig.new(config)
     else
@@ -246,6 +251,47 @@ class B5mTask
     m.release
   end
 
+  def send_mail
+    return if m.nil?
+    return if m.status!="finished" and m.status!="matched"
+    subject = "Matcher (#{config.schema})"
+    if m.mode>0
+      subject += ' Rebuild'
+    elsif m.mode==0
+      subject += ' Incremental'
+    elsif m.cmode>=0
+      subject += ' Comment Only'
+    end
+    subject += " to #{config.first_ip}"
+    subject += ' Finish'
+    body = "schema #{config.schema}\n"
+    body = "working path #{m.path}\n"
+    body += "timestamp #{m.name}\n"
+    body += "o/p mode #{m.mode}\n"
+    body += "c mode #{m.cmode}\n"
+    body += "start_time #{m.start_time}\n"
+    o_count = ScdParser.get_doc_count(m.b5mo)
+    p_count = ScdParser.get_doc_count(m.b5mp)
+    c_count = ScdParser.get_doc_count(m.b5mc)
+    body += "b5mo doc count #{o_count}\n"
+    body += "b5mp doc count #{p_count}\n"
+    body += "b5mc doc count #{c_count}\n"
+
+
+    begin
+
+      B5mMail.send({:host => 'localhost', 
+                   :to => 'dri@b5m.com', 
+                   :from => 'dri@b5m.com',
+                   :from_alias => 'Matcher Message',
+                   :subject => subject, 
+                   :body => body})
+    rescue Exception => e
+      puts "send mail error #{e}"
+    end
+
+  end
+
 private
   def check_db_valid path
     unless path.nil?
@@ -254,6 +300,7 @@ private
       end
     end
   end
+
 
 
 end
