@@ -205,28 +205,6 @@ class B5mTask
     instance_list.each do |instance|
       t = Thread.new do
         puts "applying to #{instance}"
-        #m_post = []
-        #if !use_scd_time and !m.nil?
-          #if m.exists?
-            #m_post << m
-          #else
-            #puts "m #{m} does not exists"
-          #end
-        #elsif mode==0
-          #start_scd_time = instance.get_scd_time
-          #if start_scd_time.nil?
-            #start_scd_time = m_list.first.name
-          #else
-            #start_scd_time = (start_scd_time.to_i+1).to_s
-          #end
-          #m_list.each do |mi|
-            #if mi.name>=start_scd_time
-              #m_post << mi
-            #end
-          #end
-        #else #rebuild
-          #m_post = m_list
-        #end
         m_post = [m]
         if m_post.empty?
           puts "#{instance} has no more mdb instance to be processed"
@@ -236,7 +214,7 @@ class B5mTask
           if doindex
             puts "do index"
             instance.index(m_post)
-            instance.set_scd_time(end_scd_time)
+            #instance.set_scd_time(end_scd_time)
           else
             puts "do scd_post"
             instance.scd_post(m_post)
