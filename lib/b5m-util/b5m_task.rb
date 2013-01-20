@@ -81,6 +81,10 @@ class B5mTask
         break
       end
     end
+    check_valid
+  end
+
+  def check_valid
     check_db_valid @last_odb
     check_db_valid @last_codb
     check_db_valid @last_cdb
@@ -95,6 +99,13 @@ class B5mTask
     puts "last_odb #{@last_odb}"
     puts "last_codb #{@last_codb}"
     puts "last_cdb #{@last_cdb}"
+  end
+
+  def set_last_c_m(m)
+    @last_c_m = m
+    @last_codb = m.odb
+    @last_cdb = m.cdb
+    check_valid
   end
 
   def copy_m(from_m)

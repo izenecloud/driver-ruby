@@ -14,6 +14,9 @@ class B5mInputScd
   end
 
   def self.get_all(dir, done_file_name, time=Time.at(0))
+    unless File.directory? dir
+      return []
+    end
     list = []
     Dir.foreach(dir) do |m|
       next unless m =~ /\d{14}/
