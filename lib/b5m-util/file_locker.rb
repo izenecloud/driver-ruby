@@ -27,6 +27,9 @@ class FileLocker
     rescue Exception => e
       abort "FileLocker error #{e}"
     end
+  end
 
+  def release
+    @lock_file.flock(File::LOCK_UN)
   end
 end
