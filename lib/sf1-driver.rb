@@ -4,8 +4,8 @@
 #++
 # See Sf1Driver
 
-require "sf1-driver/helper"
-require "sf1-driver/raw-client"
+require_relative "sf1-driver/helper"
+require_relative "sf1-driver/raw-client"
 
 require 'pp'
 
