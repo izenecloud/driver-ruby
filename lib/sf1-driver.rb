@@ -14,7 +14,7 @@ class Sf1Driver
   class ServerError < RuntimeError
   end
 
-  VERSION = "2.0.1"
+  VERSION = '3.0.0'
 
   # Max sequence number. It is also the upper limit of the number of requests
   # in a batch request.

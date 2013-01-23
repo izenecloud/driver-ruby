@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+require 'sf1-resource/sf1r_resource'
+
+def usage_and_exit
+  STDOUT.puts "usage: sf1r-resouce action [--force]\n where action is pull or push, do not backup if force"
+  exit(1)
+end
+
+config_file = "./resource_config.yml"
+abort "resource_config.yml not found" unless File.file? config_file
+action = ARGV[0]
+if action.nil?
+  usage_and_exit
+elsif action!="pull" and action!="push"
+  usage_and_exit
+end
+force = false
+if ARGV.length>1 and ARGV[1]=="--force"
+  force = true
+  STDERR.puts "set force=true, do not backup"
+end
+resource = Sf1rResource.new config_file, force
+if action == 'pull'
+  resource.pull
+elsif action == 'push'
+  resource.push
+end
+
+
