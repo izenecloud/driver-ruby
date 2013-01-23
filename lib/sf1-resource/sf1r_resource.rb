@@ -15,14 +15,18 @@ class Sf1rResource
   end
 
   def pull(dest=nil)
-    modules = pull_sub_modules or sub_modules
+    modules = pull_sub_modules
+    modules = sub_modules if modules.nil?
+    abort("modules not found") if modules.nil?
     modules.each do |m|
       pull_module(m, dest)
     end
   end
 
   def push(source=nil)
-    modules = push_sub_modules or sub_modules
+    modules = push_sub_modules
+    modules = sub_modules if modules.nil?
+    abort("modules not found") if modules.nil?
     modules.each do |m|
       push_module(m, source)
     end
