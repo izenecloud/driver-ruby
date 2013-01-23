@@ -6,7 +6,7 @@ require 'rdoc/task'
 require 'rake/clean'
 require 'rexml/document'
 
-require_relative 'lib/sf1-driver'
+require File.join(File.dirname(__FILE__), 'lib', 'sf1-driver.rb')
 
 namespace :hudson do
   task :spec => ["hudson:setup:rspec", 'rake:spec', 'hudson:post_spec']
