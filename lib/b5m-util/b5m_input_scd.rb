@@ -2,10 +2,11 @@ require 'date'
 
 class B5mInputScd
   include Comparable
-  attr_reader :path, :time
+  attr_reader :path, :time, :name
   def initialize(path)
     @path = path
-    dt = DateTime.strptime(File.basename(@path), "%Y%m%d%H%M%S")
+    @name = File.basename(@path)
+    dt = DateTime.strptime(@name, "%Y%m%d%H%M%S")
     @time = dt.to_time
   end
 

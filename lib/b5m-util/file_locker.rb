@@ -1,9 +1,9 @@
-
+require 'sf1-util/sf1_logger'
 class FileLocker
+  include Sf1Logger
 
   attr_reader :value
   def initialize(file_path, lock_const = File::LOCK_EX)
-    @logger = Logger.new(STDERR)
     begin
       file_path = File.expand_path(file_path)
       unless File.exists?(file_path)
@@ -18,9 +18,9 @@ class FileLocker
       end
       if File.exists?(file_path)
         @lock_file = File.new(file_path)
-        @logger.info "FileLocker on #{file_path}..."
+        #puts "FileLocker on #{file_path}..."
         @value = @lock_file.flock(lock_const)
-        @logger.info "file lock got"
+        #puts "file lock got"
       else
         raise "#{file_path} not exists"
       end
@@ -31,5 +31,6 @@ class FileLocker
 
   def release
     @lock_file.flock(File::LOCK_UN)
+    #puts "file lock release #{@lock_file.path}"
   end
 end

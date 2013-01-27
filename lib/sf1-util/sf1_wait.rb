@@ -1,6 +1,8 @@
 require "sf1-driver"
+require 'sf1-util/sf1_logger'
 
 class Sf1Wait
+  include Sf1Logger
         
   def initialize(conn, collections, clear = false)
     @conn = conn
@@ -79,7 +81,7 @@ class Sf1Wait
 
   def puts(str)
 
-    $stderr.puts "#{@conn.host} #{Time.now} #{str}"
+    Sf1Logger.puts "#{@conn.host} #{str}"
   end
 
   def wait(timeout, interval = 1)

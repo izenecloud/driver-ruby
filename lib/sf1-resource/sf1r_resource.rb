@@ -34,6 +34,35 @@ class Sf1rResource
 
 private
 
+  def add_lock
+    meta = {:user => Etc.getlogin, :time => Time.now}
+    system("ssh #{server} \"echo '#{meta.to_yaml}' > #{remote_lock_file}\"")
+  end
+
+  def wait_until_lock_free
+    content = remote_lock_file_content
+    return if content.empty?
+    begin
+      meta = YAML.load(content)
+    rescue Exception => e
+      STDERR.puts "parse remote lock file err #{e}"
+      return
+    end
+  end
+
+
+  def remote_lock_file_content
+    cmd = "ssh #{server} \"test -f #{remote_lock_file} && cat #{remote_lock_file}\""
+    content = `#{cmd}`
+
+    content
+  end
+
+  def remote_lock_file
+
+    "#{remote_path}/.#{branch}.lock"
+  end
+
   def pull_module(m, dest=nil, sub_dir_name = nil)
     dest = local_path if dest.nil?
     raise "dest nil" if dest.nil?

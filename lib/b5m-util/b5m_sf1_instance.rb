@@ -1,10 +1,12 @@
 require 'sf1-driver'
 require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_wait'
+require 'sf1-util/sf1_logger'
 
 B5mCollection = Struct.new(:coll_name, :str)
 
 class B5mSf1Instance
+  include Sf1Logger
   @@test = false
   attr_reader :name, :collections
   attr_accessor :test
@@ -30,11 +32,6 @@ class B5mSf1Instance
   def to_s
 
     "#{ip}:#{server_ips}"
-  end
-
-  def puts(str)
-
-    $stderr.puts "#{to_s} #{Time.now} #{str}"
   end
 
   def port
