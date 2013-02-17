@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.requirements << "none"
   s.require_path = "lib"
   s.add_dependency "json"
+  s.add_dependency "hpricot"
   s.add_dependency "eventmachine"
   s.add_dependency "mail"
   s.homepage = "https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html"

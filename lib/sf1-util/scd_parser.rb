@@ -44,6 +44,24 @@ class ScdParser
     count
   end
 
+  def self.get_ud_doc_count(scd_path)
+    scd_list = get_scd_list(scd_path)
+    ucount = 0
+    dcount = 0
+    scd_list.each do |scd|
+      type = scd_type(scd)
+      scount = `grep -c '<DOCID>' #{scd}`
+      count = scount.to_i
+      if type==UPDATE_SCD
+        ucount+=count
+      elsif type==DELETE_SCD
+        dcount+=count
+      end
+    end
+
+    return ucount, dcount
+  end
+
   def self.get_scd_list(path)
     scd_list = []
     if File.file?(path)
