@@ -1,0 +1,17 @@
+{
+  "title":"Get distribute node status",
+  "type":"map",
+  "desc":"Gets distribute node status",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+  }
+}

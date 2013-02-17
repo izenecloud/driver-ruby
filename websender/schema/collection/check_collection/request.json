@@ -1,0 +1,17 @@
+{
+  "title":"Check collection",
+  "type":"map",
+  "desc":"check collection by specific name.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    } 
+  }
+}

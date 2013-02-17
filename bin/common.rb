@@ -24,3 +24,8 @@ CONFIG = YAML::load_file config_file
 def create_connection
   Sf1Driver.new(CONFIG["ba"]["ip"], CONFIG["ba"]["port"])
 end
+
+def create_connection_withparam(ip, port)
+    Sf1Driver.new(ip, port)
+end
+
