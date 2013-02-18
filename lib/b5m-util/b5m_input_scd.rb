@@ -1,4 +1,5 @@
 require 'date'
+require 'sf1-util/scd_parser'
 
 class B5mInputScd
   include Comparable
@@ -25,6 +26,8 @@ class B5mInputScd
       next unless File.directory?(mm)
       done_file = File.join(mm, done_file_name)
       next unless File.exists? done_file
+      scd_list = ScdParser.get_scd_list(mm)
+      next if scd_list.empty?
       t = DateTime.strptime(m, "%Y%m%d%H%M%S").to_time
       list << B5mInputScd.new(mm) if t>time
     end
