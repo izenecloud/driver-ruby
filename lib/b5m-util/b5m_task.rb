@@ -9,8 +9,8 @@ require 'net/smtp'
 class B5mTask
   include Sf1Logger
 
-  attr_accessor :email
-  attr_reader :config, :instance_list, :m, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
+  attr_accessor :email, :m
+  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
 
   def initialize(config)
     @email = false

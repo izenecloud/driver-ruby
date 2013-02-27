@@ -12,8 +12,10 @@ class B5mMail
       subject opts[:subject]
       body opts[:body]
     end
+    #smtp_from = opts[:from]
+    smtp_from = "#{ENV['USER']}@#{ENV['HOSTNAME']}.localdomain"
     Net::SMTP.start(opts[:host]) do |smtp|
-      smtp.send_message(mail.to_s, opts[:from], opts[:to])
+      smtp.send_message(mail.to_s, smtp_from, opts[:to])
     end
   end
 end
