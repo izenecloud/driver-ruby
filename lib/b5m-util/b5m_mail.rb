@@ -13,7 +13,11 @@ class B5mMail
       body opts[:body]
     end
     #smtp_from = opts[:from]
-    smtp_from = "#{ENV['USER']}@#{ENV['HOSTNAME']}.localdomain"
+    user = ENV['USER']
+    hostname = ENV['HOSTNAME']
+    user = 'lscm' if user.nil?
+    hostname = 'B5M' if hostname.nil?
+    smtp_from = "#{user}@#{hostname}.localdomain"
     Net::SMTP.start(opts[:host]) do |smtp|
       smtp.send_message(mail.to_s, smtp_from, opts[:to])
     end
