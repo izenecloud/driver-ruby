@@ -8,6 +8,7 @@ class MockDm
   def initialize(index_keys = [])
     @docs = []
     @idmap = {}
+    @uuidmap = {}
     @index_map = {}
     index_keys.each do |key|
       @index_map[key] = {}
@@ -19,10 +20,12 @@ class MockDm
 
   def insert(doc)
     docid = doc[:DOCID]
+    uuid=doc[:uuid]
     return false if docid.nil?
     return false if @idmap.has_key?(docid)
     index = @docs.size
     @idmap[docid] = index
+    @uuidmap[uuid] =doc[:SPTitle]
     id = index+1
     doc[:_id] = id
 
@@ -38,6 +41,14 @@ class MockDm
     true
   end
 
+  def exsit(doc)
+    docid=doc[:DOCID]
+    return false if docid.nil?
+    return false if @idmap.has_key?(docid)
+    return true
+  end
+    
+   
   def update(doc)
     docid = doc[:DOCID]
     return false if docid.nil?
@@ -57,6 +68,7 @@ class MockDm
 
     true
   end
+ 
 
   #def iu(doc)
     #docid = doc[:DOCID]
@@ -68,6 +80,37 @@ class MockDm
       #update(doc)
     #end
   #end
+  def getuuid(docid)
+    
+    return false if docid.nil?
+    index = @idmap[docid]
+    return false if index.nil?
+    exist_doc = @docs[index]
+    uuid = exist_doc[:uuid]
+    return uuid
+  end
+        
+   def getsource(docid)
+
+    return false if docid.nil?
+    index = @idmap[docid]
+    return false if index.nil?
+    exist_doc = @docs[index]
+    uuid = exist_doc[:Source]
+    return uuid
+  end
+
+  def getsptitle(docid)
+    return false if docid.nil?
+    return @uuidmap[docid]
+    return false if index.nil?
+    exist_doc = @docs[index]
+    if exist_doc[:SPTitle].nil?
+    return exist_doc[:Title]
+    else
+    return exist_doc[:SPTitle]
+    end
+  end
 
   def delete(doc)
     docid = doc[:DOCID]
