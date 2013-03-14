@@ -275,7 +275,7 @@ class B5mTask
     begin
 
       B5mMail.send({:host => 'localhost', 
-                   :to => 'dri@b5m.com', 
+                   :to => ['dri@b5m.com', 'ds@b5m.com'],
                    :from => 'dri@b5m.com',
                    :from_alias => 'Matcher Message',
                    :subject => subject, 
