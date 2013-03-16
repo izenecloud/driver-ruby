@@ -242,7 +242,7 @@ class B5mTask
     m.release
   end
 
-  def send_mail
+  def send_mail(m)
     return if m.nil?
     return if m.status!="finished" and m.status!="matched"
     subject = "Matcher (#{config.schema})"
