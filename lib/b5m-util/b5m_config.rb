@@ -1,12 +1,16 @@
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :b5mo_name, :b5mp_name, :b5mc_name
+  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name
   def initialize(file)
     @file = File.expand_path(file)
     @config = YAML.load_file(@file)["config"]
     @id = File.basename(@file, ".yml")
     @name = @id
     @name = @config['name'] unless @config['name'].nil?
+    @schema = "b5m"
+    unless @config['schema'].nil?
+      @schema = @config['schema']
+    end
     @b5mo_name = "#{name}o"
     @b5mp_name = "#{name}p"
     @b5mc_name = "#{name}c"
@@ -40,6 +44,12 @@ class B5mConfig
         si['indicator_file'] = File.expand_path(path)
       end
     end
+  end
+
+  def first_ip
+    return nil if @config["sf1_instance"].empty?
+
+    return @config["sf1_instance"].first["ip"]
   end
 
   def path_of(key)

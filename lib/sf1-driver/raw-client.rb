@@ -5,7 +5,7 @@
 #
 # Client of Sf1 Driver
 
-require "sf1-driver/helper"
+require_relative "helper"
 require "socket"
 
 class Sf1Driver

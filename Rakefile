@@ -6,8 +6,7 @@ require 'rdoc/task'
 require 'rake/clean'
 require 'rexml/document'
 
-$:.unshift File.join(File.dirname(__FILE__), 'lib')
-require 'sf1-driver'
+require File.join(File.dirname(__FILE__), 'lib', 'sf1-driver.rb')
 
 namespace :hudson do
   task :spec => ["hudson:setup:rspec", 'rake:spec', 'hudson:post_spec']
@@ -47,27 +46,32 @@ rescue LoadError
   end
 end
 
-sf1_driver_spec = Gem::Specification.new do |s|
-  s.name = "sf1-driver"
-  s.autorequire = "sf1-driver"
-  s.version = Sf1Driver::VERSION
-  s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
-  s.summary = "Sf1 Driver Ruby Client."
-  s.description = s.summary
-  s.authors = ["Ian Yang"]
-  s.email = "it@izenesoft.com"
-  s.requirements << "none"
-  s.require_path = "lib"
-  s.add_dependency "json"
-  s.add_dependency "eventmachine"
-  s.homepage = "https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html"
-  s.files = %w(README.md Rakefile lib/sf1-driver.rb) + Dir.glob("lib/sf1-driver/**/*") + Dir.glob("lib/sf1-util/*") + Dir.glob("lib/b5m-util/*")
+#sf1_driver_spec = Gem::Specification.new do |s|
+  #s.name = "sf1-driver"
+  #s.autorequire = "sf1-driver"
+  #s.version = Sf1Driver::VERSION
+  #s.platform = Gem::Platform::RUBY
+  #s.has_rdoc = true
+  #s.summary = "Sf1 Driver Ruby Client."
+  #s.description = s.summary
+  #s.authors = ["Ian Yang"]
+  #s.email = "it@izenesoft.com"
+  #s.requirements << "none"
+  #s.require_path = "lib"
+  #s.add_dependency "json"
+  #s.add_dependency "eventmachine"
+  #s.homepage = "https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html"
+  #s.files = %w(README.md Rakefile lib/sf1-driver.rb) + Dir.glob("lib/sf1-driver/**/*") + Dir.glob("lib/sf1-util/*") + Dir.glob("lib/b5m-util/*")
  
-end
+#end
 
-Gem::PackageTask.new(sf1_driver_spec) do |pkg|
-  pkg.need_tar = true
+#Gem::PackageTask.new(sf1_driver_spec) do |pkg|
+  #pkg.need_tar = true
+#end
+
+task :install do
+  system "gem build sf1-driver.gemspec"
+  system "gem install sf1-driver-#{Sf1Driver::VERSION}.gem"
 end
 
 RDoc::Task.new do |rd|

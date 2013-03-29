@@ -1,6 +1,8 @@
 require "sf1-driver"
+require 'sf1-util/sf1_logger'
 
 class Sf1Wait
+  include Sf1Logger
         
   def initialize(conn, collections, clear = false)
     @conn = conn
@@ -25,6 +27,14 @@ class Sf1Wait
         #restart collection
         puts "starting #{coll}"
         response = @conn.call("collection/start_collection", request)
+        puts response
+      end
+    else
+      #do connectioin test
+      @collections.each do |coll|
+        request = {:message => "incremental index test connection"}
+        puts "incremental index test conn on #{coll}"
+        response = @conn.call("test/echo", request)
         puts response
       end
     end
@@ -71,7 +81,7 @@ class Sf1Wait
 
   def puts(str)
 
-    $stderr.puts "#{@conn.host} #{Time.now} #{str}"
+    Sf1Logger.puts "#{@conn.host} #{str}"
   end
 
   def wait(timeout, interval = 1)

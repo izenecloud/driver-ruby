@@ -5,8 +5,12 @@
 sf1-driver can be install as a gem. The gem can be generated using `rake gem` in
 the code base:
 
-    rake gem
-    gem install pkg/sf1-driver-${VERSION}.gem
+    gem build sf1-driver.gemspec
+    gem install sf1-driver-${VERSION}.gem
+
+or simple run:
+    rake install
+to build and install the sf1-driver gem in one command.
 
 (Replace ${VERSION} to the latest version. You many need root privileges to
 install the gem in system path)

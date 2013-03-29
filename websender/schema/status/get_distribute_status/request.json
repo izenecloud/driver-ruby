@@ -1,7 +1,7 @@
 {
-  "title":"Start collection",
+  "title":"Get distribute node status",
   "type":"map",
-  "desc":"start collection by specific name.",
+  "desc":"Gets distribute node status",
   "mapping": {
     "collection": {
       "type":"str",
@@ -12,6 +12,6 @@
     "header": {
       "type":"map",
       "mapping": $(header)
-    }   
+    }
   }
 }
