@@ -1,0 +1,17 @@
+{
+  "title":"Update config file for collection",
+  "type":"map",
+  "desc":"Update collection config file.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    } 
+  }
+}

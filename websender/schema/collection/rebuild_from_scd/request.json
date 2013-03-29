@@ -1,0 +1,17 @@
+{
+  "title":"Total Rebuild",
+  "type":"map",
+  "desc":"Rebuild collection from new scd files. all old data will be deleted.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    } 
+  }
+}
