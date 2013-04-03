@@ -5,7 +5,8 @@ class ScdParser
   NOT_SCD = 0
   INSERT_SCD = 1
   UPDATE_SCD = 2
-  DELETE_SCD = 3
+  RTYPE_SCD = 3
+  DELETE_SCD = 4
   
   include Enumerable
 
@@ -26,6 +27,8 @@ class ScdParser
       type = INSERT_SCD
     elsif type_str=="U"
       type = UPDATE_SCD
+    elsif type_str=="R"
+      type = RTYPE_SCD
     elsif type_str=="D"
       type = DELETE_SCD
     end
@@ -52,7 +55,7 @@ class ScdParser
       type = scd_type(scd)
       scount = `grep -c '<DOCID>' #{scd}`
       count = scount.to_i
-      if type==UPDATE_SCD
+      if type==UPDATE_SCD or type==RTYPE_SCD
         ucount+=count
       elsif type==DELETE_SCD
         dcount+=count
