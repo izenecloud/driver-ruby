@@ -264,9 +264,9 @@ class B5mTask
     ou_count, od_count = ScdParser.get_ud_doc_count(m.b5mo)
     pu_count, pd_count = ScdParser.get_ud_doc_count(m.b5mp)
     cu_count, cd_count = ScdParser.get_ud_doc_count(m.b5mc)
-    body += "b5mo update doc count #{ou_count}\n"
+    body += "b5mo update(rtype) doc count #{ou_count}\n"
     body += "b5mo delete doc count #{od_count}\n"
-    body += "b5mp update doc count #{pu_count}\n"
+    body += "b5mp update(rtype) doc count #{pu_count}\n"
     body += "b5mp delete doc count #{pd_count}\n"
     body += "b5mc update doc count #{cu_count}\n"
     body += "b5mc delete doc count #{cd_count}\n"
