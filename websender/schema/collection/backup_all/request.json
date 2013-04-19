@@ -1,0 +1,17 @@
+{
+  "title":"Backup all collections",
+  "type":"map",
+  "desc":"Backup all collections.",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":false
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    } 
+  }
+}
