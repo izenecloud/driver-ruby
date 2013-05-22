@@ -6,7 +6,7 @@ require 'optparse'
 require 'json'
 #
 #
-ip, port, request_file = ARGV
+ip, port, request_file, collection = ARGV
 sf1 = create_connection_withparam(ip, port)
 
 request = ''
@@ -15,6 +15,9 @@ File.open(request_file) do |fs|
     if request.nil? or request["uri"].nil?
         $stderr.puts "Must set the uri in request"
         return
+    end
+    if !collection.nil?
+        request['collection'] = collection
     end
 end
 
