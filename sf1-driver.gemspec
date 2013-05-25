@@ -12,12 +12,14 @@ Gem::Specification.new do |s|
   s.requirements << "none"
   s.require_path = "lib"
   s.add_dependency "json"
+  s.add_dependency "httpclient"
   s.add_dependency "hpricot"
   s.add_dependency "eventmachine"
   s.add_dependency "mail"
   s.homepage = "https://git.izenesoft.cn/sf1-revolution/driver-docs/blobs/raw/master/html/index.html"
   s.files = %w(README.md Rakefile lib/sf1-driver.rb) + Dir.glob("lib/sf1-driver/**/*") + Dir.glob("lib/sf1-util/*") + Dir.glob("lib/b5m-util/*") + Dir.glob("lib/sf1-resource/*")
   s.executables << 'sf1r-resource'
+  s.executables << 'b5m-driver'
  
 end
 

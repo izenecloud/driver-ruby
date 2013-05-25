@@ -1,7 +1,9 @@
 require_relative 'b5m_config.rb'
-require_relative 'b5m_sf1_instance.rb'
+require_relative 'b5m_single_indexer.rb'
+require_relative 'b5m_distribute_indexer.rb'
 require_relative 'b5m_m.rb'
 require_relative 'b5m_mail.rb'
+require_relative 'b5m_daemon.rb'
 require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_logger'
 require 'net/smtp'
@@ -9,21 +11,37 @@ require 'net/smtp'
 class B5mTask
   include Sf1Logger
 
-  attr_accessor :email, :m
+  attr_accessor :email, :m, :scd, :train_scd, :comment_scd
   attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
 
-  def initialize(config)
+  def initialize(config_file)
     @email = false
-    if config.is_a? String
-      @config = B5mConfig.new(config)
+    if config_file.is_a? String
+      @config = B5mConfig.new(config_file)
     else
-      @config = config
+      @config = config_file
     end
-    @instance_list = []
-    @config.sf1_instances.each do |si|
-      instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
-      @instance_list << instance
+    @scd = config.path_of('scd')
+    @train_scd = config.path_of('train_scd')
+    @comment_scd = config.path_of('comment_scd')
+    @indexer = nil
+    indexer_type = "single"
+    #indexer_type = @config['indexer']['type']
+    #STDERR.puts "indexer type #{indexer_type}"
+    if !@config['indexer']['type'].nil?
+      indexer_type = @config['indexer']['type']
     end
+    if indexer_type=="distribute"
+      @indexer = B5mDistributeIndexer.new(@config['indexer'])
+    else
+      @indexer = B5mSingleIndexer.new(@config['indexer'])
+    end
+    @indexer.schema = config.schema
+    #@instance_list = []
+    #@config.sf1_instances.each do |si|
+      #instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
+      #@instance_list << instance
+    #end
     unless File.exists? mdb
       FileUtils.mkdir_p(mdb)
     end
@@ -186,57 +204,125 @@ class B5mTask
       puts "copy #{last_cdb} to #{m.cdb}"
       FileUtils.cp_r(last_cdb, m.cdb)
     end
-    @scd = config.path_of('scd')
+    scd_path = scd
     if m.mode==0 #incremental
-      @scd = File.join(@scd, "incremental")
+      scd_path = File.join(scd, "incremental")
     else
-      @scd = File.join(@scd, "rebuild")
+      scd_path = File.join(scd, "rebuild")
     end
-    unless File.directory?(@scd)
-      @scd = config.path_of('scd')
+    unless File.directory?(scd_path)
+      scd_path = scd
     end
-    @comment_scd = config.path_of('comment_scd')
-    puts "offer-scd:#{@scd}"
-    puts "comment-scd:#{@comment_scd}"
+    comment_scd_path = comment_scd
+    puts "offer-scd:#{scd_path}"
+    puts "comment-scd:#{comment_scd_path}"
+    cma = config.path_of('cma')
+    mobile_source = config.path_of('mobile_source')
+    human_match = config.path_of('human_match')
+    daemon = B5mDaemon.new
+    if config.schema=="b5m"
+      unless File.exists? knowledge
+        FileUtils.mkdir_p knowledge
+      end
+      #do product training
+      cmd = "--product-train -S #{train_scd} -K #{knowledge} --mode #{m.mode} -C #{cma}"
+      unless daemon.run(cmd)
+        abort("product train failed")
+      end
 
-  end
+      #b5mo generator, update odb here
+      if m.mode>=0
+        cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
+        cmd+=" --bdb #{bdb}"
+        if !last_o_m.nil? and m.mode==0
+          cmd+=" --last-mdb-instance #{last_o_m}"
+        end
+        unless human_match.nil?
+          cmd+=" --human-match #{human_match}"
+        end
+        unless daemon.run(cmd)
+          abort("b5mo generate failed")
+        end
+        #b5mp generator
+        cmd = "--b5mp-generate --mdb-instance #{m}"
+        if !last_o_m.nil? and m.mode==0
+          cmd+=" --last-mdb-instance #{last_o_m}"
+        end
+        unless daemon.run(cmd)
+          abort("b5mp generate failed")
+        end
+      end
 
-  def matcher_finish
-    @m.status = "matched"
-    @m.flush
+      if m.cmode>=0
+        cname = File.basename(comment_scd)
+        ctime = Time.at(0)
+        if cname =~ /\d{14}/
+          ctime = DateTime.strptime(cname, "%Y%m%d%H%M%S").to_time
+        end
+        m.ctime = ctime
+        #b5mc generator
+        cmd = "--b5mc-generate -S #{comment_scd} --odb #{m.odb} --mdb-instance #{m} --cdb #{m.cdb} --mode #{m.cmode}"
+        if !last_codb.nil? and m.cmode==0
+          cmd+=" --last-odb #{last_codb}"
+        end
+        unless daemon.run(cmd)
+          abort("b5mc generate failed")
+        end
+      end
+    elsif config.schema=="ticket"
+      cmd = "--ticket-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("ticket generate failed")
+      end
+    elsif config.schema=="tuan"
+      cmd = "--tuan-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("tuan generate failed")
+      end
+    else
+      abort("schema error")
+    end
+    m.status = "matched"
+    m.flush
     gen
   end
 
-  def apply(m, opt={})
-    #use_scd_time = opt[:use_scd_time]
-    #use_scd_time = false if use_scd_time.nil?
-    doindex = opt[:do_index]
-    doindex = true if doindex.nil?
-    @m = m
+  #def matcher_finish
+    #@m.status = "matched"
+    #@m.flush
+    #gen
+  #end
 
-    threads = []
-    instance_list.each do |instance|
-      t = Thread.new do
-        puts "applying to #{instance}"
-        m_post = [m]
-        if m_post.empty?
-          puts "#{instance} has no more mdb instance to be processed"
-        else
-          puts "#{instance} has #{m_post.size} mdb instances to be processed"
-          end_scd_time = m_post.last.name
-          if doindex
-            puts "do index"
-            instance.index(m_post)
-            #instance.set_scd_time(end_scd_time)
-          else
-            puts "do scd_post"
-            instance.scd_post(m_post)
-          end
-        end
-      end
-      threads << t
+  def apply(m, doindex=true)
+    if !doindex
+      @indexer.submit_scd(m)
+    else
+      @indexer.index(m)
     end
-    threads.each {|t| t.join}
+
+    #threads = []
+    #instance_list.each do |instance|
+      #t = Thread.new do
+        #puts "applying to #{instance}"
+        #m_post = [m]
+        #if m_post.empty?
+          #puts "#{instance} has no more mdb instance to be processed"
+        #else
+          #puts "#{instance} has #{m_post.size} mdb instances to be processed"
+          #end_scd_time = m_post.last.name
+          #if doindex
+            #puts "do index"
+            #instance.index(m_post)
+            ##instance.set_scd_time(end_scd_time)
+          #else
+            #puts "do scd_post"
+            #instance.scd_post(m_post)
+          #end
+        #end
+      #end
+      #threads << t
+    #end
+    #threads.each {|t| t.join}
     m.status = "finished"
     m.flush
     m.release
@@ -253,7 +339,7 @@ class B5mTask
     elsif m.cmode>=0
       subject += ' Comment Only'
     end
-    subject += " to #{config.first_ip}"
+    #subject += " to #{config.first_ip}"
     subject += ' Finish'
     body = "schema #{config.schema}\n"
     body = "working path #{m.path}\n"

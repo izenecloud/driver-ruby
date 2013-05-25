@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+require 'b5m-util/b5m_driver'
+
+config_file = "./config.yml"
+unless ARGV.empty?
+  config_file = ARGV[0]
+end
+abort "config.yml not found" unless File.file? config_file
+driver = B5mDriver.new(config_file)
+driver.start
+
+
