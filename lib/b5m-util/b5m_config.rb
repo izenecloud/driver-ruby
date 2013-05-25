@@ -91,6 +91,10 @@ class B5mConfig
     return false if @config['noindex'].nil?
     return @config['noindex']
   end
+  def noapply?
+    return false if @config['noapply'].nil?
+    return @config['noapply']
+  end
 
   def send_mail?
     return true if @config['send_mail'].nil?

@@ -84,8 +84,10 @@ class B5mDriver
         #end
         task.print_last
         task.matcher_start m
-        task.apply(m, !config.noindex?)
-        task.send_mail(m)
+        unless config.noapply?
+          task.apply(m, !config.noindex?)
+          task.send_mail(m)
+        end
       end
       
       unless config.monitor?
