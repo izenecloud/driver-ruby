@@ -54,7 +54,7 @@ class B5mDriver
           input_comment_scd = nil
         end
         if input_scd_list.empty?
-          STDERR.puts "input scd empty"
+          #STDERR.puts "input scd empty"
           input_scd = nil
         elsif input_scd_list.size==1
           input_scd = input_scd_list.first.path
