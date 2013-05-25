@@ -17,6 +17,11 @@
     "document_count": {
       "type":"int",
       "desc":"Index at most so many documents in each SCD file. It is for developer."
+    },
+
+    "index_scd_path": {
+      "type":"str",
+      "desc":"SCD file location for indexing. It is used if DFS is enabled for sf1r."
     }
   }
 }

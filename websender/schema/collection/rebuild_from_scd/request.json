@@ -12,6 +12,11 @@
     "header": {
       "type":"map",
       "mapping": $(header)
-    } 
+    },
+
+    "index_scd_path": {
+      "type":"str",
+      "desc":"Specify the dfs path for scd files."
+    }
   }
 }

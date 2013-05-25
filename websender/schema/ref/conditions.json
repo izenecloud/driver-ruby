@@ -7,6 +7,15 @@
       "desc": "Property Name",
       "required": true
     },
+    "id_type": {
+      "type": "str",
+      "required": false,
+      "desc": "Property Name",
+      "enum": [
+        "isbn",
+        "url"
+      ]
+    },
     "operator": {
       "type": "str",
       "required": true,
