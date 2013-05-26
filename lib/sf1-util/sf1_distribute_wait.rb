@@ -20,18 +20,18 @@ class Sf1DistributeWait
     if @clear
       @collections.each do |coll|
         request = {:collection => coll}
-        puts "rebuilding #{coll}"
+        STDERR.puts "rebuilding #{coll}"
         response = @conn.call("collection/rebuild_from_scd", request)
         return false if response.nil?
-        puts response
+        STDERR.puts response
       end
     else
       @collections.each do |coll|
         request = {:collection => coll}
-        puts "indexing #{coll}"
+        STDERR.puts "indexing #{coll}"
         response = @conn.call("commands/index", request)
         return false if response.nil?
-        puts response
+        STDERR.puts response
       end
     end
     sleep 10.0
@@ -48,7 +48,7 @@ class Sf1DistributeWait
             if !status_after['DistributeStatus'].nil? and !status_after['DistributeStatus']['MemoryStatus'].nil? and !status_after['DistributeStatus']['MemoryStatus']['NodeState'].nil? and status_after['DistributeStatus']['MemoryStatus']['NodeState'].to_i==3
               ready = true
             else
-              puts "#{collection} indexing..."
+              STDERR.puts "#{collection} indexing..."
             end
           end
         end
@@ -59,11 +59,6 @@ class Sf1DistributeWait
   end
 
   private
-
-  def puts(str)
-
-    Sf1Logger.puts "#{@conn.host} #{str}"
-  end
 
   def wait(timeout, interval = 1)
     elapsed = 0
