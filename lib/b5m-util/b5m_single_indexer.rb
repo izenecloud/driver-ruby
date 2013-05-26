@@ -55,6 +55,10 @@ class B5mSingleIndexer
     cmd_list = []
     if m.mode>=0
       if local?
+        if m.mode>0
+          cmd_list << "rm -rf #{o_scd_path}/*.SCD"
+          cmd_list << "rm -rf #{p_scd_path}/*.SCD"
+        end
         cmd_list << "cp #{m.b5mo}/*.SCD #{o_scd_path}/"
         cmd_list << "cp #{m.b5mp}/*.SCD #{p_scd_path}/"
       else
@@ -64,6 +68,9 @@ class B5mSingleIndexer
     end
     if m.cmode>=0
       if local?
+        if m.cmode>0
+          cmd_list << "rm -rf #{c_scd_path}/*.SCD"
+        end
         cmd_list << "cp #{m.b5mc}/*.SCD #{c_scd_path}/"
       else
         cmd_list << "scp -C #{m.b5mc}/*.SCD #{user}@#{cip}:#{c_scd_path}/"
