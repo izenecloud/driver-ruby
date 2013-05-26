@@ -24,7 +24,7 @@ class B5mDriver
         FileUtils.rm_rf config.path_of('work_dir')
       end
       task = B5mTask.new(config)
-      task.m_release
+      #task.m_release
       if schema=="b5m" and task.m_list.empty?
         mode = 1
         cmode = 1

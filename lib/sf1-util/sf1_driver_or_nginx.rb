@@ -1,5 +1,6 @@
 require 'sf1-driver'
 require 'httpclient'
+require 'json'
 class Sf1DriverOrNginx
   def initialize(ip, port, nginx_postfix=nil)
     @ip = ip
@@ -17,7 +18,7 @@ class Sf1DriverOrNginx
   def call(api, body)
     begin
       if !@nginx_postfix.nil?
-        return @client.post("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body).content
+        return @client.post_content("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body.to_json, 'Content-Type' => 'application/json')
       else
         return @conn.call(api, body)
       end
