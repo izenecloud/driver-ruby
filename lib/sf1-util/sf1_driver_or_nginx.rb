@@ -17,7 +17,7 @@ class Sf1DriverOrNginx
   def call(api, body)
     begin
       if !@nginx_postfix.nil?
-        return @client.post("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body)
+        return @client.post("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body).content
       else
         return @conn.call(api, body)
       end
