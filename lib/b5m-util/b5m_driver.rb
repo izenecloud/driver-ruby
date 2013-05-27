@@ -13,7 +13,16 @@ class B5mDriver
 
     #default parameters
     schema = config.schema
+    last_start_time = nil
     while true
+      sleep_time = 0
+      unless last_start_time.nil?
+        this_start_time = last_start_time + config.monitor_interval
+        sleep_time = this_start_time - Time.now
+      end
+
+      sleep(sleep_time) if sleep_time>0
+
       mode = 0 #B5MMode::INC as default
       cmode = -1 #no comment process as default
       if schema!="b5m"
@@ -82,6 +91,7 @@ class B5mDriver
         #if m.cmode==0 and !input_lastcm.nil?
           #task.set_last_c_m(input_lastcm)
         #end
+        last_start_time = Time.now
         task.print_last
         task.matcher_start m
         unless config.noapply?

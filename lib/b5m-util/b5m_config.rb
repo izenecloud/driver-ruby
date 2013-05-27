@@ -89,6 +89,11 @@ class B5mConfig
     return @config['monitor']
   end
 
+  def monitor_interval
+    return 0 if @config['monitor_interval'].nil?
+    return @config['monitor_interval']
+  end
+
   def noindex?
     return false if @config['noindex'].nil?
     return @config['noindex']
