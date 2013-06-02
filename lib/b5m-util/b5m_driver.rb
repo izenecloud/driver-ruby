@@ -96,7 +96,7 @@ class B5mDriver
         task.matcher_start m
         unless config.noapply?
           task.apply(m, !config.noindex?)
-          task.send_mail(m)
+          task.send_mail(m) if config.send_mail?
         end
       end
       

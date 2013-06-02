@@ -216,6 +216,11 @@ class B5mTask
     comment_scd_path = comment_scd
     puts "offer-scd:#{scd_path}"
     puts "comment-scd:#{comment_scd_path}"
+    comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
+    if comment_scd_list.empty?
+      puts "comment scd empty, set cmode=-1"
+      m.cmode = -1
+    end
     cma = config.path_of('cma')
     mobile_source = config.path_of('mobile_source')
     human_match = config.path_of('human_match')
@@ -254,14 +259,14 @@ class B5mTask
       end
 
       if m.cmode>=0
-        cname = File.basename(comment_scd)
+        cname = File.basename(comment_scd_path)
         ctime = Time.at(0)
         if cname =~ /\d{14}/
           ctime = DateTime.strptime(cname, "%Y%m%d%H%M%S").to_time
         end
         m.ctime = ctime
         #b5mc generator
-        cmd = "--b5mc-generate -S #{comment_scd} --odb #{m.odb} --mdb-instance #{m} --cdb #{m.cdb} --mode #{m.cmode}"
+        cmd = "--b5mc-generate -S #{comment_scd_path} --odb #{m.odb} --mdb-instance #{m} --cdb #{m.cdb} --mode #{m.cmode}"
         if !last_codb.nil? and m.cmode==0
           cmd+=" --last-odb #{last_codb}"
         end
