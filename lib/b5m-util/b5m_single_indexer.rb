@@ -115,9 +115,9 @@ class B5mSingleIndexer
     else
       #use http
     end
-    #threads.each do |t|
-      #t.join
-    #end
+    threads.each do |t|
+      t.join
+    end
   end
 
   def index(m)
