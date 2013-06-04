@@ -8,36 +8,36 @@ class Sf1Wait
     @conn = conn
     @collections = collections
     @clear = clear
-    @command = 'index'
+    #@command = 'index'
   end
 
   def index_finish(seconds)
-    if @clear
-      @collections.each do |coll|
-        request = {:collection => coll, :clear => true} #stop and clear
-        #stop collection
-        puts "stopping and clearing #{coll}"
-        response = @conn.call("collection/stop_collection", request)
-        puts response
+    #if @clear
+      #@collections.each do |coll|
+        #request = {:collection => coll, :clear => true} #stop and clear
+        ##stop collection
+        #puts "stopping and clearing #{coll}"
+        #response = @conn.call("collection/stop_collection", request)
+        #puts response
 
-      end
-      @collections.each do |coll|
-        request = {:collection => coll}
-        #stop collection
-        #restart collection
-        puts "starting #{coll}"
-        response = @conn.call("collection/start_collection", request)
-        puts response
-      end
-    else
-      #do connectioin test
-      @collections.each do |coll|
-        request = {:message => "incremental index test connection"}
-        puts "incremental index test conn on #{coll}"
-        response = @conn.call("test/echo", request)
-        puts response
-      end
-    end
+      #end
+      #@collections.each do |coll|
+        #request = {:collection => coll}
+        ##stop collection
+        ##restart collection
+        #puts "starting #{coll}"
+        #response = @conn.call("collection/start_collection", request)
+        #puts response
+      #end
+    #else
+      ##do connectioin test
+      #@collections.each do |coll|
+        #request = {:message => "incremental index test connection"}
+        #puts "incremental index test conn on #{coll}"
+        #response = @conn.call("test/echo", request)
+        #puts response
+      #end
+    #end
     yield if block_given?
     status_before_list = []
     @collections.each do |collection|
@@ -45,9 +45,16 @@ class Sf1Wait
       response = @conn.call("status/index", request)
       status_before_list << response
     end
-    @collections.each do |collection|
-      request = {:collection => collection}
-      response = @conn.call("commands/#{@command}", request)
+    if @clear
+      @collections.each do |collection|
+        request = {:collection => collection}
+        response = @conn.call("collection/rebuild_from_scd", request)
+      end
+    else
+      @collections.each do |collection|
+        request = {:collection => collection}
+        response = @conn.call("commands/index", request)
+      end
     end
     @collections.each_with_index do |collection, i|
       status_before = status_before_list[i]
@@ -55,14 +62,14 @@ class Sf1Wait
         if true
           ready = :continue
           status_after = @conn.call("status/index", {:collection => collection})
-          if status_after[@command]["counter"] != status_before[@command]["counter"] and
-              status_after[@command]["status"] == "idle"
+          if status_after["index"]["counter"] != status_before["index"]["counter"] and
+              status_after["index"]["status"] == "idle"
             # success if modification time has changed
-            if status_after[@command]["last_modified"] > status_before[@command]["last_modified"]
-              puts "#{collection} #{@command} finished in #{elapsed} seconds"
+            if status_after["index"]["last_modified"] > status_before["index"]["last_modified"]
+              puts "#{collection} index finished in #{elapsed} seconds"
               ready = true
             else
-              puts "#{collection} #{@command} failed"
+              puts "#{collection} index failed"
               ready = false
             end
           else

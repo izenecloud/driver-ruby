@@ -74,12 +74,19 @@ class B5mDistributeIndexer
     cmd_list = []
     if m.mode>=0
       opip.each do |ip|
+        if m.mode>0
+          cmd_list << "ssh #{user}@#{ip} 'rm -rf #{b5mo_scd_path(m)}/*.SCD'"
+          cmd_list << "ssh #{user}@#{ip} 'rm -rf #{b5mp_scd_path(m)}/*.SCD'"
+        end
         cmd_list << "scp -C #{m.b5mo}/*.SCD #{user}@#{ip}:#{b5mo_scd_path(m)}/"
         cmd_list << "scp -C #{m.b5mp}/*.SCD #{user}@#{ip}:#{b5mp_scd_path(m)}/"
       end
     end
     if m.cmode>=0
       cip.each do |ip|
+        if m.cmode>0
+          cmd_list << "ssh #{user}@#{ip} 'rm -rf #{b5mc_scd_path(m)}/*.SCD'"
+        end
         cmd_list << "scp -C #{m.b5mc}/*.SCD #{user}@#{ip}:#{b5mc_scd_path(m)}/"
       end
     end
