@@ -216,10 +216,12 @@ class B5mTask
     comment_scd_path = comment_scd
     puts "offer-scd:#{scd_path}"
     puts "comment-scd:#{comment_scd_path}"
-    comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
-    if comment_scd_list.empty?
-      puts "comment scd empty, set cmode=-1"
-      m.cmode = -1
+    unless comment_scd_path.nil?
+      comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
+      if comment_scd_list.empty?
+        puts "comment scd empty, set cmode=-1"
+        m.cmode = -1
+      end
     end
     cma = config.path_of('cma')
     mobile_source = config.path_of('mobile_source')

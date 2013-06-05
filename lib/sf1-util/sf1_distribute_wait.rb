@@ -37,21 +37,22 @@ class Sf1DistributeWait
     sleep 10.0
     @collections.each_with_index do |collection, i|
       wait(seconds, 10) do |elapsed|
-        ready = :continue
-        if !@clear
-          ready = true
-        else
-          status_after = @conn.call("status/get_distribute_status", {:collection => collection})
-          if status_after.nil?
-            ready = false
-          else
-            if !status_after['DistributeStatus'].nil? and !status_after['DistributeStatus']['MemoryStatus'].nil? and !status_after['DistributeStatus']['MemoryStatus']['NodeState'].nil? and status_after['DistributeStatus']['MemoryStatus']['NodeState'].to_i==3
-              ready = true
-            else
-              STDERR.puts "#{collection} indexing..."
-            end
-          end
-        end
+        ready = true
+        #ready = :continue
+        #if !@clear
+          #ready = true
+        #else
+          #status_after = @conn.call("status/get_distribute_status", {:collection => collection})
+          #if status_after.nil?
+            #ready = false
+          #else
+            #if !status_after['DistributeStatus'].nil? and !status_after['DistributeStatus']['MemoryStatus'].nil? and !status_after['DistributeStatus']['MemoryStatus']['NodeState'].nil? and status_after['DistributeStatus']['MemoryStatus']['NodeState'].to_i==3
+              #ready = true
+            #else
+              #STDERR.puts "#{collection} indexing..."
+            #end
+          #end
+        #end
 
         ready
       end
