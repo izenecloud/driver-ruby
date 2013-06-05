@@ -67,15 +67,23 @@ class B5mSingleIndexer
           cmd_list << "rm -rf #{o_scd_path}/*.SCD"
           cmd_list << "rm -rf #{p_scd_path}/*.SCD"
         end
-        cmd_list << "cp #{m.b5mo}/*.SCD #{o_scd_path}/"
-        cmd_list << "cp #{m.b5mp}/*.SCD #{p_scd_path}/"
+        unless m.b5mo_scd_list.empty?
+          cmd_list << "cp #{m.b5mo}/*.SCD #{o_scd_path}/"
+        end
+        unless m.b5mp_scd_list.empty?
+          cmd_list << "cp #{m.b5mp}/*.SCD #{p_scd_path}/"
+        end
       else
         if m.mode>0
           cmd_list << "ssh #{user}@#{opip} 'rm -rf #{o_scd_path}/.SCD'"
           cmd_list << "ssh #{user}@#{opip} 'rm -rf #{p_scd_path}/.SCD'"
         end
-        cmd_list << "scp -C #{m.b5mo}/*.SCD #{user}@#{opip}:#{o_scd_path}/"
-        cmd_list << "scp -C #{m.b5mp}/*.SCD #{user}@#{opip}:#{p_scd_path}/"
+        unless m.b5mo_scd_list.empty?
+          cmd_list << "scp -C #{m.b5mo}/*.SCD #{user}@#{opip}:#{o_scd_path}/"
+        end
+        unless m.b5mp_scd_list.empty?
+          cmd_list << "scp -C #{m.b5mp}/*.SCD #{user}@#{opip}:#{p_scd_path}/"
+        end
       end
     end
     if m.cmode>=0
@@ -83,12 +91,16 @@ class B5mSingleIndexer
         if m.cmode>0
           cmd_list << "rm -rf #{c_scd_path}/*.SCD"
         end
-        cmd_list << "cp #{m.b5mc}/*.SCD #{c_scd_path}/"
+        unless m.b5mc_scd_list.empty?
+          cmd_list << "cp #{m.b5mc}/*.SCD #{c_scd_path}/"
+        end
       else
         if m.cmode>0
           cmd_list << "ssh #{user}@#{cip} 'rm -rf #{c_scd_path}/.SCD'"
         end
-        cmd_list << "scp -C #{m.b5mc}/*.SCD #{user}@#{cip}:#{c_scd_path}/"
+        unless m.b5mc_scd_list.empty?
+          cmd_list << "scp -C #{m.b5mc}/*.SCD #{user}@#{cip}:#{c_scd_path}/"
+        end
       end
     end
     cmd_list.each do |cmd|

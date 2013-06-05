@@ -78,8 +78,12 @@ class B5mDistributeIndexer
           cmd_list << "ssh #{user}@#{ip} 'rm -rf #{b5mo_scd_path(m)}/*.SCD'"
           cmd_list << "ssh #{user}@#{ip} 'rm -rf #{b5mp_scd_path(m)}/*.SCD'"
         end
-        cmd_list << "scp -C #{m.b5mo}/*.SCD #{user}@#{ip}:#{b5mo_scd_path(m)}/"
-        cmd_list << "scp -C #{m.b5mp}/*.SCD #{user}@#{ip}:#{b5mp_scd_path(m)}/"
+        unless m.b5mo_scd_list.empty?
+          cmd_list << "scp -C #{m.b5mo}/*.SCD #{user}@#{ip}:#{b5mo_scd_path(m)}/"
+        end
+        unless m.b5mp_scd_list.empty?
+          cmd_list << "scp -C #{m.b5mp}/*.SCD #{user}@#{ip}:#{b5mp_scd_path(m)}/"
+        end
       end
     end
     if m.cmode>=0
@@ -87,7 +91,9 @@ class B5mDistributeIndexer
         if m.cmode>0
           cmd_list << "ssh #{user}@#{ip} 'rm -rf #{b5mc_scd_path(m)}/*.SCD'"
         end
-        cmd_list << "scp -C #{m.b5mc}/*.SCD #{user}@#{ip}:#{b5mc_scd_path(m)}/"
+        unless m.b5mc_scd_list.empty?
+          cmd_list << "scp -C #{m.b5mc}/*.SCD #{user}@#{ip}:#{b5mc_scd_path(m)}/"
+        end
       end
     end
     cmd_list.each do |cmd|

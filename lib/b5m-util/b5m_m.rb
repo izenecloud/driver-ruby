@@ -107,6 +107,16 @@ class B5mM
     File.join(path, "b5mc")
   end
 
+  def b5mo_scd_list
+    ScdParser.get_scd_list(b5mo)
+  end
+  def b5mp_scd_list
+    ScdParser.get_scd_list(b5mp)
+  end
+  def b5mc_scd_list
+    ScdParser.get_scd_list(b5mc)
+  end
+
   def odb
 
     File.join(path, "odb")
