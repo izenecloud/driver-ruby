@@ -93,9 +93,9 @@ class B5mHdfsIndexer
         end
         clear = false
         clear = true if m.mode>0
-        oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path)
+        oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path(m))
         oindexer.index
-        pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path)
+        pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path(m))
         pindexer.index
       end
       threads << t
@@ -110,7 +110,7 @@ class B5mHdfsIndexer
         end
         clear = false
         clear = true if m.cmode>0
-        cindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mc_index_path)
+        cindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mc_index_path(m))
         cindexer.index
       end
       threads << t
