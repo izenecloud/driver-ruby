@@ -39,6 +39,8 @@ class B5mM
   end
 
   def flush
+    @property['mode'] = mode
+    @property['cmode'] = cmode
     File.open(@property_file, 'w') do |f|
       f.write @property.to_yaml
     end
