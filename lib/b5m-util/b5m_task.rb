@@ -338,6 +338,7 @@ class B5mTask
   def send_mail(m)
     return if m.nil?
     return if m.status!="finished" and m.status!="matched"
+    puts "start to send mail at #{m}"
     subject = "Matcher (#{config.schema})"
     if m.mode>0
       subject += ' Rebuild'
