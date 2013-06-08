@@ -1,23 +1,40 @@
 require 'sf1-driver'
-require 'sf1-util/scd_parser'
-require 'sf1-util/sf1_wait'
 require 'sf1-util/sf1_logger'
 
-B5mCollection = Struct.new(:coll_name, :str)
 
 class B5mIndexer
-  def initialize(params, prefix="b5m")
-    @params = params
-    @prefix = prefix
-    @collections = [ B5mCollection.new("#{name}p", "b5mp"), 
-      B5mCollection.new("#{name}o", "b5mo") ]
-    unless nocomment
-      @collections << B5mCollection.new("#{name}c", "b5mc")
-    end
+  include Sf1Logger
+  def initialize(conn, collection, clear, scd_path=nil)
+    @conn = conn
+    @collection = collection
+    @clear = clear
+    @scd_path = scd_path
   end
 
-  def index(m_list)
-    normal_index(m_list, ip, port)
+  def index
+    if @clear
+      @collections.each do |coll|
+        request = {:collection => coll}
+        unless @scd_path.nil?
+          request[:index_scd_path] = @scd_path
+        end
+        STDERR.puts "rebuilding #{coll}"
+        response = @conn.call("collection/rebuild_from_scd", request)
+        return false if response.nil?
+        STDERR.puts response
+      end
+    else
+      @collections.each do |coll|
+        request = {:collection => coll}
+        unless @scd_path.nil?
+          request[:index_scd_path] = @scd_path
+        end
+        STDERR.puts "indexing #{coll}"
+        response = @conn.call("commands/index", request)
+        return false if response.nil?
+        STDERR.puts response
+      end
+    end
   end
 
 end

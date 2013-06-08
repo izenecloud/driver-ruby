@@ -1,6 +1,7 @@
 require_relative 'b5m_config.rb'
 require_relative 'b5m_single_indexer.rb'
 require_relative 'b5m_distribute_indexer.rb'
+require_relative 'b5m_hdfs_indexer.rb'
 require_relative 'b5m_m.rb'
 require_relative 'b5m_mail.rb'
 require_relative 'b5m_daemon.rb'
@@ -33,6 +34,8 @@ class B5mTask
     end
     if indexer_type=="distribute"
       @indexer = B5mDistributeIndexer.new(@config['indexer'])
+    else if indexer_type=="hdfs"
+      @indexer = B5mHdfsIndexer.new(@config['indexer'])
     else
       @indexer = B5mSingleIndexer.new(@config['indexer'])
     end
