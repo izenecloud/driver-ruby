@@ -58,12 +58,15 @@ class B5mHdfsIndexer
   def submit_scd(m)
     cmd_list = []
     if m.mode>=0
+      cmd_list << "rm -rf #{b5mo_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mo_scd_path(m)}"
       cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(m)}/"
+      cmd_list << "rm -rf #{b5mp_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mp_scd_path(m)}"
       cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
     end
     if m.cmode>=0
+      cmd_list << "rm -rf #{b5mc_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mc_scd_path(m)}"
       cmd_list << "cp #{m.b5mc}/*.SCD #{b5mc_scd_path(m)}/"
     end
