@@ -13,27 +13,23 @@ class B5mIndexer
 
   def index
     if @clear
-      @collections.each do |coll|
-        request = {:collection => coll}
-        unless @scd_path.nil?
-          request[:index_scd_path] = @scd_path
-        end
-        STDERR.puts "rebuilding #{request}"
-        response = @conn.call("collection/rebuild_from_scd", request)
-        return false if response.nil?
-        STDERR.puts response
+      request = {:collection => @collection}
+      unless @scd_path.nil?
+        request[:index_scd_path] = @scd_path
       end
+      STDERR.puts "rebuilding #{request}"
+      response = @conn.call("collection/rebuild_from_scd", request)
+      return false if response.nil?
+      STDERR.puts response
     else
-      @collections.each do |coll|
-        request = {:collection => coll}
-        unless @scd_path.nil?
-          request[:index_scd_path] = @scd_path
-        end
-        STDERR.puts "indexing #{request}"
-        response = @conn.call("commands/index", request)
-        return false if response.nil?
-        STDERR.puts response
+      request = {:collection => @collection}
+      unless @scd_path.nil?
+        request[:index_scd_path] = @scd_path
       end
+      STDERR.puts "indexing #{request}"
+      response = @conn.call("commands/index", request)
+      return false if response.nil?
+      STDERR.puts response
     end
   end
 
