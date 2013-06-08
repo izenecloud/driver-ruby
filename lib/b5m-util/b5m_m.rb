@@ -5,6 +5,7 @@ class B5mM
   include Comparable
 
   attr_reader :name, :path, :mdb, :time
+  attr_accessor :mode, :cmode
 
   def initialize(path, name = nil)
     if name.nil?
@@ -21,6 +22,8 @@ class B5mM
     @property = {}
     @property_file = File.join(@path, "property")
     @property = YAML.load_file(@property_file) if File.file?(@property_file)
+    @mode = @property['mode']
+    @cmode = @property['cmode']
     #@status_file = File.join(@path, "status")
     #@mode_file = File.join(@path, "mode")
     #@cmode_file = File.join(@path, "cmode")
