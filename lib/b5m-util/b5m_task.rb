@@ -34,7 +34,7 @@ class B5mTask
     end
     if indexer_type=="distribute"
       @indexer = B5mDistributeIndexer.new(@config['indexer'])
-    else if indexer_type=="hdfs"
+    elsif indexer_type=="hdfs"
       @indexer = B5mHdfsIndexer.new(@config['indexer'])
     else
       @indexer = B5mSingleIndexer.new(@config['indexer'])
