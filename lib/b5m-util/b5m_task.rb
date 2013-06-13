@@ -303,39 +303,17 @@ class B5mTask
     #gen
   #end
 
-  def apply(m, doindex=true)
-    if !doindex
-      @indexer.submit_scd(m)
+  def apply(m, opt={})
+    @indexer.index(m, opt)
+    if m.is_a? Array
+      m.each do |im|
+        im.status = "finished"
+        im.flush
+      end
     else
-      @indexer.index(m)
+      m.status = "finished"
+      m.flush
     end
-
-    #threads = []
-    #instance_list.each do |instance|
-      #t = Thread.new do
-        #puts "applying to #{instance}"
-        #m_post = [m]
-        #if m_post.empty?
-          #puts "#{instance} has no more mdb instance to be processed"
-        #else
-          #puts "#{instance} has #{m_post.size} mdb instances to be processed"
-          #end_scd_time = m_post.last.name
-          #if doindex
-            #puts "do index"
-            #instance.index(m_post)
-            ##instance.set_scd_time(end_scd_time)
-          #else
-            #puts "do scd_post"
-            #instance.scd_post(m_post)
-          #end
-        #end
-      #end
-      #threads << t
-    #end
-    #threads.each {|t| t.join}
-    m.status = "finished"
-    m.flush
-    m.release
   end
 
   def send_mail(m)

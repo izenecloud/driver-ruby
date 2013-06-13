@@ -93,10 +93,6 @@ class B5mM
     @property['start_time'] = Time.now
   end
 
-  def release
-
-  end
-
   def b5mo
 
     File.join(path, "b5mo")

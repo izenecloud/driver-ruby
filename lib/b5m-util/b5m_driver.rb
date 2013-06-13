@@ -94,8 +94,9 @@ class B5mDriver
         last_start_time = Time.now
         task.print_last
         task.matcher_start m
+        opt = {:scd_only => config.noindex?}
         unless config.noapply?
-          task.apply(m, !config.noindex?)
+          task.apply(m, opt)
           task.send_mail(m) if config.send_mail?
         end
       end
