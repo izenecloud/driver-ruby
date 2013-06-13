@@ -77,7 +77,8 @@ class B5mHdfsIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
-    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    scd_only = opt[:scd_only]
+    scd_only = false if scd_only.nil?
     return if scd_only
     threads = []
     if m.mode>=0
@@ -156,7 +157,9 @@ class B5mHdfsIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
-    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    scd_only = opt[:scd_only]
+    scd_only = false if scd_only.nil?
+    return if scd_only
     oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
     oindexer.index
     pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))

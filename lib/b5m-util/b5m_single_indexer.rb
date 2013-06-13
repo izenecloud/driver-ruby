@@ -110,7 +110,8 @@ class B5mSingleIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
-    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    scd_only = opt[:scd_only]
+    scd_only = false if scd_only.nil?
     return if scd_only
     threads = []
     if use_driver?
