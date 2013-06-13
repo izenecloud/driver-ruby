@@ -1,7 +1,9 @@
 require_relative "b5m_m"
+require_relative 'b5m_indexer_module'
 require 'sf1-util/sf1_distribute_wait'
 require 'sf1-util/sf1_driver_or_nginx'
 class B5mDistributeIndexer
+  include B5mIndexerModule
   attr_accessor :schema
   def initialize(param)
     @param = param
@@ -70,7 +72,8 @@ class B5mDistributeIndexer
     path
   end
 
-  def submit_scd(m)
+
+  def index_one(m, opt={})
     cmd_list = []
     if m.mode>=0
       opip.each do |ip|
@@ -101,9 +104,8 @@ class B5mDistributeIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
-  end
-
-  def submit_index(m)
+    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    return if scd_only
     threads = []
     if m.mode>=0
       #request = {:collection => o_collection_name}
@@ -142,11 +144,6 @@ class B5mDistributeIndexer
     threads.each do |t|
       t.join
     end
-  end
-
-  def index(m)
-    submit_scd(m)
-    submit_index(m)
   end
 end
 

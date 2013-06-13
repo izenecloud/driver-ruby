@@ -1,6 +1,8 @@
 require_relative "b5m_m"
+require_relative 'b5m_indexer_module'
 require 'sf1-util/sf1_wait'
 class B5mSingleIndexer
+  include B5mIndexerModule
   attr_accessor :schema
   def initialize(param)
     @param = param
@@ -56,7 +58,7 @@ class B5mSingleIndexer
     ip=="localhost" or ip=="127.0.0.1"
   end
 
-  def submit_scd(m)
+  def index_one(m, opt={})
     o_scd_path = get_scd_path(m.mode, "o")
     p_scd_path = get_scd_path(m.mode, "p")
     c_scd_path = get_scd_path(m.cmode, "c")
@@ -108,9 +110,8 @@ class B5mSingleIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
-  end
-
-  def submit_index(m)
+    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    return if scd_only
     threads = []
     if use_driver?
       if m.mode>=0
@@ -145,10 +146,5 @@ class B5mSingleIndexer
     threads.each do |t|
       t.join
     end
-  end
-
-  def index(m)
-    submit_scd(m)
-    submit_index(m)
   end
 end

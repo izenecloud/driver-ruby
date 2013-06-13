@@ -1,7 +1,9 @@
 require_relative "b5m_m"
 require_relative 'b5m_indexer'
+require_relative 'b5m_indexer_module'
 require 'sf1-util/sf1_driver_or_nginx'
 class B5mHdfsIndexer
+  include B5mIndexerModule
   attr_accessor :schema
   def initialize(param)
     @param = param
@@ -55,7 +57,7 @@ class B5mHdfsIndexer
     path
   end
 
-  def submit_scd(m)
+  def index_one(m, opt={})
     cmd_list = []
     if m.mode>=0
       cmd_list << "rm -rf #{b5mo_scd_path(m)}"
@@ -75,9 +77,8 @@ class B5mHdfsIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
-  end
-
-  def submit_index(m)
+    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    return if scd_only
     threads = []
     if m.mode>=0
       #request = {:collection => o_collection_name}
@@ -120,9 +121,46 @@ class B5mHdfsIndexer
     end
   end
 
-  def index(m)
-    submit_scd(m)
-    submit_index(m)
+  def index_multi(m_list, opt={})
+    rebuild = nil
+    m_list.each do |m|
+      if m.mode>0 or m.cmode>0
+        rebuild = m
+      end
+    end
+    unless rebuild.nil?
+      index_one(rebuild, opt)
+    end
+    inc_m_list = m_list
+    unless rebuild.nil?
+      inc_m_list.clear
+      m_list.each do |m|
+        if m.time>rebuild.time
+          inc_m_list << m
+        end
+      end
+    end
+    return if inc_m_list.empty?
+    lastm = inc_m_list.last
+    cmd_list = []
+    cmd_list << "rm -rf #{b5mo_scd_path(lastm)}"
+    cmd_list << "mkdir -p #{b5mo_scd_path(lastm)}"
+    cmd_list << "rm -rf #{b5mp_scd_path(lastm)}"
+    cmd_list << "mkdir -p #{b5mp_scd_path(lastm)}"
+    inc_m_list.each do |m|
+      cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(lastm)}/"
+      cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(lastm)}/"
+    end
+    cmd_list.each do |cmd|
+      STDERR.puts cmd
+      system(cmd)
+      raise "cmd fail" unless $?.success?
+    end
+    scd_only = opt[:scd_only].nil? false : opt[:scd_only]
+    oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
+    oindexer.index
+    pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))
+    pindexer.index
   end
 end
 
