@@ -160,6 +160,12 @@ class B5mHdfsIndexer
     scd_only = opt[:scd_only]
     scd_only = false if scd_only.nil?
     return if scd_only
+    conn = nil
+    if use_driver?
+      conn = Sf1DriverOrNginx.new(ip, port)
+    else
+      conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+    end
     oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
     oindexer.index
     pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))
