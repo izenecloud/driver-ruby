@@ -48,20 +48,23 @@ class B5mTask
     unless File.exists? mdb
       FileUtils.mkdir_p(mdb)
     end
+    @m_list = []
+    @broken_m_list = []
     gen
   end
 
-  def gen
-    #do broken clean
-    return if config.schema=="ticket"
-    @m_list = []
+  def gen()
+    return if config.schema!="b5m"
+    @m_list.clear
+    @broken_m_list.clear
     Dir.foreach(mdb) do |m|
       next unless m =~ /\d{14}/
       mm = File.join(mdb, m)
       next unless File.directory?(mm)
       b5m_m = B5mM.new(mm)
       if b5m_m.broken?
-        b5m_m.delete
+        @broken_m_list << b5m_m
+        #b5m_m.delete
         next
       end
       @m_list << b5m_m
@@ -105,6 +108,12 @@ class B5mTask
       end
     end
     check_valid
+  end
+
+  def clean
+    @broken_m_list.each do |m|
+      m.delete
+    end
   end
 
   def check_valid
