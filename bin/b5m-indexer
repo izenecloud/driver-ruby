@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+require 'b5m-util/b5m_task'
+
+unless ARGV.empty?
+  config_file = ARGV[0]
+end
+
+config_file = "./config.yml"
+startmname = nil
+endmname = nil
+nocomment = false
+incremental_file = nil
+
+ARGV.each_with_index do |a,i|
+  if a=="--config"
+    config_file = ARGV[i+1]
+  elsif a=="--m"
+    startmname = ARGV[i+1]
+    endmname = ARGV[i+1]
+  elsif a=="--startm"
+    startmname = ARGV[i+1]
+  elsif a=="--endm"
+    endmname = ARGV[i+1]
+  elsif a=="--nocomment"
+    nocomment = true
+  elsif a=="--incremental"
+    incremental_file = ARGV[i+1]
+  end
+end
+abort "config.yml not found" unless File.file? config_file
+
+config = B5mConfig.new(config_file)
+
+task = B5mTask.new(config)
+incremental_last = nil
+unless incremental_file.nil?
+  if File.file? incremental_file
+    File.open(incremental_file, 'r').each_line do |line|
+      line.strip!
+      incremental_last = line
+    end
+  end
+end
+m_list = []
+task.m_list.each do |m|
+  valid = true
+  unless startmname.nil?
+    valid = false if m.name<startmname
+  end
+  unless endmname.nil?
+    valid = false if m.name>endmname
+  end
+  unless incremental_last.nil?
+    valid = false if m.name<=incremental_last
+  end
+  m_list << m if valid
+end
+if m_list.empty?
+  STDERR.puts "m list empty"
+  exit(0)
+end
+m_list.each do |m|
+  STDERR.puts "ready to apply #{m}"
+end
+sleep 10.0
+
+m_list.each_with_index do |m, i|
+  if nocomment and m.cmode>=0
+    m.cmode = -1
+  end
+end
+opt = {:scd_only => config.noindex?}
+task.apply(m_list, opt)
+unless incremental_file.nil?
+  File.open(incremental_file, 'w') do |f|
+    f.puts m_list.last.name
+  end
+end
+

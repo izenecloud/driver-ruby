@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.files = %w(README.md Rakefile lib/sf1-driver.rb) + Dir.glob("lib/sf1-driver/**/*") + Dir.glob("lib/sf1-util/*") + Dir.glob("lib/b5m-util/*") + Dir.glob("lib/sf1-resource/*")
   s.executables << 'sf1r-resource'
   s.executables << 'b5m-driver'
+  s.executables << 'b5m-indexer'
  
 end
 
