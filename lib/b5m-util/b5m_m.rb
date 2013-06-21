@@ -108,6 +108,11 @@ class B5mM
     File.join(path, "b5mc")
   end
 
+  def b5mo_mirror
+
+    File.join(path, "b5mo_mirror")
+  end
+
   def b5mo_scd_list
     ScdParser.get_scd_list(b5mo)
   end

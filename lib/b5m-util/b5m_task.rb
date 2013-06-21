@@ -110,9 +110,21 @@ class B5mTask
     check_valid
   end
 
-  def clean
+  def clean(opt={})
     @broken_m_list.each do |m|
       m.delete
+    end
+    keep = 0
+    keep = opt[:keep] unless opt[:keep].nil?
+    if keep>0
+      @m_list.each_with_index do |m, i|
+        doclean = false
+        doclean = true if @m_list.size-i>keep
+        if doclean
+          puts "keep clean #{m.b5mo_mirror}"
+          FileUtils.rm_rf m.b5mo_mirror
+        end
+      end
     end
   end
 
