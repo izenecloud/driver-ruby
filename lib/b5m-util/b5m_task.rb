@@ -119,7 +119,7 @@ class B5mTask
     if keep>0
       @m_list.each_with_index do |m, i|
         doclean = false
-        doclean = true if @m_list.size-i>keep
+        doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
         if doclean
           puts "keep clean #{m.b5mo_mirror}"
           FileUtils.rm_rf m.b5mo_mirror
