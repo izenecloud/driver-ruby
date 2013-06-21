@@ -28,6 +28,8 @@ class B5mSingleIndexer
         path+="/scd/index"
       end
     end
+
+    return path
   end
 
 
