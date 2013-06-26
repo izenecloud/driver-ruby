@@ -13,6 +13,10 @@ class B5mHdfsIndexer
     key = m.to_s
     if key.end_with? 'collection_name'
       name = key[0, key.length-'_collection_name'.length]
+      if schema=="tuan"
+        name = "m" if name=="o"
+        name = "a" if name=="p"
+      end
       return "#{schema}#{name}"
     else
       return @param[m.to_s]

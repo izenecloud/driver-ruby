@@ -12,6 +12,10 @@ class B5mSingleIndexer
     key = m.to_s
     if key.end_with? 'collection_name'
       name = key[0, key.length-'_collection_name'.length]
+      if schema=="tuan"
+        name = "m" if name=="o"
+        name = "a" if name=="p"
+      end
       return "#{schema}#{name}"
     else
       return @param[m.to_s]
@@ -19,6 +23,10 @@ class B5mSingleIndexer
   end
 
   def get_scd_path(mode, coll)
+    if schema=="tuan"
+      coll = "m" if coll=="o"
+      coll = "a" if coll=="p"
+    end
     path = @param['dest_collection_path']
     path+="/#{schema}#{coll}"
     if !@param['sf1r_collection_path'].nil? and @param['sf1r_collection_path']
