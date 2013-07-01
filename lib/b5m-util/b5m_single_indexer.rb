@@ -30,11 +30,12 @@ class B5mSingleIndexer
     path = @param['dest_collection_path']
     path+="/#{schema}#{coll}"
     if !@param['sf1r_collection_path'].nil? and @param['sf1r_collection_path']
-      if mode>0
-        path+="/scd/rebuild_scd"
-      else
-        path+="/scd/index"
-      end
+      path+="/scd/index"
+      #if mode>0
+        #path+="/scd/rebuild_scd"
+      #else
+        #path+="/scd/index"
+      #end
     end
 
     return path
