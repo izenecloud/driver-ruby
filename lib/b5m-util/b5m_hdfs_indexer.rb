@@ -147,9 +147,11 @@ class B5mHdfsIndexer
       end
     end
     unless rebuild.nil?
+      puts "processing rebuild #{rebuild}"
+      sleep 20.0
       index_one(rebuild, opt)
     end
-    inc_m_list = m_list
+    inc_m_list = m_list.clone
     unless rebuild.nil?
       inc_m_list.clear
       m_list.each do |m|
