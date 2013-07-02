@@ -87,11 +87,6 @@ class Sf1Wait
 
   private
 
-  def puts(str)
-
-    Sf1Logger.puts "#{@conn.host} #{str}"
-  end
-
   def wait(timeout, interval = 1)
     elapsed = 0
     result = false
