@@ -294,9 +294,9 @@ class B5mTask
         end
         m.ctime = ctime
         #b5mc generator
-        cmd = "--b5mc-generate -S #{comment_scd_path} --odb #{m.odb} --mdb-instance #{m} --cdb #{m.cdb} --mode #{m.cmode}"
-        if !last_codb.nil? and m.cmode==0
-          cmd+=" --last-odb #{last_codb}"
+        cmd = "--b5mc-generate -S #{comment_scd_path} --mode #{m.cmode} --mdb-instance #{m}"
+        if !last_c_m.nil? and m.cmode==0
+          cmd+=" --last-mdb-instance #{last_c_m}"
         end
         unless daemon.run(cmd)
           abort("b5mc generate failed")
