@@ -281,6 +281,9 @@ class B5mTask
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
         end
+        if config.spu_only?
+          cmd+=" --spu-only"
+        end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
         end

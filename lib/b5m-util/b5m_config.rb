@@ -108,6 +108,11 @@ class B5mConfig
     return @config['send_mail']
   end
 
+  def spu_only?
+    return false if @config['spu_only'].nil?
+    return @config['spu_only']
+  end
+
   def scd_done_name
     return "done" if @config['scd_done_name'].nil?
     return @config['scd_done_name']
