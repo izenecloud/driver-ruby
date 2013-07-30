@@ -265,6 +265,18 @@ class B5mTask
 
       #b5mo generator, update odb here
       if m.mode>=0
+        unless config.omapper.nil?
+          FileUtils.mkdir m.omapper unless File.exists? m.omapper
+          uri = URI(config.omapper)
+          Net::HTTP.start(uri.host, uri.port) do |http|
+            http.read_timeout = 3600
+            request = Net::HTTP::Get.new(uri.request_uri)
+            res = http.request(request)
+            File.open(m.omapper_data, 'w') do |f|
+              f.write res.body
+            end
+          end
+        end
         cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
         cmd+=" --bdb #{bdb}"
         if !last_o_m.nil? and m.mode==0
