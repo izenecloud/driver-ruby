@@ -8,6 +8,7 @@ require_relative 'b5m_daemon.rb'
 require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_logger'
 require 'net/smtp'
+require 'fileutils'
 
 class B5mTask
   include Sf1Logger
@@ -267,14 +268,18 @@ class B5mTask
       if m.mode>=0
         unless config.omapper.nil?
           FileUtils.mkdir m.omapper unless File.exists? m.omapper
-          uri = URI(config.omapper)
-          Net::HTTP.start(uri.host, uri.port) do |http|
-            http.read_timeout = 3600
-            request = Net::HTTP::Get.new(uri.request_uri)
-            res = http.request(request)
-            File.open(m.omapper_data, 'w') do |f|
-              f.write res.body
+          if config.omapper.start_with? 'http'
+            uri = URI(config.omapper)
+            Net::HTTP.start(uri.host, uri.port) do |http|
+              http.read_timeout = 3600
+              request = Net::HTTP::Get.new(uri.request_uri)
+              res = http.request(request)
+              File.open(m.omapper_data, 'w') do |f|
+                f.write res.body
+              end
             end
+          else
+            FileUtils.cp config.omapper, m.omapper_data
           end
         end
         cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
