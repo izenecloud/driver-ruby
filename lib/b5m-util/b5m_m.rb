@@ -108,6 +108,11 @@ class B5mM
     File.join(path, "b5mc")
   end
 
+  def b5mo_mirror
+
+    File.join(path, "b5mo_mirror")
+  end
+
   def b5mo_scd_list
     ScdParser.get_scd_list(b5mo)
   end
@@ -126,6 +131,16 @@ class B5mM
   def cdb
 
     File.join(path, "cdb")
+  end
+
+  def omapper
+
+    File.join(path, "omapper")
+  end
+
+  def omapper_data
+
+    File.join(omapper, 'data')
   end
 
   def bdb

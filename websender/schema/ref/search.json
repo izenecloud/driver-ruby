@@ -108,6 +108,10 @@
         "type": "bool",
         "desc": "option to use fuzzy search to get more results for fm-index"
       },
+      "query_prune": {
+        "type": "bool",
+        "desc": "option to choose if use query prune in fuzzy search"
+      },
       "original_query": {
         "type": "bool",
         "desc": "option to use original query or modified query"

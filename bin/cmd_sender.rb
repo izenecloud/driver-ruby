@@ -37,7 +37,11 @@ if command.nil?
 end
 
 conn = create_connection
-response = conn.call("commands/#{command}", request)
+api = "commands/#{command}"
+if command=="rebuild"
+  api = "collection/rebuild_from_scd"
+end
+response = conn.call(api, request)
 
 if response.nil? or !response["header"]["success"]
   STDERR.puts "ERROR!"

@@ -12,6 +12,10 @@ class B5mSingleIndexer
     key = m.to_s
     if key.end_with? 'collection_name'
       name = key[0, key.length-'_collection_name'.length]
+      if schema=="tuan"
+        name = "m" if name=="o"
+        name = "a" if name=="p"
+      end
       return "#{schema}#{name}"
     else
       return @param[m.to_s]
@@ -19,15 +23,22 @@ class B5mSingleIndexer
   end
 
   def get_scd_path(mode, coll)
+    if schema=="tuan"
+      coll = "m" if coll=="o"
+      coll = "a" if coll=="p"
+    end
     path = @param['dest_collection_path']
     path+="/#{schema}#{coll}"
     if !@param['sf1r_collection_path'].nil? and @param['sf1r_collection_path']
-      if mode>0
-        path+="/scd/rebuild_scd"
-      else
-        path+="/scd/index"
-      end
+      path+="/scd/index"
+      #if mode>0
+        #path+="/scd/rebuild_scd"
+      #else
+        #path+="/scd/index"
+      #end
     end
+
+    return path
   end
 
 
@@ -58,10 +69,9 @@ class B5mSingleIndexer
     ip=="localhost" or ip=="127.0.0.1"
   end
 
-  def index_one(m, opt={})
+  def submit_opscd(m)
     o_scd_path = get_scd_path(m.mode, "o")
     p_scd_path = get_scd_path(m.mode, "p")
-    c_scd_path = get_scd_path(m.cmode, "c")
     cmd_list = []
     if m.mode>=0
       if local?
@@ -88,6 +98,15 @@ class B5mSingleIndexer
         end
       end
     end
+    cmd_list.each do |cmd|
+      STDERR.puts cmd
+      system(cmd)
+      raise "cmd fail" unless $?.success?
+    end
+  end
+  def submit_cscd(m)
+    c_scd_path = get_scd_path(m.cmode, "c")
+    cmd_list = []
     if m.cmode>=0
       if local?
         if m.cmode>0
@@ -110,9 +129,16 @@ class B5mSingleIndexer
       system(cmd)
       raise "cmd fail" unless $?.success?
     end
+  end
+
+  def index_one(m, opt={})
     scd_only = opt[:scd_only]
     scd_only = false if scd_only.nil?
-    return if scd_only
+    if scd_only
+      submit_opscd(m)
+      submit_cscd(m)
+      return
+    end
     threads = []
     if use_driver?
       if m.mode>=0
@@ -125,7 +151,9 @@ class B5mSingleIndexer
           clear = false
           clear = true if m.mode>0
           sf1 = Sf1Wait.new(conn, [o_collection_name, p_collection_name], clear)
-          sf1.index_finish(3600*24*7)
+          sf1.index_finish(3600*24*7) do
+            submit_opscd(m)
+          end
         end
         threads << t
       end
@@ -137,7 +165,9 @@ class B5mSingleIndexer
           clear = false
           clear = true if m.cmode>0
           sf1 = Sf1Wait.new(conn, [c_collection_name], clear)
-          sf1.index_finish(3600*24*7)
+          sf1.index_finish(3600*24*7) do
+            submit_cscd(m)
+          end
         end
         threads << t
       end

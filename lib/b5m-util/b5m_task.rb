@@ -8,6 +8,7 @@ require_relative 'b5m_daemon.rb'
 require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_logger'
 require 'net/smtp'
+require 'fileutils'
 
 class B5mTask
   include Sf1Logger
@@ -110,9 +111,21 @@ class B5mTask
     check_valid
   end
 
-  def clean
+  def clean(opt={})
     @broken_m_list.each do |m|
       m.delete
+    end
+    keep = 0
+    keep = opt[:keep] unless opt[:keep].nil?
+    if keep>0
+      @m_list.each_with_index do |m, i|
+        doclean = false
+        doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
+        if doclean
+          puts "keep clean #{m.b5mo_mirror}"
+          FileUtils.rm_rf m.b5mo_mirror
+        end
+      end
     end
   end
 
@@ -228,12 +241,14 @@ class B5mTask
     comment_scd_path = comment_scd
     puts "offer-scd:#{scd_path}"
     puts "comment-scd:#{comment_scd_path}"
-    unless comment_scd_path.nil?
+    if !comment_scd_path.nil?
       comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
       if comment_scd_list.empty?
         puts "comment scd empty, set cmode=-1"
         m.cmode = -1
       end
+    else
+      m.cmode = -1
     end
     cma = config.path_of('cma')
     mobile_source = config.path_of('mobile_source')
@@ -251,6 +266,22 @@ class B5mTask
 
       #b5mo generator, update odb here
       if m.mode>=0
+        unless config.omapper.nil?
+          FileUtils.mkdir m.omapper unless File.exists? m.omapper
+          if config.omapper.start_with? 'http'
+            uri = URI(config.omapper)
+            Net::HTTP.start(uri.host, uri.port) do |http|
+              http.read_timeout = 3600
+              request = Net::HTTP::Get.new(uri.request_uri)
+              res = http.request(request)
+              File.open(m.omapper_data, 'w') do |f|
+                f.write res.body
+              end
+            end
+          else
+            FileUtils.cp config.omapper, m.omapper_data
+          end
+        end
         cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
         cmd+=" --bdb #{bdb}"
         if !last_o_m.nil? and m.mode==0
@@ -267,6 +298,9 @@ class B5mTask
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
         end
+        if config.spu_only?
+          cmd+=" --spu-only"
+        end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
         end
@@ -280,9 +314,9 @@ class B5mTask
         end
         m.ctime = ctime
         #b5mc generator
-        cmd = "--b5mc-generate -S #{comment_scd_path} --odb #{m.odb} --mdb-instance #{m} --cdb #{m.cdb} --mode #{m.cmode}"
-        if !last_codb.nil? and m.cmode==0
-          cmd+=" --last-odb #{last_codb}"
+        cmd = "--b5mc-generate -S #{comment_scd_path} --mode #{m.cmode} --mdb-instance #{m}"
+        if !last_c_m.nil? and m.cmode==0
+          cmd+=" --last-mdb-instance #{last_c_m}"
         end
         unless daemon.run(cmd)
           abort("b5mc generate failed")
