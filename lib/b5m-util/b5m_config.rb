@@ -2,7 +2,7 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name, :omapper
+  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name, :omapper, :thread_num
   def initialize(file)
     @file = File.expand_path(file)
     @config = YAML.load_file(@file)["config"]
@@ -14,6 +14,10 @@ class B5mConfig
       @schema = @config['schema']
     end
     @omapper = @config['omapper']
+    @thread_num = nil
+    unless @config['thread_num'].nil?
+      @thread_num = @config['thread_num'].to_i
+    end
     #@b5mo_name = "#{name}o"
     #@b5mp_name = "#{name}p"
     #@b5mc_name = "#{name}c"
