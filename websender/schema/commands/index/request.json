@@ -22,6 +22,10 @@
     "index_scd_path": {
       "type":"str",
       "desc":"SCD file location for indexing. It is used if DFS is enabled for sf1r."
+    },
+    "disable_sharding": {
+        "type":"bool",
+        "desc":"allow do indexing on the single shard node."
     }
   }
 }
