@@ -310,6 +310,9 @@ class B5mTask
         unless config.thread_num.nil?
           cmd += " --thread-num #{config.thread_num}"
         end
+        unless config.buffer_size.nil?
+          cmd += " --buffer-size #{config.buffer_size}"
+        end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
         end
