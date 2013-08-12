@@ -1,0 +1,25 @@
+{
+  "title":"Add some new sharding nodes for collection",
+  "type":"map",
+  "desc":"Add some new sharding nodes .",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+    "new_sharding_ids": {
+      "type":"seq",
+      "desc":"Specify a list of new sharding node ids",
+      "sequence": [{
+        "type": "str",
+        "title": "node id"
+      }],
+      "required":true
+    },
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    } 
+  }
+}
