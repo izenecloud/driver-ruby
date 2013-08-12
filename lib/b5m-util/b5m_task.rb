@@ -260,6 +260,9 @@ class B5mTask
       end
       #do product training
       cmd = "--product-train -S #{train_scd} -K #{knowledge} --mode #{m.mode} -C #{cma}"
+      unless config.thread_num.nil?
+        cmd += " --thread-num #{config.thread_num}"
+      end
       unless daemon.run(cmd)
         abort("product train failed")
       end
@@ -290,6 +293,9 @@ class B5mTask
         unless human_match.nil?
           cmd+=" --human-match #{human_match}"
         end
+        unless config.thread_num.nil?
+          cmd += " --thread-num #{config.thread_num}"
+        end
         unless daemon.run(cmd)
           abort("b5mo generate failed")
         end
@@ -300,6 +306,12 @@ class B5mTask
         end
         if config.spu_only?
           cmd+=" --spu-only"
+        end
+        unless config.thread_num.nil?
+          cmd += " --thread-num #{config.thread_num}"
+        end
+        unless config.buffer_size.nil?
+          cmd += " --buffer-size #{config.buffer_size}"
         end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
@@ -317,6 +329,9 @@ class B5mTask
         cmd = "--b5mc-generate -S #{comment_scd_path} --mode #{m.cmode} --mdb-instance #{m}"
         if !last_c_m.nil? and m.cmode==0
           cmd+=" --last-mdb-instance #{last_c_m}"
+        end
+        unless config.thread_num.nil?
+          cmd += " --thread-num #{config.thread_num}"
         end
         unless daemon.run(cmd)
           abort("b5mc generate failed")
