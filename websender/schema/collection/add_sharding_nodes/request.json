@@ -17,6 +17,10 @@
       }],
       "required":true
     },
+    "do_remove": {
+        "type":"bool",
+        "required":false
+    },
     "header": {
       "type":"map",
       "mapping": $(header)
