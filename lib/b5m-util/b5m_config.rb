@@ -122,6 +122,11 @@ class B5mConfig
     return @config['spu_only']
   end
 
+  def use_psm?
+    return false if @config['use_psm'].nil?
+    return @config['use_psm']
+  end
+
   def scd_done_name
     return "done" if @config['scd_done_name'].nil?
     return @config['scd_done_name']
