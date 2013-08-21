@@ -2,11 +2,17 @@
 require 'b5m-util/b5m_driver'
 
 config_file = "./config.yml"
-unless ARGV.empty?
-  config_file = ARGV[0]
+rlimit = 0
+ARGV.each_with_index do |a,i|
+  if a=="--config"
+    config_file = ARGV[i+1]
+  elsif a=="--rounds-limit"
+    rlimit = ARGV[i+1].to_i
+  end
 end
 abort "config.yml not found" unless File.file? config_file
 driver = B5mDriver.new(config_file)
+driver.rounds_limit = rlimit if rlimit>0
 driver.start
 
 
