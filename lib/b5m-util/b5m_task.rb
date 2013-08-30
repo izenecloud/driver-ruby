@@ -263,6 +263,9 @@ class B5mTask
       unless config.thread_num.nil?
         cmd += " --thread-num #{config.thread_num}"
       end
+      if config.use_psm?
+        cmd += " --use-psm"
+      end
       unless daemon.run(cmd)
         abort("product train failed")
       end

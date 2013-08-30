@@ -75,10 +75,14 @@ class B5mHdfsIndexer
     if m.mode>=0
       cmd_list << "rm -rf #{b5mo_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mo_scd_path(m)}"
+      unless m.b5mo_scd_list.empty?
       cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(m)}/"
+      end
       cmd_list << "rm -rf #{b5mp_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mp_scd_path(m)}"
-      cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
+      unless m.b5mp_scd_list.empty?
+        cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
+      end
     end
     if m.cmode>=0
       cmd_list << "rm -rf #{b5mc_scd_path(m)}"
@@ -168,8 +172,12 @@ class B5mHdfsIndexer
     cmd_list << "rm -rf #{b5mp_scd_path(lastm)}"
     cmd_list << "mkdir -p #{b5mp_scd_path(lastm)}"
     inc_m_list.each do |m|
-      cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(lastm)}/"
-      cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(lastm)}/"
+      unless m.b5mo_scd_list.empty?
+        cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(lastm)}/"
+      end
+      unless m.b5mp_scd_list.empty?
+        cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(lastm)}/"
+      end
     end
     cmd_list.each do |cmd|
       STDERR.puts cmd
