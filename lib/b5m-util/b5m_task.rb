@@ -350,6 +350,11 @@ class B5mTask
       unless daemon.run(cmd)
         abort("tuan generate failed")
       end
+    elsif config.schema=="tour"
+      cmd = "--tour-generate -S #{scd_path} --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("tour generate failed")
+      end
     else
       abort("schema error")
     end
