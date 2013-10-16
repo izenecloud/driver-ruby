@@ -6,22 +6,18 @@ require 'b5m-util/b5m_input_scd'
 
 class B5mDriver
   attr_reader :config
+  attr_accessor :rounds_limit
   def initialize(config_file)
     @config = B5mConfig.new(config_file)
+    @rounds_limit = 0
   end
   def start
 
     #default parameters
     schema = config.schema
     last_start_time = nil
+    rounds = 0
     while true
-      sleep_time = 0
-      unless last_start_time.nil?
-        this_start_time = last_start_time + config.monitor_interval
-        sleep_time = this_start_time - Time.now
-      end
-
-      sleep(sleep_time) if sleep_time>0
 
       mode = 0 #B5MMode::INC as default
       cmode = -1 #no comment process as default
@@ -100,12 +96,26 @@ class B5mDriver
           task.apply(m, opt)
           task.send_mail(m) if config.send_mail?
         end
+        rounds+=1
       end
       
       unless config.monitor?
         break
       end
-      sleep 30.0
+      if @rounds_limit>0 and rounds>=@rounds_limit
+        break
+      end
+      sleep_time = config.monitor_interval
+      sleep_time = 30 if sleep_time<30
+      sleep_time*=5 if m.mode>0
+      STDERR.puts "now sleep #{sleep_time} seconds"
+      #unless last_start_time.nil?
+        #this_start_time = last_start_time + config.monitor_interval
+        #sleep_time = this_start_time - Time.now
+      #end
+
+      sleep(sleep_time) if sleep_time>0
+      #sleep 30.0
     end
   end
 

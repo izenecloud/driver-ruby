@@ -23,6 +23,15 @@ class B5mHdfsIndexer
     end
   end
 
+  def ip_list
+    ip = @param['ip']
+    if ip.is_a? Array
+      return ip
+    else
+      return [ip]
+    end
+  end
+
 
   def use_driver?
     return false unless @param['use_driver'].nil?
@@ -66,10 +75,14 @@ class B5mHdfsIndexer
     if m.mode>=0
       cmd_list << "rm -rf #{b5mo_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mo_scd_path(m)}"
+      unless m.b5mo_scd_list.empty?
       cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(m)}/"
+      end
       cmd_list << "rm -rf #{b5mp_scd_path(m)}"
       cmd_list << "mkdir -p #{b5mp_scd_path(m)}"
-      cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
+      unless m.b5mp_scd_list.empty?
+        cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
+      end
     end
     if m.cmode>=0
       cmd_list << "rm -rf #{b5mc_scd_path(m)}"
@@ -90,36 +103,40 @@ class B5mHdfsIndexer
       #response = @conn.call("commands/index", request)
       #request = {:collection => p_collection_name}
       #response = @conn.call("commands/index", request)
-      t = Thread.new do
-        conn = nil
-        if use_driver?
-          conn = Sf1DriverOrNginx.new(ip, port)
-        else
-          conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+      ip_list.each do |ip|
+        t = Thread.new do
+          conn = nil
+          if use_driver?
+            conn = Sf1DriverOrNginx.new(ip, port)
+          else
+            conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+          end
+          clear = false
+          clear = true if m.mode>0
+          oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path(m))
+          oindexer.index
+          pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path(m))
+          pindexer.index
         end
-        clear = false
-        clear = true if m.mode>0
-        oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path(m))
-        oindexer.index
-        pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path(m))
-        pindexer.index
+        threads << t
       end
-      threads << t
     end
     if m.cmode>=0
-      t = Thread.new do
-        conn = nil
-        if use_driver?
-          conn = Sf1DriverOrNginx.new(ip, port)
-        else
-          conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+      ip_list.each do |ip|
+        t = Thread.new do
+          conn = nil
+          if use_driver?
+            conn = Sf1DriverOrNginx.new(ip, port)
+          else
+            conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+          end
+          clear = false
+          clear = true if m.cmode>0
+          cindexer = B5mIndexer.new(conn, c_collection_name, clear, b5mc_index_path(m))
+          cindexer.index
         end
-        clear = false
-        clear = true if m.cmode>0
-        cindexer = B5mIndexer.new(conn, c_collection_name, clear, b5mc_index_path(m))
-        cindexer.index
+        threads << t
       end
-      threads << t
     end
     threads.each do |t|
       t.join
@@ -134,9 +151,11 @@ class B5mHdfsIndexer
       end
     end
     unless rebuild.nil?
+      puts "processing rebuild #{rebuild}"
+      sleep 20.0
       index_one(rebuild, opt)
     end
-    inc_m_list = m_list
+    inc_m_list = m_list.clone
     unless rebuild.nil?
       inc_m_list.clear
       m_list.each do |m|
@@ -153,8 +172,12 @@ class B5mHdfsIndexer
     cmd_list << "rm -rf #{b5mp_scd_path(lastm)}"
     cmd_list << "mkdir -p #{b5mp_scd_path(lastm)}"
     inc_m_list.each do |m|
-      cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(lastm)}/"
-      cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(lastm)}/"
+      unless m.b5mo_scd_list.empty?
+        cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(lastm)}/"
+      end
+      unless m.b5mp_scd_list.empty?
+        cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(lastm)}/"
+      end
     end
     cmd_list.each do |cmd|
       STDERR.puts cmd
@@ -164,16 +187,18 @@ class B5mHdfsIndexer
     scd_only = opt[:scd_only]
     scd_only = false if scd_only.nil?
     return if scd_only
-    conn = nil
-    if use_driver?
-      conn = Sf1DriverOrNginx.new(ip, port)
-    else
-      conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+    ip_list.each do |ip|
+      conn = nil
+      if use_driver?
+        conn = Sf1DriverOrNginx.new(ip, port)
+      else
+        conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+      end
+      oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
+      oindexer.index
+      pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))
+      pindexer.index
     end
-    oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
-    oindexer.index
-    pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))
-    pindexer.index
   end
 end
 

@@ -133,6 +133,16 @@ class B5mM
     File.join(path, "cdb")
   end
 
+  def omapper
+
+    File.join(path, "omapper")
+  end
+
+  def omapper_data
+
+    File.join(omapper, 'data')
+  end
+
   def bdb
 
     File.join(path, "bdb")

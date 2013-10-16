@@ -108,6 +108,21 @@ class B5mDistributeIndexer
     scd_only = false if scd_only.nil?
     return if scd_only
     threads = []
+    if m.cmode>=0
+      t = Thread.new do
+        conn = nil
+        if use_driver?
+          conn = Sf1DriverOrNginx.new(ccmdip, port)
+        else
+          conn = Sf1DriverOrNginx.new(ccmdip, port, "sf1r")
+        end
+        clear = false
+        clear = true if m.cmode>0
+        sf1 = Sf1DistributeWait.new(conn, [c_collection_name], clear)
+        sf1.index_finish(3600*24*7)
+      end
+      threads << t
+    end
     if m.mode>=0
       #request = {:collection => o_collection_name}
       #response = @conn.call("commands/index", request)
@@ -123,21 +138,6 @@ class B5mDistributeIndexer
         clear = false
         clear = true if m.mode>0
         sf1 = Sf1DistributeWait.new(conn, [o_collection_name, p_collection_name], clear)
-        sf1.index_finish(3600*24*7)
-      end
-      threads << t
-    end
-    if m.cmode>=0
-      t = Thread.new do
-        conn = nil
-        if use_driver?
-          conn = Sf1DriverOrNginx.new(ccmdip, port)
-        else
-          conn = Sf1DriverOrNginx.new(ccmdip, port, "sf1r")
-        end
-        clear = false
-        clear = true if m.cmode>0
-        sf1 = Sf1DistributeWait.new(conn, [c_collection_name], clear)
         sf1.index_finish(3600*24*7)
       end
       threads << t

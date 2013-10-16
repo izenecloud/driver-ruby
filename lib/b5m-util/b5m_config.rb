@@ -2,7 +2,7 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name
+  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name, :omapper, :thread_num, :buffer_size
   def initialize(file)
     @file = File.expand_path(file)
     @config = YAML.load_file(@file)["config"]
@@ -12,6 +12,15 @@ class B5mConfig
     @schema = "b5m"
     unless @config['schema'].nil?
       @schema = @config['schema']
+    end
+    @omapper = @config['omapper']
+    @thread_num = nil
+    unless @config['thread_num'].nil?
+      @thread_num = @config['thread_num'].to_i
+    end
+    @buffer_size = nil
+    unless @config['buffer_size'].nil?
+      @buffer_size = @config['buffer_size']
     end
     #@b5mo_name = "#{name}o"
     #@b5mp_name = "#{name}p"
@@ -106,6 +115,16 @@ class B5mConfig
   def send_mail?
     return true if @config['send_mail'].nil?
     return @config['send_mail']
+  end
+
+  def spu_only?
+    return false if @config['spu_only'].nil?
+    return @config['spu_only']
+  end
+
+  def use_psm?
+    return false if @config['use_psm'].nil?
+    return @config['use_psm']
   end
 
   def scd_done_name

@@ -8,6 +8,7 @@ require_relative 'b5m_daemon.rb'
 require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_logger'
 require 'net/smtp'
+require 'fileutils'
 
 class B5mTask
   include Sf1Logger
@@ -107,7 +108,7 @@ class B5mTask
         break
       end
     end
-    check_valid
+    #check_valid
   end
 
   def clean(opt={})
@@ -240,12 +241,14 @@ class B5mTask
     comment_scd_path = comment_scd
     puts "offer-scd:#{scd_path}"
     puts "comment-scd:#{comment_scd_path}"
-    unless comment_scd_path.nil?
+    if !comment_scd_path.nil?
       comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
       if comment_scd_list.empty?
         puts "comment scd empty, set cmode=-1"
         m.cmode = -1
       end
+    else
+      m.cmode = -1
     end
     cma = config.path_of('cma')
     mobile_source = config.path_of('mobile_source')
@@ -257,12 +260,34 @@ class B5mTask
       end
       #do product training
       cmd = "--product-train -S #{train_scd} -K #{knowledge} --mode #{m.mode} -C #{cma}"
+      unless config.thread_num.nil?
+        cmd += " --thread-num #{config.thread_num}"
+      end
+      if config.use_psm?
+        cmd += " --use-psm"
+      end
       unless daemon.run(cmd)
         abort("product train failed")
       end
 
       #b5mo generator, update odb here
       if m.mode>=0
+        unless config.omapper.nil?
+          FileUtils.mkdir m.omapper unless File.exists? m.omapper
+          if config.omapper.start_with? 'http'
+            uri = URI(config.omapper)
+            Net::HTTP.start(uri.host, uri.port) do |http|
+              http.read_timeout = 3600
+              request = Net::HTTP::Get.new(uri.request_uri)
+              res = http.request(request)
+              File.open(m.omapper_data, 'w') do |f|
+                f.write res.body
+              end
+            end
+          else
+            FileUtils.cp config.omapper, m.omapper_data
+          end
+        end
         cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
         cmd+=" --bdb #{bdb}"
         if !last_o_m.nil? and m.mode==0
@@ -271,6 +296,9 @@ class B5mTask
         unless human_match.nil?
           cmd+=" --human-match #{human_match}"
         end
+        unless config.thread_num.nil?
+          cmd += " --thread-num #{config.thread_num}"
+        end
         unless daemon.run(cmd)
           abort("b5mo generate failed")
         end
@@ -278,6 +306,15 @@ class B5mTask
         cmd = "--b5mp-generate --mdb-instance #{m}"
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
+        end
+        if config.spu_only?
+          cmd+=" --spu-only"
+        end
+        unless config.thread_num.nil?
+          cmd += " --thread-num #{config.thread_num}"
+        end
+        unless config.buffer_size.nil?
+          cmd += " --buffer-size #{config.buffer_size}"
         end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
@@ -292,9 +329,12 @@ class B5mTask
         end
         m.ctime = ctime
         #b5mc generator
-        cmd = "--b5mc-generate -S #{comment_scd_path} --odb #{m.odb} --mdb-instance #{m} --cdb #{m.cdb} --mode #{m.cmode}"
-        if !last_codb.nil? and m.cmode==0
-          cmd+=" --last-odb #{last_codb}"
+        cmd = "--b5mc-generate -S #{comment_scd_path} --mode #{m.cmode} --mdb-instance #{m}"
+        if !last_c_m.nil? and m.cmode==0
+          cmd+=" --last-mdb-instance #{last_c_m}"
+        end
+        unless config.thread_num.nil?
+          cmd += " --thread-num #{config.thread_num}"
         end
         unless daemon.run(cmd)
           abort("b5mc generate failed")
@@ -309,6 +349,11 @@ class B5mTask
       cmd = "--tuan-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
       unless daemon.run(cmd)
         abort("tuan generate failed")
+      end
+    elsif config.schema=="tour"
+      cmd = "--tour-generate -S #{scd_path} --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("tour generate failed")
       end
     else
       abort("schema error")
