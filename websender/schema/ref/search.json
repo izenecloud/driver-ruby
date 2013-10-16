@@ -48,6 +48,26 @@
       }
     }]
   },
+  "ad_search": {
+    "desc": "Informations that are used to retrieve ads",
+    "type": "seq",
+    "sequence": [{
+      "title": "item",
+      "type": "map",
+      "mapping": {
+        "property": {
+          "type": "str",
+          "required": true,
+          "desc": "the attribute name"
+        },
+        "value": {
+          "type": "str",
+          "required": true,
+          "desc": "the attribute value"
+        }
+      }
+    }]
+  },
   "attr_label": {
     "desc": "Only get documents in the specified attribute groups",
     "type": "seq",
