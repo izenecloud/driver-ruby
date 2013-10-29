@@ -108,7 +108,7 @@ class B5mTask
         break
       end
     end
-    check_valid
+    #check_valid
   end
 
   def clean(opt={})

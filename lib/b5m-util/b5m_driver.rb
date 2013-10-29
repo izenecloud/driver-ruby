@@ -106,8 +106,12 @@ class B5mDriver
         break
       end
       sleep_time = config.monitor_interval
-      sleep_time = 30 if sleep_time<30
-      sleep_time*=2 if m.mode>0
+      if m.nil?
+        sleep_time = 1800
+      else
+        sleep_time = 30 if sleep_time<30
+        sleep_time*=5 if m.mode>0
+      end
       STDERR.puts "now sleep #{sleep_time} seconds"
       #unless last_start_time.nil?
         #this_start_time = last_start_time + config.monitor_interval
