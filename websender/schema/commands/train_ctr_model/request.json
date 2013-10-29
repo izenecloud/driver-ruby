@@ -1,0 +1,12 @@
+{
+  "title":"Sends training command",
+  "type":"map",
+  "desc":"Sends training command",
+  "mapping": {
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    }
+    }
+  }
+}
