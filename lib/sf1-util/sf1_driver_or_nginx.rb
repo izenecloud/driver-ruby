@@ -18,7 +18,11 @@ class Sf1DriverOrNginx
   def call(api, body, tokens="")
     begin
       if !@nginx_postfix.nil?
-        return @client.post_content("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body.to_json, 'Content-Type' => 'application/json')
+        r = @client.post_content("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body.to_json, 'Content-Type' => 'application/json')
+        if r.is_a? String
+          r = JSON.parse(r)
+        end
+        return r
       else
         return @conn.call(api, body, tokens)
       end
