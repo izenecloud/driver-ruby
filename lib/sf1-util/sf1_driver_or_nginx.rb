@@ -15,12 +15,12 @@ class Sf1DriverOrNginx
     end
   end
 
-  def call(api, body)
+  def call(api, body, tokens="")
     begin
       if !@nginx_postfix.nil?
         return @client.post_content("http://#{@ip}:#{@port}/#{@nginx_postfix}/#{api}", body.to_json, 'Content-Type' => 'application/json')
       else
-        return @conn.call(api, body)
+        return @conn.call(api, body, tokens)
       end
     rescue Exception => e
       STDERR.puts "call exception #{e}"

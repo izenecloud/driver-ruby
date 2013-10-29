@@ -73,14 +73,14 @@ class B5mHdfsIndexer
   def index_one(m, opt={})
     cmd_list = []
     if m.mode>=0
-      cmd_list << "rm -rf #{b5mo_scd_path(m)}"
-      cmd_list << "mkdir -p #{b5mo_scd_path(m)}"
       unless m.b5mo_scd_list.empty?
-      cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(m)}/"
+        cmd_list << "rm -rf #{b5mo_scd_path(m)}"
+        cmd_list << "mkdir -p #{b5mo_scd_path(m)}"
+        cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(m)}/"
       end
-      cmd_list << "rm -rf #{b5mp_scd_path(m)}"
-      cmd_list << "mkdir -p #{b5mp_scd_path(m)}"
       unless m.b5mp_scd_list.empty?
+        cmd_list << "rm -rf #{b5mp_scd_path(m)}"
+        cmd_list << "mkdir -p #{b5mp_scd_path(m)}"
         cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
       end
     end
@@ -113,10 +113,14 @@ class B5mHdfsIndexer
           end
           clear = false
           clear = true if m.mode>0
-          oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path(m))
-          oindexer.index
-          pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path(m))
-          pindexer.index
+          unless m.b5mo_scd_list.empty?
+            oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path(m))
+            oindexer.index
+          end 
+          unless m.b5mp_scd_list.empty?
+            pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path(m))
+            pindexer.index
+          end
         end
         threads << t
       end
