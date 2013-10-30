@@ -41,6 +41,9 @@ class B5mTask
       @indexer = B5mSingleIndexer.new(@config['indexer'])
     end
     @indexer.schema = config.schema
+    unless config.name.nil?
+      @index.schema = config.name
+    end
     #@instance_list = []
     #@config.sf1_instances.each do |si|
       #instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)

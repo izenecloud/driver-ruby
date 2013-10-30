@@ -7,8 +7,7 @@ class B5mConfig
     @file = File.expand_path(file)
     @config = YAML.load_file(@file)["config"]
     @id = File.basename(@file, ".yml")
-    @name = @id
-    @name = @config['name'] unless @config['name'].nil?
+    @name = @config['name']
     @schema = "b5m"
     unless @config['schema'].nil?
       @schema = @config['schema']
