@@ -140,7 +140,7 @@ private
     output_dir = File.join(output_cache_dir, last_input.name)
     FileUtils.mkdir_p output_dir
     daemon = B5mDaemon.new
-    daemon.run("--scd-merge -I #{input_cache_dir} -O #{output_dir} --all")
+    daemon.run("--scd-merge -I #{input_cache_dir} -O #{output_dir} --all --imc #{config.imc}")
     #system("ScdMergeTool -I #{input_cache_dir} -O #{output_dir} --gen-all")
     #FileUtils.rm_rf input_cache_dir
     output_scd_list = ScdParser.get_scd_list(output_dir)
