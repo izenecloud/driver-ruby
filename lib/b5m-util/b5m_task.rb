@@ -319,6 +319,9 @@ class B5mTask
         unless config.buffer_size.nil?
           cmd += " --buffer-size #{config.buffer_size}"
         end
+        unless config.sorter_bin.nil?
+          cmd += " --sorter-bin #{config.sorter_bin}"
+        end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
         end
