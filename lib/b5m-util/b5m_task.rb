@@ -42,7 +42,7 @@ class B5mTask
     end
     @indexer.schema = config.schema
     unless config.name.nil?
-      @index.schema = config.name
+      @indexer.schema = config.name
     end
     #@instance_list = []
     #@config.sf1_instances.each do |si|
