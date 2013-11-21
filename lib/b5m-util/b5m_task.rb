@@ -49,16 +49,16 @@ class B5mTask
       #instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
       #@instance_list << instance
     #end
-    unless File.exists? mdb
-      FileUtils.mkdir_p(mdb)
-    end
     @m_list = []
     @broken_m_list = []
     gen
   end
 
   def gen()
-    return if config.schema!="b5m"
+    unless File.exists? mdb
+      FileUtils.mkdir_p(mdb)
+    end
+    #return if config.schema!="b5m"
     @m_list.clear
     @broken_m_list.clear
     Dir.foreach(mdb) do |m|
@@ -376,7 +376,12 @@ class B5mTask
   #end
 
   def apply(m, opt={})
-    @indexer.index(m, opt)
+    begin
+      @indexer.index(m, opt)
+    rescue Exception => e
+      STDERR.puts "exception #{e} in indexing #{m}"
+      raise e
+    end
     if m.is_a? Array
       m.each do |im|
         im.status = "finished"

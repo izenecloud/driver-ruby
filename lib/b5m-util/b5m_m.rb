@@ -5,7 +5,7 @@ class B5mM
   include Comparable
 
   attr_reader :name, :path, :mdb, :time
-  attr_accessor :mode, :cmode
+  attr_accessor :mode, :cmode, :scd
 
   def initialize(path, name = nil)
     if name.nil?

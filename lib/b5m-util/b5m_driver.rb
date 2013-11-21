@@ -11,6 +11,113 @@ class B5mDriver
     @config = B5mConfig.new(config_file)
     @rounds_limit = 0
   end
+
+  def run
+    schema = config.schema
+    mode = 0 #B5MMode::INC as default
+    cmode = -1 #no comment process as default
+    #if schema!="b5m"
+    #  mode = 3
+    #  cmode = -1
+    #end
+    task = B5mTask.new(config)
+    task.clean(:keep => 5)
+    last_m_time = Time.at(0)
+    unless task.last_m.nil?
+      last_m_time = task.last_m.time
+    end
+    #last_rebuild_time = Time.at(0)
+    #unless task.last_rebuild_m.nil?
+    #  last_rebuild_time = task.last_rebuild_m.time
+    #end
+    #if schema=="b5m" and task.m_list.empty?
+    #  mode = 1
+    #  cmode = 1
+    #end
+    mname = B5mM.get_a_name
+    input_scd = task.scd
+    input_comment_scd = task.comment_scd
+    if config.monitor?
+      auto_rebuild = config.schema=="b5m"? false : true
+      #to set mode, cmode and input_scd_list below
+      input_scd_list = B5mInputScd.get_all(File.join(task.scd, "incremental"), config.scd_done_name, last_m_time)
+      rebuild_scd_list = B5mInputScd.get_all(File.join(task.scd,"rebuild"), config.scd_done_name, last_m_time)
+      if auto_rebuild
+        unless rebuild_scd_list.empty?
+          input_scd_list = [rebuild_scd_list.last]
+          mode = 1
+        end
+      elsif task.m_list.empty?
+        input_scd_list = [rebuild_scd_list.last]
+        mode = 1
+      end
+      if config.schema=="b5m" and mode>0
+        cmode = 1
+      end
+      #if mode>0
+      #  rebuild_scd_list = B5mInputScd.get_all(File.join(task.scd,"rebuild"), config.scd_done_name, last_rebuild_time)
+      #  if rebuild_scd_list.empty?
+      #    input_scd_list = []
+      #  else
+      #    input_scd_list = [rebuild_scd_list.last]
+      #  end
+      #elsif mode==0
+      #  start_time = Time.at(0)
+      #  unless task.last_m.nil?
+      #    start_time = task.last_m.time
+      #  end
+      #  input_scd_list = B5mInputScd.get_all(File.join(task.scd, "incremental"), config.scd_done_name, start_time)
+      #end
+      if cmode>0
+        input_comment_scd = B5mInputScd.get_all(File.join(task.comment_scd, "rebuild"), config.scd_done_name).last
+      else
+        input_comment_scd = nil
+      end
+      if input_scd_list.empty?
+        #STDERR.puts "input scd empty"
+        input_scd = nil
+      elsif input_scd_list.size==1 or config.schema=="__other"
+        input_scd = input_scd_list.first.path
+        mname = input_scd_list.first.name
+      else
+        input_b5m_scd = merge_scd(input_scd_list)
+        input_scd = input_b5m_scd.path
+        mname = input_b5m_scd.name
+      end
+      input_comment_scd = input_comment_scd.path unless input_comment_scd.nil?
+    end
+    unless input_scd.nil?
+      m = B5mM.new(task.mdb, mname)
+      m.mode = mode
+      m.cmode = cmode
+      m.scd = input_scd
+      puts "schema:#{schema}"
+      puts "mode:#{mode}"
+      puts "cmode:#{cmode}"
+      task.scd = input_scd
+      task.comment_scd = input_comment_scd
+      puts "input_scd:#{task.scd}"
+      puts "input_c_scd:#{task.comment_scd}"
+      puts "input_t_scd:#{task.train_scd}"
+
+      #if m.cmode==0 and !input_lastcm.nil?
+        #task.set_last_c_m(input_lastcm)
+      #end
+      last_start_time = Time.now
+      task.print_last
+      if schema!="__other"
+        task.matcher_start m
+      else
+        m.create
+      end
+      opt = {:scd_only => config.noindex?}
+      unless config.noapply?
+        task.apply(m, opt)
+        task.send_mail(m) if config.send_mail?
+      end
+    end
+    
+  end
   def start
 
     #default parameters

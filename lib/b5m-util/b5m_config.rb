@@ -29,6 +29,9 @@ class B5mConfig
     unless @config['imc'].nil?
       @imc = @config['imc'].to_i
     end
+    if @config['path_of']['work_dir'].nil?
+      @config['path_of']['work_dir'] = File.join(File.dirname(@file), "work_dir")
+    end
     #@b5mo_name = "#{name}o"
     #@b5mp_name = "#{name}p"
     #@b5mc_name = "#{name}c"

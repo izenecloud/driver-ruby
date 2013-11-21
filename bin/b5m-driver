@@ -1,18 +1,27 @@
 #!/usr/bin/env ruby
 require 'b5m-util/b5m_driver'
 
+instance = "."
 config_file = "./config.yml"
 rlimit = 0
 ARGV.each_with_index do |a,i|
-  if a=="--config"
-    config_file = ARGV[i+1]
+  if a=="-I"
+    instance = ARGV[i+1]
   elsif a=="--rounds-limit"
     rlimit = ARGV[i+1].to_i
   end
 end
+config_file = File.join(instance, "config.yml")
 abort "config.yml not found" unless File.file? config_file
-driver = B5mDriver.new(config_file)
-driver.rounds_limit = rlimit if rlimit>0
-driver.start
-
+pid_file = File.join(instance, "pid")
+abort "pid file exists, maybe another process running" if File.exists? pid_file
+File.open(pid_file, File::RDWR | File::CREAT, 0644) do |f|
+    f.flock(File::LOCK_EX)
+    f.puts Process.pid
+    f.flush
+    driver = B5mDriver.new(config_file)
+    driver.rounds_limit = rlimit if rlimit>0
+    driver.run
+end
+File.delete pid_file if File.exists? pid_file
 

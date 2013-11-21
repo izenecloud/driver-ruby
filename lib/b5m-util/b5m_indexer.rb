@@ -31,6 +31,7 @@ class B5mIndexer
       return false if response.nil?
       STDERR.puts response
     end
+    return true
   end
 
 end
