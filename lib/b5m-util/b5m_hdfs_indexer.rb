@@ -141,9 +141,9 @@ class B5mHdfsIndexer
       cmd_list << "cp #{m.b5mc}/*.SCD #{b5mc_scd_path(m)}/"
     end
     cmd_list.each do |cmd|
-      STDERR.puts cmd
-      system(cmd)
-      raise "cmd fail" unless $?.success?
+      STDERR.puts "ingore cmd #{cmd}"
+      #system(cmd)
+      #raise "cmd fail" unless $?.success?
     end
     scd_only = opt[:scd_only]
     scd_only = false if scd_only.nil?

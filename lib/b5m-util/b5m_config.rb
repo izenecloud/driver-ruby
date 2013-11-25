@@ -142,6 +142,13 @@ class B5mConfig
     return @config['scd_done_name']
   end
 
+  def save(file)
+    obj = {:config => @config}
+    File.open(file, "w") do |f|
+      f.puts obj.to_yaml
+    end
+  end
+
   #def sf1_instances
 
     #config['sf1_instance']

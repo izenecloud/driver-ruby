@@ -223,11 +223,15 @@ class B5mTask
     m.create
     m.status = "matching"
     m.flush
+    m_config_file = File.join(m.path, "config")
+    config.save(m_config_file)
     #then copy related db to the new m
-    if m.mode==0 and !last_odb.nil?
-      puts "copy #{last_odb} to #{m.odb}"
-      FileUtils.cp_r(last_odb, m.odb)
-    end
+    #if m.mode==0 and !last_odb.nil?
+    #  puts "copy #{last_odb} to #{m.odb}"
+    #  FileUtils.cp_r(last_odb, m.odb)
+    #end
+
+    #cmode==0 never happen now
     if m.cmode==0 and !last_cdb.nil?
       puts "copy #{last_cdb} to #{m.cdb}"
       FileUtils.cp_r(last_cdb, m.cdb)
@@ -291,13 +295,10 @@ class B5mTask
             FileUtils.cp config.omapper, m.omapper_data
           end
         end
-        cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
+        cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --mdb-instance #{m}"
         cmd+=" --bdb #{bdb}"
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
-        end
-        unless human_match.nil?
-          cmd+=" --human-match #{human_match}"
         end
         unless config.thread_num.nil?
           cmd += " --thread-num #{config.thread_num}"
