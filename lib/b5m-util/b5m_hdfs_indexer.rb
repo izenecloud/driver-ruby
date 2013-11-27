@@ -28,6 +28,13 @@ class B5mHdfsIndexer
         name = "a" if name=="p"
       end
       return "#{collection_name}#{name}"
+    elsif key.end_with? 'schema_name'
+      name = key[0, key.length-'_schema_name'.length]
+      if collection_name=="tuan"
+        name = "m" if name=="o"
+        name = "a" if name=="p"
+      end
+      return "#{@schema}#{name}"
     else
       return @param[m.to_s]
     end
@@ -54,17 +61,17 @@ class B5mHdfsIndexer
   end
 
   def b5mo_scd_path(m)
-    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_collection_name}"
+    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_schema_name}"
 
     path
   end
   def b5mp_scd_path(m)
-    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_collection_name}"
+    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_schema_name}"
 
     path
   end
   def b5mc_scd_path(m)
-    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_collection_name}"
+    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_schema_name}"
 
     path
   end
@@ -75,17 +82,17 @@ class B5mHdfsIndexer
   end
 
   def b5mo_index_path(m)
-    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_collection_name}"
+    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_schema_name}"
 
     path
   end
   def b5mp_index_path(m)
-    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_collection_name}"
+    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_schema_name}"
 
     path
   end
   def b5mc_index_path(m)
-    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_collection_name}"
+    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_schema_name}"
 
     path
   end
@@ -122,35 +129,16 @@ class B5mHdfsIndexer
       end
       return
     end
-    cmd_list = []
-    if m.mode>=0
-      if !m.b5mo_scd_list.empty? and !@ignoreo
-        cmd_list << "rm -rf #{b5mo_scd_path(m)}"
-        cmd_list << "mkdir -p #{b5mo_scd_path(m)}"
-        cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(m)}/"
-      end
-      if !m.b5mp_scd_list.empty? and !@ignorep
-        cmd_list << "rm -rf #{b5mp_scd_path(m)}"
-        cmd_list << "mkdir -p #{b5mp_scd_path(m)}"
-        cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(m)}/"
-      end
-    end
-    if m.cmode>=0
-      cmd_list << "rm -rf #{b5mc_scd_path(m)}"
-      cmd_list << "mkdir -p #{b5mc_scd_path(m)}"
-      cmd_list << "cp #{m.b5mc}/*.SCD #{b5mc_scd_path(m)}/"
-    end
-    cmd_list.each do |cmd|
-      STDERR.puts "ingore cmd #{cmd}"
-      #system(cmd)
-      #raise "cmd fail" unless $?.success?
-    end
+    b5mo_scd_list = ScdParser.get_scd_list(b5mo_scd_path(m))
+    b5mp_scd_list = ScdParser.get_scd_list(b5mp_scd_path(m))
+    b5mc_scd_list = ScdParser.get_scd_list(b5mc_scd_path(m))
     scd_only = opt[:scd_only]
     scd_only = false if scd_only.nil?
     return if scd_only
     STDERR.puts "o_collection_name #{o_collection_name}"
     STDERR.puts "p_collection_name #{p_collection_name}"
-    sleep 10.0
+    STDERR.puts "b5mo scd path #{b5mo_scd_path(m)}"
+    STDERR.puts "b5mp scd path #{b5mp_scd_path(m)}"
     if m.mode>=0
       #request = {:collection => o_collection_name}
       #response = @conn.call("commands/index", request)
@@ -165,13 +153,13 @@ class B5mHdfsIndexer
         end
         clear = false
         clear = true if m.mode>0
-        if !m.b5mo_scd_list.empty? and !@ignoreo
+        if !b5mo_scd_list.empty? and !@ignoreo
           oindexer = B5mIndexer.new(conn, o_collection_name, clear, b5mo_index_path(m))
           unless oindexer.index
             raise "#{o_collection_name} index on #{ip} fail"
           end
         end 
-        if !m.b5mp_scd_list.empty? and !@ignorep
+        if !b5mp_scd_list.empty? and !@ignorep
           pindexer = B5mIndexer.new(conn, p_collection_name, clear, b5mp_index_path(m))
           unless pindexer.index
             raise "#{p_collection_name} index on #{ip} fail"

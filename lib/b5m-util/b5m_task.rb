@@ -41,9 +41,6 @@ class B5mTask
       @indexer = B5mSingleIndexer.new(@config['indexer'])
     end
     @indexer.schema = config.schema
-    unless config.name.nil?
-      @indexer.schema = config.name
-    end
     #@instance_list = []
     #@config.sf1_instances.each do |si|
       #instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
@@ -223,8 +220,6 @@ class B5mTask
     m.create
     m.status = "matching"
     m.flush
-    m_config_file = File.join(m.path, "config")
-    config.save(m_config_file)
     #then copy related db to the new m
     #if m.mode==0 and !last_odb.nil?
     #  puts "copy #{last_odb} to #{m.odb}"
@@ -257,9 +252,21 @@ class B5mTask
     else
       m.cmode = -1
     end
+    mconfig = Marshal.load(Marshal.dump(config.config))
+    mconfig['path_of']['scd'] = scd_path
+    mconfig['path_of']['knowledge'] = knowledge
+    mconfig['mode'] = m.mode
+    mconfig['cmode'] = m.cmode
+    if m.cmode>=0
+      mconfig['path_of']['comment_scd'] = comment_scd_path
+    end
+    m_config_file = File.join(m.path, "config")
+    File.open(m_config_file, 'w') do |f|
+      f.puts mconfig.to_yaml
+    end
     cma = config.path_of('cma')
-    mobile_source = config.path_of('mobile_source')
-    human_match = config.path_of('human_match')
+    #mobile_source = config.path_of('mobile_source')
+    #human_match = config.path_of('human_match')
     daemon = B5mDaemon.new
     if config.schema=="b5m"
       unless File.exists? knowledge
@@ -295,13 +302,9 @@ class B5mTask
             FileUtils.cp config.omapper, m.omapper_data
           end
         end
-        cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --mdb-instance #{m}"
-        cmd+=" --bdb #{bdb}"
+        cmd = "--b5mo-generate --mdb-instance #{m}"
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
-        end
-        unless config.thread_num.nil?
-          cmd += " --thread-num #{config.thread_num}"
         end
         unless daemon.run(cmd)
           abort("b5mo generate failed")
@@ -310,18 +313,6 @@ class B5mTask
         cmd = "--b5mp-generate --mdb-instance #{m}"
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
-        end
-        if config.spu_only?
-          cmd+=" --spu-only"
-        end
-        unless config.thread_num.nil?
-          cmd += " --thread-num #{config.thread_num}"
-        end
-        unless config.buffer_size.nil?
-          cmd += " --buffer-size #{config.buffer_size}"
-        end
-        unless config.sorter_bin.nil?
-          cmd += " --sorter-bin #{config.sorter_bin}"
         end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
@@ -336,12 +327,9 @@ class B5mTask
         end
         m.ctime = ctime
         #b5mc generator
-        cmd = "--b5mc-generate -S #{comment_scd_path} --mode #{m.cmode} --mdb-instance #{m}"
+        cmd = "--b5mc-generate --mdb-instance #{m}"
         if !last_c_m.nil? and m.cmode==0
           cmd+=" --last-mdb-instance #{last_c_m}"
-        end
-        unless config.thread_num.nil?
-          cmd += " --thread-num #{config.thread_num}"
         end
         unless daemon.run(cmd)
           abort("b5mc generate failed")
