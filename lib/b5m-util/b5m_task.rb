@@ -336,17 +336,17 @@ class B5mTask
         end
       end
     elsif config.schema=="ticket"
-      cmd = "--ticket-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
+      cmd = "--ticket-generate --mdb-instance #{m}"
       unless daemon.run(cmd)
         abort("ticket generate failed")
       end
     elsif config.schema=="tuan"
-      cmd = "--tuan-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
+      cmd = "--tuan-generate --mdb-instance #{m}"
       unless daemon.run(cmd)
         abort("tuan generate failed")
       end
     elsif config.schema=="tour"
-      cmd = "--tour-generate -S #{scd_path} --mdb-instance #{m}"
+      cmd = "--tour-generate --mdb-instance #{m}"
       unless daemon.run(cmd)
         abort("tour generate failed")
       end

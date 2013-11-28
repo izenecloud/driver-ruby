@@ -186,75 +186,53 @@ class B5mHdfsIndexer
     end
   end
 
-  def index_multi(m_list, opt={})
-    rebuild = nil
-    m_list.each do |m|
-      if m.mode>0 or m.cmode>0
-        rebuild = m
-      end
-    end
-    unless rebuild.nil?
-      puts "processing rebuild #{rebuild}"
-      sleep 20.0
-      index_one(rebuild, opt)
-    end
-    inc_m_list = m_list.clone
-    unless rebuild.nil?
-      inc_m_list.clear
-      m_list.each do |m|
-        if m.time>rebuild.time
-          inc_m_list << m
-        end
-      end
-    end
-    return if inc_m_list.empty?
-    lastm = inc_m_list.last
-    cmd_list = []
-    unless @ignoreo
-      cmd_list << "rm -rf #{b5mo_scd_path(lastm)}"
-      cmd_list << "mkdir -p #{b5mo_scd_path(lastm)}"
-    end
-    unless @ignorep
-      cmd_list << "rm -rf #{b5mp_scd_path(lastm)}"
-      cmd_list << "mkdir -p #{b5mp_scd_path(lastm)}"
-    end
-    inc_m_list.each do |m|
-      if !m.b5mo_scd_list.empty? and !@ignoreo
-        cmd_list << "cp #{m.b5mo}/*.SCD #{b5mo_scd_path(lastm)}/"
-      end
-      if !m.b5mp_scd_list.empty? and !@ignorep
-        cmd_list << "cp #{m.b5mp}/*.SCD #{b5mp_scd_path(lastm)}/"
-      end
-    end
-    cmd_list.each do |cmd|
-      STDERR.puts cmd
-      system(cmd)
-      raise "cmd fail" unless $?.success?
-    end
-    scd_only = opt[:scd_only]
-    scd_only = false if scd_only.nil?
-    return if scd_only
-    ip_list.each do |ip|
-      conn = nil
-      if use_driver?
-        conn = Sf1DriverOrNginx.new(ip, port)
-      else
-        conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
-      end
-      unless @ignoreo
-        oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
-        unless oindexer.index
-          raise "#{o_collection_name} index on #{ip} fail"
-        end
-      end
-      unless @ignorep
-        pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))
-        unless pindexer.index
-          raise "#{p_collection_name} index on #{ip} fail"
-        end
-      end
-    end
-  end
+  #def index_multi(m_list, opt={})
+  #  rebuild = nil
+  #  m_list.each do |m|
+  #    if m.mode>0 or m.cmode>0
+  #      rebuild = m
+  #    end
+  #  end
+  #  unless rebuild.nil?
+  #    puts "processing rebuild #{rebuild}"
+  #    sleep 20.0
+  #    index_one(rebuild, opt)
+  #  end
+  #  inc_m_list = m_list.clone
+  #  unless rebuild.nil?
+  #    inc_m_list.clear
+  #    m_list.each do |m|
+  #      if m.time>rebuild.time
+  #        inc_m_list << m
+  #      end
+  #    end
+  #  end
+  #  return if inc_m_list.empty?
+  #  lastm = inc_m_list.last
+  #  scd_only = opt[:scd_only]
+  #  scd_only = false if scd_only.nil?
+  #  return if scd_only
+  #  ip_list.each do |ip|
+  #    conn = nil
+  #    if use_driver?
+  #      conn = Sf1DriverOrNginx.new(ip, port)
+  #    else
+  #      conn = Sf1DriverOrNginx.new(ip, port, "sf1r")
+  #    end
+  #    unless @ignoreo
+  #      oindexer = B5mIndexer.new(conn, o_collection_name, false, b5mo_index_path(lastm))
+  #      unless oindexer.index
+  #        raise "#{o_collection_name} index on #{ip} fail"
+  #      end
+  #    end
+  #    unless @ignorep
+  #      pindexer = B5mIndexer.new(conn, p_collection_name, false, b5mp_index_path(lastm))
+  #      unless pindexer.index
+  #        raise "#{p_collection_name} index on #{ip} fail"
+  #      end
+  #    end
+  #  end
+  #end
 end
 
 
