@@ -17,7 +17,7 @@ class B5mIndexer
       unless @scd_path.nil?
         request[:index_scd_path] = @scd_path
       end
-      STDERR.puts "rebuilding #{request}"
+      STDERR.puts "rebuilding #{@conn.host} #{request}"
       sleep 10.0
       response = @conn.call("collection/rebuild_from_scd", request)
       return false if response.nil?
@@ -27,7 +27,7 @@ class B5mIndexer
       unless @scd_path.nil?
         request[:index_scd_path] = @scd_path
       end
-      STDERR.puts "indexing #{request}"
+      STDERR.puts "indexing #{@conn.host} #{request}"
       sleep 10.0
       response = @conn.call("commands/index", request)
       return false if response.nil?
