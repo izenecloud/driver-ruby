@@ -61,17 +61,17 @@ class B5mHdfsIndexer
   end
 
   def b5mo_scd_path(m)
-    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_schema_name}"
+    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_collection_name}"
 
     path
   end
   def b5mp_scd_path(m)
-    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_schema_name}"
+    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_collection_name}"
 
     path
   end
   def b5mc_scd_path(m)
-    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_schema_name}"
+    path = "#{@param['hdfs_mnt']}/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_collection_name}"
 
     path
   end
@@ -82,17 +82,17 @@ class B5mHdfsIndexer
   end
 
   def b5mo_index_path(m)
-    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_schema_name}"
+    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{o_collection_name}"
 
     path
   end
   def b5mp_index_path(m)
-    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_schema_name}"
+    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{p_collection_name}"
 
     path
   end
   def b5mc_index_path(m)
-    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_schema_name}"
+    path = "/#{@param['hdfs_prefix']}/#{collection_name}/#{m.name}/#{c_collection_name}"
 
     path
   end
