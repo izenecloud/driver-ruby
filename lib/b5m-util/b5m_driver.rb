@@ -113,8 +113,8 @@ class B5mDriver
       opt = {:scd_only => config.noindex?}
       unless config.noapply?
         task.apply(m, opt)
-        task.send_mail(m) if config.send_mail?
       end
+      task.send_mail(m) if config.send_mail?
     end
     
   end

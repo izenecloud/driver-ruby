@@ -265,6 +265,7 @@ class B5mTask
     File.open(m_config_file, 'w') do |f|
       f.puts mconfig.to_yaml
     end
+    m.set_scd_path(config)
     cma = config.path_of('cma')
     #mobile_source = config.path_of('mobile_source')
     #human_match = config.path_of('human_match')
@@ -355,6 +356,8 @@ class B5mTask
       abort("schema error")
     end
     m.status = "matched"
+    sleep 5.0
+    m.count_scd
     m.flush
     gen
   end
@@ -368,6 +371,12 @@ class B5mTask
   def apply(m, opt={})
     begin
       @indexer.index(m, opt)
+      if config.schema=="__other"
+        m.set_scd_path(config)
+        sleep 5.0
+        m.count_scd
+        m.flush
+      end
     rescue Exception => e
       STDERR.puts "exception #{e} in indexing #{m}"
       raise e
@@ -387,7 +396,7 @@ class B5mTask
     return if m.nil?
     return if m.status!="finished" and m.status!="matched"
     puts "start to send mail at #{m}"
-    subject = "Matcher (#{config.schema})"
+    subject = "Matcher/Index (#{config.coll_name})"
     if m.mode>0
       subject += ' Rebuild'
     elsif m.mode==0
@@ -398,27 +407,39 @@ class B5mTask
     #subject += " to #{config.first_ip}"
     subject += ' Finish'
     body = "schema #{config.schema}\n"
-    body = "working path #{m.path}\n"
+    body += "collection_name #{config.coll_name}\n"
+    body += "working path #{m.path}\n"
     body += "timestamp #{m.name}\n"
     body += "o/p mode #{m.mode}\n"
     body += "c mode #{m.cmode}\n"
     body += "start_time #{m.start_time}\n"
-    ou_count, od_count = ScdParser.get_ud_doc_count(m.b5mo)
-    pu_count, pd_count = ScdParser.get_ud_doc_count(m.b5mp)
-    cu_count, cd_count = ScdParser.get_ud_doc_count(m.b5mc)
-    body += "b5mo update(rtype) doc count #{ou_count}\n"
-    body += "b5mo delete doc count #{od_count}\n"
-    body += "b5mp update(rtype) doc count #{pu_count}\n"
-    body += "b5mp delete doc count #{pd_count}\n"
-    body += "b5mc update doc count #{cu_count}\n"
-    body += "b5mc delete doc count #{cd_count}\n"
-
+    #ou_count, od_count = ScdParser.get_ud_doc_count(m.b5mo)
+    #pu_count, pd_count = ScdParser.get_ud_doc_count(m.b5mp)
+    #cu_count, cd_count = ScdParser.get_ud_doc_count(m.b5mc)
+    if m.ou_count>0
+      body += "O insert/update/rtype doc count #{m.ou_count}\n"
+    end
+    if m.od_count>0
+      body += "O delete doc count #{m.od_count}\n"
+    end
+    if m.pu_count>0
+      body += "P insert/update/rtype doc count #{m.pu_count}\n"
+    end
+    if m.pd_count>0
+      body += "P delete doc count #{m.pd_count}\n"
+    end
+    if m.cu_count>0
+      body += "C update doc count #{m.cu_count}\n"
+    end
+    if m.cd_count>0
+      body += "C delete doc count #{m.cd_count}\n"
+    end
 
     begin
 
       B5mMail.send({:host => 'localhost', 
-                   :to => ['matcher_notify@b5m.com'],
-                   :from => 'matcher_notify@b5m.com',
+                   :to => ['matcher_notify@b5m.cn'],
+                   :from => 'matcher_notify@b5m.cn',
                    :from_alias => 'Matcher Message',
                    :subject => subject, 
                    :body => body})
@@ -437,6 +458,5 @@ private
     end
   end
 
-
-
 end
+

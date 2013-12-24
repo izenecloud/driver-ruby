@@ -4,7 +4,7 @@ require 'date'
 class B5mM
   include Comparable
 
-  attr_reader :name, :path, :mdb, :time
+  attr_reader :name, :path, :mdb, :time, :b5mo, :b5mp, :b5mc, :ou_count, :od_count, :pu_count, :pd_count, :cu_count, :cd_count
   attr_accessor :mode, :cmode, :scd
 
   def initialize(path, name = nil)
@@ -24,25 +24,63 @@ class B5mM
     @property = YAML.load_file(@property_file) if File.file?(@property_file)
     @mode = @property['mode']
     @cmode = @property['cmode']
-    #@status_file = File.join(@path, "status")
-    #@mode_file = File.join(@path, "mode")
-    #@cmode_file = File.join(@path, "cmode")
-    #if File.file? @status_file
-      #@status = IO.readlines(@status_file).first.strip
-    #end
-    #if File.file? @mode_file
-      #@mode = IO.readlines(@mode_file).first.strip.to_i
-    #end
-    #if File.file? @cmode_file
-      #@cmode = IO.readlines(@cmode_file).first.strip.to_i
-    #end
+    @b5mo = File.join(@path, 'b5mo')
+    @b5mp = File.join(@path, 'b5mp')
+    @b5mc = File.join(@path, 'b5mc')
+    @ou_count = @property['ou_count'] || 0
+    @od_count = @property['od_count'] || 0
+    @pu_count = @property['pu_count'] || 0
+    @pd_count = @property['pd_count'] || 0
+    @cu_count = @property['cu_count'] || 0
+    @cd_count = @property['cd_count'] || 0
+
   end
 
   def flush
     @property['mode'] = mode
     @property['cmode'] = cmode
+    @property['ou_count'] = @ou_count
+    @property['od_count'] = @od_count
+    @property['pu_count'] = @pu_count
+    @property['pd_count'] = @pd_count
+    @property['cu_count'] = @cu_count
+    @property['cd_count'] = @cd_count
     File.open(@property_file, 'w') do |f|
       f.write @property.to_yaml
+    end
+  end
+
+  def set_scd_path(config)
+    indexer = config.config['indexer']
+    return if indexer.nil?
+    type = indexer['type']
+    return if type.nil?
+    return if type!="hdfs"
+    prefix = "#{indexer['hdfs_mnt']}/#{indexer['hdfs_prefix']}/#{config.coll_name}/#{@name}"
+    if config.schema=="__other"
+      @b5mo = prefix
+      @b5mp = nil
+      @b5mc = nil
+    elsif config.schema!="tuan"
+      @b5mo = "/#{prefix}/#{config.coll_name}o"
+      @b5mp = "/#{prefix}/#{config.coll_name}p"
+      @b5mc = "/#{prefix}/#{config.coll_name}c"
+    else
+      @b5mo = "/#{prefix}/#{config.coll_name}m"
+      @b5mp = "/#{prefix}/#{config.coll_name}a"
+      @b5mc = "/#{prefix}/#{config.coll_name}c"
+    end
+  end
+
+  def count_scd
+    unless @b5mo.nil?
+      @ou_count, @od_count = ScdParser.get_ud_doc_count(@b5mo)
+    end
+    unless @b5mp.nil?
+      @pu_count, @pd_count = ScdParser.get_ud_doc_count(@b5mp)
+    end
+    unless @b5mc.nil?
+      @cu_count, @cd_count = ScdParser.get_ud_doc_count(@b5mc)
     end
   end
 
@@ -91,21 +129,6 @@ class B5mM
     FileUtils.mkdir(path)
     @property['pid'] = Process.pid
     @property['start_time'] = Time.now
-  end
-
-  def b5mo
-
-    File.join(path, "b5mo")
-  end
-
-  def b5mp
-
-    File.join(path, "b5mp")
-  end
-
-  def b5mc
-
-    File.join(path, "b5mc")
   end
 
   def b5mo_mirror

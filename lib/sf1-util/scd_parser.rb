@@ -54,14 +54,14 @@ class ScdParser
     scd_list.each do |scd|
       type = scd_type(scd)
       scount = `grep -c '<DOCID>' #{scd}`
+      #STDERR.puts "find #{scount} in #{scd}"
       count = scount.to_i
-      if type==UPDATE_SCD or type==RTYPE_SCD
+      if type==INSERT_SCD or type==UPDATE_SCD or type==RTYPE_SCD
         ucount+=count
       elsif type==DELETE_SCD
         dcount+=count
       end
     end
-
     return ucount, dcount
   end
 

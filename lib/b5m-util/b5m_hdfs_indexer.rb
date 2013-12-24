@@ -113,6 +113,9 @@ class B5mHdfsIndexer
         system(cmd)
         raise "cmd fail" unless $?.success?
       end
+      scd_only = opt[:scd_only]
+      scd_only = false if scd_only.nil?
+      return if scd_only
       ip_list.each do |ip|
         conn = nil
         if use_driver?

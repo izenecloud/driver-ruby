@@ -2,10 +2,12 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc
+  attr_reader :file, :config, :id, :name, :schema, :coll_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc
   def initialize(file)
     @file = File.expand_path(file)
-    @config = YAML.load_file(@file)["config"]
+    root = YAML.load_file(@file)
+    @config = root["config"]
+    @config = root if @config.nil?
     @id = File.basename(@file, ".yml")
     @name = @config['name']
     @schema = "b5m"
@@ -31,6 +33,14 @@ class B5mConfig
     end
     if @config['path_of']['work_dir'].nil?
       @config['path_of']['work_dir'] = File.join(File.dirname(@file), "work_dir")
+    end
+    @coll_name = @schema
+    indexer = @config['indexer']
+    unless indexer.nil?
+      collection_name = indexer['collection_name']
+      unless collection_name.nil?
+        @coll_name = collection_name
+      end
     end
     #@b5mo_name = "#{name}o"
     #@b5mp_name = "#{name}p"

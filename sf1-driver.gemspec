@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.executables << 'sf1r-resource'
   s.executables << 'b5m-driver'
   s.executables << 'b5m-indexer'
+  s.executables << 'b5m-m-mail'
  
 end
 
