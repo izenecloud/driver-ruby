@@ -100,6 +100,8 @@ class B5mHdfsIndexer
     if schema=="__other"
       index_path = scd_scd_path(m)
       if m.scd!=index_path
+        STDERR.puts "need to copy scd to hdfs"
+        sleep 10.0
         cmd_list = []
         cmd_list << "rm -rf #{index_path}"
         cmd_list << "mkdir -p #{index_path}"
