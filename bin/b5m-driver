@@ -4,9 +4,12 @@ require 'b5m-util/b5m_driver'
 instance = "."
 config_file = "./config.yml"
 rlimit = 0
+force = false
 ARGV.each_with_index do |a,i|
   if a=="-I"
     instance = ARGV[i+1]
+  elsif a=="--force"
+    force = true
   elsif a=="--rounds-limit"
     rlimit = ARGV[i+1].to_i
   end
@@ -14,7 +17,13 @@ end
 config_file = File.join(instance, "config.yml")
 abort "config.yml not found" unless File.file? config_file
 pid_file = File.join(instance, "pid")
-abort "pid file exists, maybe another process running" if File.exists? pid_file
+if File.exists? pid_file
+  if force
+    File.delete pid_file
+  else
+    abort "pid file exists, maybe another process running"
+  end
+end
 File.open(pid_file, File::RDWR | File::CREAT, 0644) do |f|
     f.flock(File::LOCK_EX)
     f.puts Process.pid

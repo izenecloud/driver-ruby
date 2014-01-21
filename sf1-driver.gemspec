@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.executables << 'b5m-driver'
   s.executables << 'b5m-indexer'
   s.executables << 'b5m-m-mail'
+  s.executables << 'b5m-monitor'
  
 end
 

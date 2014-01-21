@@ -4,8 +4,8 @@ require 'date'
 class B5mM
   include Comparable
 
-  attr_reader :name, :path, :mdb, :time, :b5mo, :b5mp, :b5mc, :ou_count, :od_count, :pu_count, :pd_count, :cu_count, :cd_count
-  attr_accessor :mode, :cmode, :scd
+  attr_reader :name, :path, :mdb, :time, :b5mo, :b5mp, :b5mc, :ou_count, :od_count, :pu_count, :pd_count, :cu_count, :cd_count, :local_b5mo, :local_b5mp, :local_b5mc
+  attr_accessor :mode, :cmode, :scd, :comment_scd, :knowledge
 
   def initialize(path, name = nil)
     if name.nil?
@@ -27,6 +27,9 @@ class B5mM
     @b5mo = File.join(@path, 'b5mo')
     @b5mp = File.join(@path, 'b5mp')
     @b5mc = File.join(@path, 'b5mc')
+    @local_b5mo = @b5mo
+    @local_b5mp = @b5mp
+    @local_b5mc = @b5mc
     @ou_count = @property['ou_count'] || 0
     @od_count = @property['od_count'] || 0
     @pu_count = @property['pu_count'] || 0
@@ -47,28 +50,6 @@ class B5mM
     @property['cd_count'] = @cd_count
     File.open(@property_file, 'w') do |f|
       f.write @property.to_yaml
-    end
-  end
-
-  def set_scd_path(config)
-    indexer = config.config['indexer']
-    return if indexer.nil?
-    type = indexer['type']
-    return if type.nil?
-    return if type!="hdfs"
-    prefix = "#{indexer['hdfs_mnt']}/#{indexer['hdfs_prefix']}/#{config.coll_name}/#{@name}"
-    if config.schema=="__other"
-      @b5mo = prefix
-      @b5mp = nil
-      @b5mc = nil
-    elsif config.schema!="tuan"
-      @b5mo = "/#{prefix}/#{config.coll_name}o"
-      @b5mp = "/#{prefix}/#{config.coll_name}p"
-      @b5mc = "/#{prefix}/#{config.coll_name}c"
-    else
-      @b5mo = "/#{prefix}/#{config.coll_name}m"
-      @b5mp = "/#{prefix}/#{config.coll_name}a"
-      @b5mc = "/#{prefix}/#{config.coll_name}c"
     end
   end
 
@@ -125,10 +106,39 @@ class B5mM
     return name<=>o.name
   end
 
-  def create
+  def create(config=nil)
     FileUtils.mkdir(path)
     @property['pid'] = Process.pid
     @property['start_time'] = Time.now
+    unless config.nil?
+      mconfig = Marshal.load(Marshal.dump(config.config))
+      mconfig['path_of']['scd'] = scd
+      mconfig['path_of']['knowledge'] = knowledge
+      mconfig['mode'] = mode
+      mconfig['cmode'] = cmode
+      if cmode>=0
+        mconfig['path_of']['comment_scd'] = comment_scd
+      end
+      m_config_file = File.join(@path, "config")
+      File.open(m_config_file, 'w') do |f|
+        f.puts mconfig.to_yaml
+      end
+      indexer = config.config['indexer']
+      return if indexer.nil?
+      type = indexer['type']
+      return if type.nil?
+      return if type!="hdfs"
+      prefix = "#{indexer['hdfs_mnt']}/#{indexer['hdfs_prefix']}/#{config.collection_name}/#{@name}"
+      if config.schema=="__other"
+        @b5mo = prefix
+        @b5mp = nil
+        @b5mc = nil
+      else
+        @b5mo = "/#{prefix}/#{config.o_collection_name}"
+        @b5mp = "/#{prefix}/#{config.p_collection_name}"
+        @b5mc = "/#{prefix}/#{config.c_collection_name}"
+      end
+    end
   end
 
   def b5mo_mirror

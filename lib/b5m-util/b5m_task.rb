@@ -9,27 +9,26 @@ require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_logger'
 require 'net/smtp'
 require 'fileutils'
+require 'logger'
 
 class B5mTask
   include Sf1Logger
 
-  attr_accessor :email, :m, :scd, :train_scd, :comment_scd
-  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
+  attr_accessor :email, :m, :train_scd
+  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :last_db_m, :last_rebuild_m
 
   def initialize(config_file)
+    @logger = Logger.new(STDERR)
     @email = false
     if config_file.is_a? String
       @config = B5mConfig.new(config_file)
     else
       @config = config_file
     end
-    @scd = config.path_of('scd')
     @train_scd = config.path_of('train_scd')
-    @comment_scd = config.path_of('comment_scd')
     @indexer = nil
     indexer_type = "single"
     #indexer_type = @config['indexer']['type']
-    #STDERR.puts "indexer type #{indexer_type}"
     if !@config['indexer']['type'].nil?
       indexer_type = @config['indexer']['type']
     end
@@ -122,7 +121,7 @@ class B5mTask
         doclean = false
         doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
         if doclean
-          puts "minimize m #{m}"
+          @logger.info "minimize m #{m}"
           FileUtils.rm_rf m.b5mo_mirror
           FileUtils.rm_rf m.b5mo_block
         end
@@ -137,14 +136,14 @@ class B5mTask
   end
 
   def print_last
-    puts "last_m #{@last_m}"
-    puts "last_o_m #{@last_o_m}"
-    puts "last_c_m #{@last_c_m}"
-    puts "last_rebuild_m #{@last_rebuild_m}"
-    puts "last_db_m #{@last_db_m}"
-    puts "last_odb #{@last_odb}"
-    puts "last_codb #{@last_codb}"
-    puts "last_cdb #{@last_cdb}"
+    @logger.info "last_m #{@last_m}"
+    @logger.info "last_o_m #{@last_o_m}"
+    @logger.info "last_c_m #{@last_c_m}"
+    @logger.info "last_rebuild_m #{@last_rebuild_m}"
+    @logger.info "last_db_m #{@last_db_m}"
+    @logger.info "last_odb #{@last_odb}"
+    @logger.info "last_codb #{@last_codb}"
+    @logger.info "last_cdb #{@last_cdb}"
   end
 
   def set_last_c_m(m)
@@ -157,28 +156,28 @@ class B5mTask
   def copy_m(from_m)
     target_m = File.join(mdb, from_m.name)
     if File.exists? target_m
-      puts "#{target_m} exists, copy_m failed"
+      @logger.error "#{target_m} exists, copy_m failed"
       return false
     end
-    puts "copy #{from_m.path} to #{target_m}"
+    @logger.info "copy #{from_m.path} to #{target_m}"
     FileUtils.cp_r from_m.path, target_m
-    puts "copied"
+    @logger.info "copied"
     return true
   end
 
   def m_release
     return if @last_rebuild_m.nil?
-    puts "last_rebuild_m #{@last_rebuild_m}"
+    @logger.info "last_rebuild_m #{@last_rebuild_m}"
     gap = @last_rebuild_m
     unless @last_db_m.nil?
-      puts "last_db_m #{@last_db_m}"
+      @logger.info "last_db_m #{@last_db_m}"
       gap = [@last_rebuild_m, @last_db_m].min
     end
-    puts "m_release gap #{gap}"
+    @logger.info "m_release gap #{gap}"
     new_m_list = []
     @m_list.each do |m|
       if m<gap
-        puts "releasing #{m}"
+        @logger.info "releasing #{m}"
         m.delete
       else
         new_m_list << m
@@ -190,16 +189,6 @@ class B5mTask
   def work_dir
 
     config.path_of('work_dir')
-  end
-
-  def knowledge
-
-    File.join(work_dir, "knowledge")
-  end
-
-  def bdb
-
-    File.join(knowledge, 'bdb')
   end
 
   def db
@@ -215,10 +204,6 @@ class B5mTask
 
   def matcher_start(m)
     @m = m
-    if m.exists?
-      raise "m #{@m} already exists"
-    end
-    m.create
     m.status = "matching"
     m.flush
     #then copy related db to the new m
@@ -227,55 +212,16 @@ class B5mTask
     #  FileUtils.cp_r(last_odb, m.odb)
     #end
 
-    #cmode==0 never happen now
-    if m.cmode==0 and !last_cdb.nil?
-      puts "copy #{last_cdb} to #{m.cdb}"
-      FileUtils.cp_r(last_cdb, m.cdb)
-    end
-    scd_path = scd
-    if m.mode==0 #incremental
-      scd_path = File.join(scd, "incremental")
-    else
-      scd_path = File.join(scd, "rebuild")
-    end
-    unless File.directory?(scd_path)
-      scd_path = scd
-    end
-    comment_scd_path = comment_scd
-    puts "offer-scd:#{scd_path}"
-    puts "comment-scd:#{comment_scd_path}"
-    if !comment_scd_path.nil?
-      comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
-      if comment_scd_list.empty?
-        puts "comment scd empty, set cmode=-1"
-        m.cmode = -1
-      end
-    else
-      m.cmode = -1
-    end
-    mconfig = Marshal.load(Marshal.dump(config.config))
-    mconfig['path_of']['scd'] = scd_path
-    mconfig['path_of']['knowledge'] = knowledge
-    mconfig['mode'] = m.mode
-    mconfig['cmode'] = m.cmode
-    if m.cmode>=0
-      mconfig['path_of']['comment_scd'] = comment_scd_path
-    end
-    m_config_file = File.join(m.path, "config")
-    File.open(m_config_file, 'w') do |f|
-      f.puts mconfig.to_yaml
-    end
-    m.set_scd_path(config)
     cma = config.path_of('cma')
     #mobile_source = config.path_of('mobile_source')
     #human_match = config.path_of('human_match')
     daemon = B5mDaemon.new
     if config.schema=="b5m"
-      unless File.exists? knowledge
-        FileUtils.mkdir_p knowledge
+      unless File.exists? m.knowledge
+        FileUtils.mkdir_p m.knowledge
       end
       #do product training
-      cmd = "--product-train -S #{train_scd} -K #{knowledge} --mode #{m.mode} -C #{cma}"
+      cmd = "--product-train -S #{train_scd} -K #{m.knowledge} --mode #{m.mode} -C #{cma}"
       unless config.thread_num.nil?
         cmd += " --thread-num #{config.thread_num}"
       end
@@ -322,7 +268,7 @@ class B5mTask
       end
 
       if m.cmode>=0
-        cname = File.basename(comment_scd_path)
+        cname = File.basename(m.comment_scd)
         ctime = Time.at(0)
         if cname =~ /\d{14}/
           ctime = DateTime.strptime(cname, "%Y%m%d%H%M%S").to_time
@@ -372,7 +318,6 @@ class B5mTask
     begin
       @indexer.index(m, opt)
       if config.schema=="__other"
-        m.set_scd_path(config)
         sleep 5.0
         m.count_scd
         m.flush
@@ -395,7 +340,7 @@ class B5mTask
   def send_mail(m)
     return if m.nil?
     return if m.status!="finished" and m.status!="matched"
-    puts "start to send mail at #{m}"
+    @logger.info "start to send mail at #{m}"
     subject = "Matcher/Index (#{config.coll_name})"
     if m.mode>0
       subject += ' Rebuild'
@@ -444,7 +389,7 @@ class B5mTask
                    :subject => subject, 
                    :body => body})
     rescue Exception => e
-      puts "send mail error #{e}"
+      @logger.error "send mail error #{e}"
     end
 
   end

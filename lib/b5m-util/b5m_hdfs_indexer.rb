@@ -1,6 +1,7 @@
 require_relative "b5m_m"
 require_relative 'b5m_indexer'
 require_relative 'b5m_indexer_module'
+require_relative 'hdfs_helper'
 require 'sf1-util/sf1_driver_or_nginx'
 class B5mHdfsIndexer
   include B5mIndexerModule
@@ -21,6 +22,8 @@ class B5mHdfsIndexer
 
   def method_missing(m, *args, &block)
     key = m.to_s
+    pv = @param[key]
+    return pv unless pv.nil?
     if key.end_with? 'collection_name'
       name = key[0, key.length-'_collection_name'.length]
       if collection_name=="tuan"
@@ -28,15 +31,6 @@ class B5mHdfsIndexer
         name = "a" if name=="p"
       end
       return "#{collection_name}#{name}"
-    elsif key.end_with? 'schema_name'
-      name = key[0, key.length-'_schema_name'.length]
-      if collection_name=="tuan"
-        name = "m" if name=="o"
-        name = "a" if name=="p"
-      end
-      return "#{@schema}#{name}"
-    else
-      return @param[m.to_s]
     end
   end
 
@@ -104,14 +98,17 @@ class B5mHdfsIndexer
 
   def index_one(m, opt={})
     if schema=="__other"
-      cmd_list = []
-      cmd_list << "rm -rf #{scd_scd_path(m)}"
-      cmd_list << "mkdir -p #{scd_scd_path(m)}"
-      cmd_list << "cp #{m.scd}/*.SCD #{scd_scd_path(m)}/"
-      cmd_list.each do |cmd|
-        STDERR.puts cmd
-        system(cmd)
-        raise "cmd fail" unless $?.success?
+      index_path = scd_scd_path(m)
+      if m.scd!=index_path
+        cmd_list = []
+        cmd_list << "rm -rf #{index_path}"
+        cmd_list << "mkdir -p #{index_path}"
+        cmd_list << "cp #{m.scd}/*.SCD #{index_path}/"
+        cmd_list.each do |cmd|
+          STDERR.puts cmd
+          system(cmd)
+          raise "cmd fail" unless $?.success?
+        end
       end
       scd_only = opt[:scd_only]
       scd_only = false if scd_only.nil?

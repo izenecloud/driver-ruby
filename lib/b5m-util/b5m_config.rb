@@ -2,7 +2,7 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :coll_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc
+  attr_reader :file, :config, :id, :name, :schema, :coll_name, :collection_name, :o_collection_name, :p_collection_name, :c_collection_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc, :auto_rebuild, :omapper
   def initialize(file)
     @file = File.expand_path(file)
     root = YAML.load_file(@file)
@@ -31,6 +31,8 @@ class B5mConfig
     unless @config['imc'].nil?
       @imc = @config['imc'].to_i
     end
+    @auto_rebuild = @config['auto_rebuild']
+    @omapper = @config['omapper']
     if @config['path_of']['work_dir'].nil?
       @config['path_of']['work_dir'] = File.join(File.dirname(@file), "work_dir")
     end
@@ -41,6 +43,19 @@ class B5mConfig
       unless collection_name.nil?
         @coll_name = collection_name
       end
+    end
+    @collection_name = @coll_name
+    @o_collection_name = "#{@collection_name}o"
+    @p_collection_name = "#{@collection_name}p"
+    @c_collection_name = "#{@collection_name}c"
+    if @schema=="tuan"
+      @o_collection_name = "#{@collection_name}m"
+      @p_collection_name = "#{@collection_name}a"
+    end
+      
+    unless indexer.nil?
+      @o_collection_name = indexer['o_collection_name'] unless indexer['o_collection_name'].nil?
+      @p_collection_name = indexer['p_collection_name'] unless indexer['p_collection_name'].nil?
     end
     #@b5mo_name = "#{name}o"
     #@b5mp_name = "#{name}p"
