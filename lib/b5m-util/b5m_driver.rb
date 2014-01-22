@@ -95,13 +95,14 @@ class B5mDriver
       m.mode = mode
       m.cmode = cmode
       m.scd = input_scd
+      comment_scd_list = []
       unless input_comment_scd.nil?
         m.comment_scd = input_comment_scd
         comment_scd_list = ScdParser.get_scd_list(m.comment_scd)
-        if comment_scd_list.empty?
-          m.cmode = -1
-          m.comment_scd = nil
-        end
+      end
+      if comment_scd_list.empty?
+        m.cmode = -1
+        m.comment_scd = nil
       end
 
       #if m.cmode==0 and !input_lastcm.nil?
