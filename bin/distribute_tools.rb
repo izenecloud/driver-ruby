@@ -21,7 +21,8 @@ File.open(request_file) do |fs|
     end
 end
 
-puts "=====" + request['uri'] + "====="
+puts "=====command to #{ip}, #{request['collection']}, " + request['uri'] + "===== "
+
 begin
     response = sf1.call(request['uri'], request)
 
