@@ -298,6 +298,11 @@ class B5mTask
       unless daemon.run(cmd)
         abort("tour generate failed")
       end
+    elsif config.schema=="hotel"
+      cmd = "--hotel-generate --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("hotel generate failed")
+      end
     else
       abort("schema error")
     end
@@ -383,8 +388,8 @@ class B5mTask
     begin
 
       B5mMail.send({:host => 'localhost', 
-                   :to => ['matcher_notify@b5m.cn'],
-                   :from => 'matcher_notify@b5m.cn',
+                   :to => ['matcher_notify@b5m.com'],
+                   :from => 'matcher_notify@b5m.com',
                    :from_alias => 'Matcher Message',
                    :subject => subject, 
                    :body => body})
