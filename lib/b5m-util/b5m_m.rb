@@ -4,7 +4,7 @@ require 'date'
 class B5mM
   include Comparable
 
-  attr_reader :name, :path, :mdb, :time, :b5mo, :b5mp, :b5mc, :ou_count, :od_count, :pu_count, :pd_count, :cu_count, :cd_count, :local_b5mo, :local_b5mp, :local_b5mc
+  attr_reader :name, :path, :mdb, :time, :b5mo, :b5mp, :b5ma, :b5mc, :ou_count, :od_count, :pu_count, :pd_count, :cu_count, :cd_count, :local_b5mo, :local_b5mp, :local_b5ma, :local_b5mc
   attr_accessor :mode, :cmode, :scd, :comment_scd, :knowledge
 
   def initialize(path, name = nil)
@@ -26,9 +26,11 @@ class B5mM
     @cmode = @property['cmode']
     @b5mo = File.join(@path, 'b5mo')
     @b5mp = File.join(@path, 'b5mp')
+    @b5ma = File.join(@path, 'b5ma')
     @b5mc = File.join(@path, 'b5mc')
     @local_b5mo = @b5mo
     @local_b5mp = @b5mp
+    @local_b5ma = @b5ma
     @local_b5mc = @b5mc
     @ou_count = @property['ou_count'] || 0
     @od_count = @property['od_count'] || 0
@@ -36,6 +38,11 @@ class B5mM
     @pd_count = @property['pd_count'] || 0
     @cu_count = @property['cu_count'] || 0
     @cd_count = @property['cd_count'] || 0
+    config_file = File.join(@path, 'config')
+    if File.file? config_file
+      bc = B5mConfig.new config_file
+      load_config(bc)
+    end
 
   end
 
@@ -106,6 +113,26 @@ class B5mM
     return name<=>o.name
   end
 
+  def load_config(config)
+    indexer = config.config['indexer']
+    return if indexer.nil?
+    type = indexer['type']
+    return if type.nil?
+    return if type!="hdfs"
+    prefix = "#{indexer['hdfs_mnt']}/#{indexer['hdfs_prefix']}/#{config.collection_name}/#{@name}"
+    if config.schema=="__other"
+      @b5mo = prefix
+      @b5mp = nil
+      @b5ma = nil
+      @b5mc = nil
+    else
+      @b5mo = "/#{prefix}/#{config.o_collection_name}"
+      @b5mp = "/#{prefix}/#{config.p_collection_name}"
+      @b5ma = "/#{prefix}/#{config.a_collection_name}"
+      @b5mc = "/#{prefix}/#{config.c_collection_name}"
+    end
+  end
+
   def create(config=nil)
     FileUtils.mkdir(path)
     @property['pid'] = Process.pid
@@ -123,21 +150,7 @@ class B5mM
       File.open(m_config_file, 'w') do |f|
         f.puts mconfig.to_yaml
       end
-      indexer = config.config['indexer']
-      return if indexer.nil?
-      type = indexer['type']
-      return if type.nil?
-      return if type!="hdfs"
-      prefix = "#{indexer['hdfs_mnt']}/#{indexer['hdfs_prefix']}/#{config.collection_name}/#{@name}"
-      if config.schema=="__other"
-        @b5mo = prefix
-        @b5mp = nil
-        @b5mc = nil
-      else
-        @b5mo = "/#{prefix}/#{config.o_collection_name}"
-        @b5mp = "/#{prefix}/#{config.p_collection_name}"
-        @b5mc = "/#{prefix}/#{config.c_collection_name}"
-      end
+      load_config(config)
     end
   end
 
@@ -155,6 +168,9 @@ class B5mM
   end
   def b5mp_scd_list
     ScdParser.get_scd_list(b5mp)
+  end
+  def b5ma_scd_list
+    ScdParser.get_scd_list(b5ma)
   end
   def b5mc_scd_list
     ScdParser.get_scd_list(b5mc)

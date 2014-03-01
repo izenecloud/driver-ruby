@@ -2,7 +2,7 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :coll_name, :collection_name, :o_collection_name, :p_collection_name, :c_collection_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc, :auto_rebuild, :omapper
+  attr_reader :file, :config, :id, :name, :schema, :matcher_ip, :matcher_port, :coll_name, :collection_name, :o_collection_name, :p_collection_name, :a_collection_name, :c_collection_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc, :auto_rebuild, :omapper
   def initialize(file)
     @file = File.expand_path(file)
     root = YAML.load_file(@file)
@@ -13,6 +13,11 @@ class B5mConfig
     @schema = "b5m"
     unless @config['schema'].nil?
       @schema = @config['schema']
+    end
+    @matcher_ip = "0.0.0.0"
+    @matcher_port = 18190
+    unless @config['matcher_port'].nil?
+      @matcher_port = @config['matcher_port']
     end
     @omapper = @config['omapper']
     @thread_num = nil
@@ -47,6 +52,7 @@ class B5mConfig
     @collection_name = @coll_name
     @o_collection_name = "#{@collection_name}o"
     @p_collection_name = "#{@collection_name}p"
+    @a_collection_name = "#{@collection_name}a"
     @c_collection_name = "#{@collection_name}c"
     if @schema=="tuan"
       @o_collection_name = "#{@collection_name}m"

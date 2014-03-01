@@ -215,7 +215,7 @@ class B5mTask
     cma = config.path_of('cma')
     #mobile_source = config.path_of('mobile_source')
     #human_match = config.path_of('human_match')
-    daemon = B5mDaemon.new
+    daemon = B5mDaemon.new(config.matcher_ip, config.matcher_port)
     if config.schema=="b5m"
       unless File.exists? m.knowledge
         FileUtils.mkdir_p m.knowledge
