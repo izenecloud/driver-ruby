@@ -65,6 +65,7 @@ end
 sleep 10.0
 
 m_list.each_with_index do |m, i|
+  m.load_config
   if nocomment and m.cmode>=0
     m.cmode = -1
   end

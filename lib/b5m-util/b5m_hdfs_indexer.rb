@@ -42,15 +42,14 @@ class B5mHdfsIndexer
   end
 
   def get_collections
-    collections = []
     if schema=="__other"
-      collections = get_collections_detail([])
+      return get_collections_detail([])
     elsif schema=="b5m"
-      collections = get_collections_detail(['o','p','a','c'])
+      return get_collections_detail(['o','p','a','c'])
     elsif schema=="tuan"
-      collections = get_collections_detail(['m','a'])
-    elsif
-      collections = get_collections_detail(['o','p'])
+      return get_collections_detail(['m','a'])
+    else
+      return get_collections_detail(['o','p'])
     end
   end
 
@@ -134,9 +133,9 @@ class B5mHdfsIndexer
     if collection.schema=="__other"
       return m.scd
     elsif collection.schema=="tuan"
-      if collection.name.ends_with 'm'
+      if collection.name.end_with? 'm'
         return m.b5mo
-      elsif collection.name.ends_with 'a'
+      elsif collection.name.end_with? 'a'
         return m.b5mp
       end
     else

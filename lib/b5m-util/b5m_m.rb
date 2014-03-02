@@ -38,11 +38,6 @@ class B5mM
     @pd_count = @property['pd_count'] || 0
     @cu_count = @property['cu_count'] || 0
     @cd_count = @property['cd_count'] || 0
-    config_file = File.join(@path, 'config')
-    if File.file? config_file
-      bc = B5mConfig.new config_file
-      load_config(bc)
-    end
 
   end
 
@@ -113,7 +108,14 @@ class B5mM
     return name<=>o.name
   end
 
-  def load_config(config)
+  def load_config(config=nil)
+    if config.nil?
+      config_file = File.join(@path, 'config')
+      if File.file? config_file
+        STDERR.puts "loading config #{config_file}"
+        config = B5mConfig.new config_file
+      end
+    end
     indexer = config.config['indexer']
     return if indexer.nil?
     type = indexer['type']
@@ -126,10 +128,10 @@ class B5mM
       @b5ma = nil
       @b5mc = nil
     else
-      @b5mo = "/#{prefix}/#{config.o_collection_name}"
-      @b5mp = "/#{prefix}/#{config.p_collection_name}"
-      @b5ma = "/#{prefix}/#{config.a_collection_name}"
-      @b5mc = "/#{prefix}/#{config.c_collection_name}"
+      @b5mo = "#{prefix}/#{config.o_collection_name}"
+      @b5mp = "#{prefix}/#{config.p_collection_name}"
+      @b5ma = "#{prefix}/#{config.a_collection_name}"
+      @b5mc = "#{prefix}/#{config.c_collection_name}"
     end
   end
 
