@@ -211,7 +211,7 @@ class B5mHdfsIndexer
         end
         indexer = B5mIndexer.new(conn, collection.name, clear, itp)
         unless indexer.index
-          raise "#{collection.name} index on #{ip} fail"
+          STDERR.puts "#{collection.name} index on #{ip} fail"
         end
       end
     end
