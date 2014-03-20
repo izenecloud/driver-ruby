@@ -116,13 +116,17 @@
         "type": "str",
         "desc": "Searching mode name"
       },
+      "algorithm": {
+        "type": "str",
+        "desc": "Searching algorithm name, used for ZambeziSearch, SVS, WAND, WAND_AND, WAND_OR, MBWAND"
+      },
       "threshold": {
         "type": "str",
         "desc": "threshold corresponding to wand mode"
       },
       "lucky": {
         "type": "str",
-        "desc": "largest number of documents to return"
+        "desc": "largest number of MBWAND documents to return"
       },
       "use_fuzzy": {
         "type": "bool",
@@ -135,6 +139,30 @@
       "original_query": {
         "type": "bool",
         "desc": "option to use original query or modified query"
+      },
+      "usefuzzyThreshold": {
+        "type": "bool",
+        "desc": "option to use fuzzy search threshold for majortokens and minortokens"
+      },
+      "fuzzythreshold": {
+        "type": "str",
+        "desc": "fuzzy threshold corresponding to majortokens and minortokens"
+      },
+      "tokensthreshold": {
+        "type": "str",
+        "desc": "fuzzy threshold corresponding to majortokens and minortokens"
+      },
+      "use_pQuery": {
+        "type": "bool",
+        "desc": "option to use privilege query ... "
+      },
+      "pQuery": {
+        "type": "str",
+        "desc": "privilege query that can get extra weight ..."
+      },
+      "pweight": {
+        "type": "str",
+        "desc": "between 0.1 and 1.0"
       }
     }
   },
