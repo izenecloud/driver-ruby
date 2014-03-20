@@ -140,27 +140,27 @@
         "type": "bool",
         "desc": "option to use original query or modified query"
       },
-      "usefuzzyThreshold": {
+      "use_fuzzyThreshold": {
         "type": "bool",
         "desc": "option to use fuzzy search threshold for majortokens and minortokens"
       },
-      "fuzzythreshold": {
+      "fuzzy_threshold": {
         "type": "str",
         "desc": "fuzzy threshold corresponding to majortokens and minortokens"
       },
-      "tokensthreshold": {
+      "tokens_threshold": {
         "type": "str",
         "desc": "fuzzy threshold corresponding to majortokens and minortokens"
       },
-      "use_pQuery": {
+      "use_pivilegeQuery": {
         "type": "bool",
         "desc": "option to use privilege query ... "
       },
-      "pQuery": {
+      "privilege_Query": {
         "type": "str",
         "desc": "privilege query that can get extra weight ..."
       },
-      "pweight": {
+      "privilege_Weight": {
         "type": "str",
         "desc": "between 0.1 and 1.0"
       }
