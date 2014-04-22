@@ -15,7 +15,7 @@ class B5mTask
   include Sf1Logger
 
   attr_accessor :email, :m, :train_scd
-  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :last_db_m, :last_rebuild_m
+  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_c_m, :last_complete_m
 
   def initialize(config_file)
     @logger = Logger.new(STDERR)
@@ -72,38 +72,24 @@ class B5mTask
     @m_list.sort!
     #assign last_m, last_odb, last_codb, last_cdb
     @last_m = @m_list.last
-    @last_o_m = nil
-    @last_odb = nil
-    @m_list.reverse_each do |em|
-      if em.mode>=0 #do o/p
-        @last_o_m = em
-        @last_odb = @last_o_m.odb
-        break
-      end
-    end
-    @last_codb = nil
-    @last_cdb = nil
     @last_c_m = nil
     @m_list.reverse_each do |em|
       if em.cmode>=0 #do b5mc
-        @last_codb = em.odb
-        @last_cdb = em.cdb
         @last_c_m = em
         break
       end
-    end
-    @last_db_m = nil
-    if @last_o_m.nil?
-      @last_db_m = @last_c_m
-    elsif @last_c_m.nil?
-      @last_db_m = @last_o_m
-    else
-      @last_db_m = [@last_o_m, @last_c_m].min
     end
     @last_rebuild_m = nil
     @m_list.reverse_each do |em|
       if em.mode>0
         @last_rebuild_m = em
+        break
+      end
+    end
+    @last_complete_m = nil
+    @m_list.reverse_each do |em|
+      unless em.rtype?
+        @last_complete_m = em
         break
       end
     end
@@ -117,40 +103,35 @@ class B5mTask
     keep = 0
     keep = opt[:keep] unless opt[:keep].nil?
     if keep>0
-      @m_list.each_with_index do |m, i|
-        doclean = false
-        doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
-        if doclean
-          @logger.info "minimize m #{m}"
-          FileUtils.rm_rf m.b5mo_mirror
-          FileUtils.rm_rf m.b5mo_block
+      ikeep = 0
+      @m_list.reverse_each do |m|
+        if File.exists? m.b5mo_mirror
+          ikeep+=1
+          if ikeep>keep
+            @logger.info "minimize m #{m}"
+            FileUtils.rm_rf m.b5mo_mirror
+            FileUtils.rm_rf m.b5mo_block
+            FileUtils.rm_rf m.odb
+          end
         end
       end
+      #@m_list.each_with_index do |m, i|
+      #  doclean = false
+      #  doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
+      #  if doclean
+      #    @logger.info "minimize m #{m}"
+      #    FileUtils.rm_rf m.b5mo_mirror
+      #    FileUtils.rm_rf m.b5mo_block
+      #  end
+      #end
     end
-  end
-
-  def check_valid
-    check_db_valid @last_odb
-    check_db_valid @last_codb
-    check_db_valid @last_cdb
   end
 
   def print_last
     @logger.info "last_m #{@last_m}"
-    @logger.info "last_o_m #{@last_o_m}"
-    @logger.info "last_c_m #{@last_c_m}"
     @logger.info "last_rebuild_m #{@last_rebuild_m}"
-    @logger.info "last_db_m #{@last_db_m}"
-    @logger.info "last_odb #{@last_odb}"
-    @logger.info "last_codb #{@last_codb}"
-    @logger.info "last_cdb #{@last_cdb}"
-  end
-
-  def set_last_c_m(m)
-    @last_c_m = m
-    @last_codb = m.odb
-    @last_cdb = m.cdb
-    check_valid
+    @logger.info "last_c_m #{@last_c_m}"
+    @logger.info "last_complete_m #{@last_complete_m}"
   end
 
   def copy_m(from_m)
@@ -163,27 +144,6 @@ class B5mTask
     FileUtils.cp_r from_m.path, target_m
     @logger.info "copied"
     return true
-  end
-
-  def m_release
-    return if @last_rebuild_m.nil?
-    @logger.info "last_rebuild_m #{@last_rebuild_m}"
-    gap = @last_rebuild_m
-    unless @last_db_m.nil?
-      @logger.info "last_db_m #{@last_db_m}"
-      gap = [@last_rebuild_m, @last_db_m].min
-    end
-    @logger.info "m_release gap #{gap}"
-    new_m_list = []
-    @m_list.each do |m|
-      if m<gap
-        @logger.info "releasing #{m}"
-        m.delete
-      else
-        new_m_list << m
-      end
-    end
-    @m_list = new_m_list
   end
 
   def work_dir
@@ -212,6 +172,10 @@ class B5mTask
     #  FileUtils.cp_r(last_odb, m.odb)
     #end
 
+    last_o_m = @last_m
+    unless m.rtype?
+      last_o_m = @last_complete_m
+    end
     cma = config.path_of('cma')
     #mobile_source = config.path_of('mobile_source')
     #human_match = config.path_of('human_match')
@@ -257,6 +221,13 @@ class B5mTask
         unless daemon.run(cmd)
           abort("b5mo generate failed")
         end
+        #cmd = "--b5mo-check --mdb-instance #{m}"
+        #if !last_o_m.nil? and m.mode==0
+        #  cmd+=" --last-mdb-instance #{last_o_m}"
+        #end
+        #unless daemon.run(cmd)
+        #  abort("b5mo check failed")
+        #end
         #b5mp generator
         cmd = "--b5mp-generate --mdb-instance #{m}"
         if !last_o_m.nil? and m.mode==0
@@ -362,6 +333,7 @@ class B5mTask
     body += "timestamp #{m.name}\n"
     body += "o/p mode #{m.mode}\n"
     body += "c mode #{m.cmode}\n"
+    body += "rtype #{m.rtype}\n"
     body += "start_time #{m.start_time}\n"
     #ou_count, od_count = ScdParser.get_ud_doc_count(m.b5mo)
     #pu_count, pd_count = ScdParser.get_ud_doc_count(m.b5mp)

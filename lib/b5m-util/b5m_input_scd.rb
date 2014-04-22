@@ -34,5 +34,12 @@ class B5mInputScd
 
     list.sort!
   end
+
+  def self.get_time(scd_dir)
+    name = File.basename(scd_dir)
+    return nil unless mname =~ /\d{14}/
+    t = DateTime.strptime(name, "%Y%m%d%H%M%S").to_time
+    return t
+  end
 end
 

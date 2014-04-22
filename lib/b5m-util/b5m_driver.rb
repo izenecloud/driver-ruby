@@ -25,10 +25,14 @@ class B5mDriver
     #  cmode = -1
     #end
     task = B5mTask.new(config)
-    task.clean(:keep => 5)
+    task.clean(:keep => 2)
     last_m_time = Time.at(0)
     unless task.last_m.nil?
       last_m_time = task.last_m.time
+    end
+    last_complete_m_time = Time.at(0)
+    unless task.last_complete_m.nil?
+      last_complete_m_time = task.last_complete_m.time
     end
     #last_rebuild_time = Time.at(0)
     #unless task.last_rebuild_m.nil?
@@ -39,14 +43,16 @@ class B5mDriver
     #  cmode = 1
     #end
     mname = B5mM.get_a_name
+    rtype = false
     if config.monitor?
       auto_rebuild = config.auto_rebuild
       if auto_rebuild.nil?
         auto_rebuild = config.schema=="b5m"? false : true
       end
       #to set mode, cmode and input_scd_list below
-      input_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'), "incremental"), config.scd_done_name, last_m_time)
-      rebuild_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'),"rebuild"), config.scd_done_name, last_m_time)
+      last_scd_time = last_complete_m_time
+      input_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'), "incremental"), config.scd_done_name, last_scd_time)
+      rebuild_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'),"rebuild"), config.scd_done_name, last_scd_time)
       if auto_rebuild
         unless rebuild_scd_list.empty?
           input_scd_list = [rebuild_scd_list.last]
@@ -58,6 +64,20 @@ class B5mDriver
       end
       if config.schema=="b5m" and mode>0
         cmode = 1
+      end
+      if mode==0 and !input_scd_list.empty?
+        if config.schema=='b5m' and config.use_rtype?
+          last_input_scd_time = input_scd_list.last.time
+          if !task.last_complete_m.nil?
+            if last_input_scd_time-task.last_complete_m.time<config.complete_interval
+              rtype = true
+            end
+          end
+        end
+      end
+      if mode==0 and rtype
+        last_scd_time = last_m_time
+        input_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'), "incremental"), config.scd_done_name, last_scd_time)
       end
       #if mode>0
       #  rebuild_scd_list = B5mInputScd.get_all(File.join(task.scd,"rebuild"), config.scd_done_name, last_rebuild_time)
@@ -95,6 +115,8 @@ class B5mDriver
       m.mode = mode
       m.cmode = cmode
       m.scd = input_scd
+      #set rtype
+      m.rtype = rtype
       comment_scd_list = []
       unless input_comment_scd.nil?
         m.comment_scd = input_comment_scd
@@ -126,6 +148,7 @@ class B5mDriver
       @logger.info "schema:#{schema}"
       @logger.info "mode:#{mode}"
       @logger.info "cmode:#{cmode}"
+      @logger.info "rtype:#{rtype}"
       @logger.info "input_scd:#{m.scd}"
       @logger.info "input_c_scd:#{m.comment_scd}"
       @logger.info "knowledge:#{m.knowledge}"
@@ -265,6 +288,7 @@ private
     FileUtils.rm_rf output_cache_dir if File.exists? output_cache_dir
     FileUtils.mkdir_p input_cache_dir
     input_list.each do |input|
+      @logger.info "merging #{input.path}"
       scd_list = ScdParser.get_scd_list(input.path)
       scd_list.each do |scd|
         FileUtils.cp scd, input_cache_dir

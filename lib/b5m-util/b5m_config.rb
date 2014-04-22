@@ -2,7 +2,7 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :matcher_ip, :matcher_port, :coll_name, :collection_name, :o_collection_name, :p_collection_name, :a_collection_name, :c_collection_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc, :auto_rebuild, :omapper
+  attr_reader :file, :config, :id, :name, :schema, :matcher_ip, :matcher_port, :coll_name, :collection_name, :o_collection_name, :p_collection_name, :a_collection_name, :c_collection_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc, :auto_rebuild, :omapper, :complete_interval
   def initialize(file)
     @file = File.expand_path(file)
     root = YAML.load_file(@file)
@@ -40,6 +40,10 @@ class B5mConfig
     @omapper = @config['omapper']
     if @config['path_of']['work_dir'].nil?
       @config['path_of']['work_dir'] = File.join(File.dirname(@file), "work_dir")
+    end
+    @complete_interval = @config['complete_interval']
+    if @complete_interval.nil?
+      @complete_interval = 24*3600
     end
     @coll_name = @schema
     indexer = @config['indexer']
@@ -137,6 +141,11 @@ class B5mConfig
 
     return false if @config['monitor'].nil?
     return @config['monitor']
+  end
+  def use_rtype?
+
+    return false if @config['use_rtype'].nil?
+    return @config['use_rtype']
   end
 
   def monitor_interval

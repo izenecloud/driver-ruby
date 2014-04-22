@@ -5,7 +5,7 @@ class B5mM
   include Comparable
 
   attr_reader :name, :path, :mdb, :time, :b5mo, :b5mp, :b5ma, :b5mc, :ou_count, :od_count, :pu_count, :pd_count, :cu_count, :cd_count, :local_b5mo, :local_b5mp, :local_b5ma, :local_b5mc
-  attr_accessor :mode, :cmode, :scd, :comment_scd, :knowledge
+  attr_accessor :mode, :cmode, :scd, :comment_scd, :knowledge, :rtype
 
   def initialize(path, name = nil)
     if name.nil?
@@ -24,6 +24,10 @@ class B5mM
     @property = YAML.load_file(@property_file) if File.file?(@property_file)
     @mode = @property['mode']
     @cmode = @property['cmode']
+    @rtype = @property['rtype']
+    if @rtype.nil?
+      @rtype = false
+    end
     @b5mo = File.join(@path, 'b5mo')
     @b5mp = File.join(@path, 'b5mp')
     @b5ma = File.join(@path, 'b5ma')
@@ -44,6 +48,7 @@ class B5mM
   def flush
     @property['mode'] = mode
     @property['cmode'] = cmode
+    @property['rtype'] = rtype
     @property['ou_count'] = @ou_count
     @property['od_count'] = @od_count
     @property['pu_count'] = @pu_count
@@ -53,6 +58,10 @@ class B5mM
     File.open(@property_file, 'w') do |f|
       f.write @property.to_yaml
     end
+  end
+
+  def rtype?
+    return @rtype
   end
 
   def count_scd
@@ -145,6 +154,7 @@ class B5mM
       mconfig['path_of']['knowledge'] = knowledge
       mconfig['mode'] = mode
       mconfig['cmode'] = cmode
+      mconfig['rtype'] = rtype
       if cmode>=0
         mconfig['path_of']['comment_scd'] = comment_scd
       end
