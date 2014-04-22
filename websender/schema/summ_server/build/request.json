@@ -1,0 +1,18 @@
+{
+  "title":"Summarization Manager",
+  "type":"map",
+  "desc":"Summarization manager for different collection ... ",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "scdPath": {
+      "type": "str",
+      "desc":"Specify the scd path. The default path is iscd/CollectionName/scd",
+      "required": false
+    }
+  }
+}
