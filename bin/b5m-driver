@@ -5,13 +5,14 @@ instance = "."
 config_file = "./config.yml"
 rlimit = 0
 force = false
+last_rtype = nil
 ARGV.each_with_index do |a,i|
   if a=="-I"
     instance = ARGV[i+1]
   elsif a=="--force"
     force = true
-  elsif a=="--rounds-limit"
-    rlimit = ARGV[i+1].to_i
+  elsif a=="--last-rtype"
+    last_rtype = ARGV[i+1]
   end
 end
 config_file = File.join(instance, "config.yml")
@@ -29,7 +30,7 @@ File.open(pid_file, File::RDWR | File::CREAT, 0644) do |f|
     f.puts Process.pid
     f.flush
     driver = B5mDriver.new(config_file)
-    driver.rounds_limit = rlimit if rlimit>0
+    driver.last_rtype = last_rtype unless last_rtype.nil?
     driver.run
 end
 File.delete pid_file if File.exists? pid_file

@@ -9,11 +9,11 @@ require 'sf1-util/scd_type_writer'
 
 class B5mDriver
   attr_reader :config
-  attr_accessor :rounds_limit, :m
+  attr_accessor :m, :last_rtype
   def initialize(config_file)
     @logger = Logger.new(STDERR)
     @config = B5mConfig.new(config_file)
-    @rounds_limit = 0
+    @rtype = false
   end
 
   def run
@@ -25,7 +25,7 @@ class B5mDriver
     #  cmode = -1
     #end
     task = B5mTask.new(config)
-    task.clean(:keep => 2)
+    task.clean(:keep => 5)
     last_m_time = Time.at(0)
     unless task.last_m.nil?
       last_m_time = task.last_m.time
@@ -43,7 +43,6 @@ class B5mDriver
     #  cmode = 1
     #end
     mname = B5mM.get_a_name
-    rtype = false
     if config.monitor?
       auto_rebuild = config.auto_rebuild
       if auto_rebuild.nil?
@@ -70,14 +69,20 @@ class B5mDriver
           last_input_scd_time = input_scd_list.last.time
           if !task.last_complete_m.nil?
             if last_input_scd_time-task.last_complete_m.time<config.complete_interval
-              rtype = true
+              @rtype = true
             end
           end
         end
       end
-      if mode==0 and rtype
+      if mode==0 and @rtype
         last_scd_time = last_m_time
         input_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'), "incremental"), config.scd_done_name, last_scd_time)
+      end
+      unless last_rtype.nil?
+        last_scd_time = get_time(last_rtype)
+        input_scd_list = B5mInputScd.get_all(File.join(config.path_of('scd'), "incremental"), config.scd_done_name, last_scd_time)
+        mode = 0
+        @rtype = true
       end
       #if mode>0
       #  rebuild_scd_list = B5mInputScd.get_all(File.join(task.scd,"rebuild"), config.scd_done_name, last_rebuild_time)
@@ -105,10 +110,29 @@ class B5mDriver
         mname = input_scd_list.first.name
       else
         input_b5m_scd = merge_scd(input_scd_list)
-        input_scd = input_b5m_scd.path
-        mname = input_b5m_scd.name
+        if input_b5m_scd.nil?
+          input_scd = nil
+        else
+          input_scd = input_b5m_scd.path
+          mname = input_b5m_scd.name
+        end
       end
       input_comment_scd = input_comment_scd.path unless input_comment_scd.nil?
+      unless input_scd.nil?
+        if @rtype
+          rtype_count = 0
+          input_scd_list = ScdParser.get_scd_list(input_scd)
+          input_scd_list.each do |scd|
+            scd_type = ScdParser.scd_type(scd)
+            if scd_type==ScdParser::RTYPE_SCD
+              rtype_count+=1
+            end
+          end
+          if rtype_count==0
+            input_scd = nil
+          end
+        end
+      end
     end
     unless input_scd.nil?
       m = B5mM.new(task.mdb, mname)
@@ -116,7 +140,7 @@ class B5mDriver
       m.cmode = cmode
       m.scd = input_scd
       #set rtype
-      m.rtype = rtype
+      m.rtype = @rtype
       comment_scd_list = []
       unless input_comment_scd.nil?
         m.comment_scd = input_comment_scd
@@ -148,7 +172,7 @@ class B5mDriver
       @logger.info "schema:#{schema}"
       @logger.info "mode:#{mode}"
       @logger.info "cmode:#{cmode}"
-      @logger.info "rtype:#{rtype}"
+      @logger.info "rtype:#{@rtype}"
       @logger.info "input_scd:#{m.scd}"
       @logger.info "input_c_scd:#{m.comment_scd}"
       @logger.info "knowledge:#{m.knowledge}"
@@ -169,131 +193,34 @@ class B5mDriver
     end
     
   end
-  def start
-
-    #default parameters
-    schema = config.schema
-    last_start_time = nil
-    rounds = 0
-    while true
-
-      mode = 0 #B5MMode::INC as default
-      cmode = -1 #no comment process as default
-      if schema!="b5m"
-        mode = 3
-        cmode = -1
-      end
-      if mode>=3
-        FileUtils.rm_rf config.path_of('work_dir')
-      end
-      task = B5mTask.new(config)
-      task.clean(:keep => 5)
-      #task.m_release
-      if schema=="b5m" and task.m_list.empty?
-        mode = 1
-        cmode = 1
-      end
-      mname = B5mM.get_a_name
-      input_scd = task.scd
-      input_comment_scd = task.comment_scd
-      if config.monitor?
-        input_scd_list = []
-        if mode>0
-          rebuild_scd_list = B5mInputScd.get_all(File.join(task.scd,"rebuild"), config.scd_done_name)
-          if rebuild_scd_list.empty?
-            input_scd_list = []
-          else
-            input_scd_list = [rebuild_scd_list.last]
-          end
-        elsif mode==0
-          start_time = Time.at(0)
-          unless task.last_m.nil?
-            start_time = task.last_m.time
-          end
-          input_scd_list = B5mInputScd.get_all(File.join(task.scd, "incremental"), config.scd_done_name, start_time)
-        end
-        if cmode>0
-          input_comment_scd = B5mInputScd.get_all(File.join(task.comment_scd, "rebuild"), config.scd_done_name).last
-        else
-          input_comment_scd = nil
-        end
-        if input_scd_list.empty?
-          input_scd = nil
-        elsif input_scd_list.size==1
-          input_scd = input_scd_list.first.path
-          mname = input_scd_list.first.name
-        else
-          input_b5m_scd = merge_scd(input_scd_list)
-          input_scd = input_b5m_scd.path
-          mname = input_b5m_scd.name
-        end
-        input_comment_scd = input_comment_scd.path unless input_comment_scd.nil?
-      end
-      unless input_scd.nil?
-        m = B5mM.new(task.mdb, mname)
-        m.mode = mode
-        m.cmode = cmode
-        @logger.info "schema:#{schema}"
-        @logger.info "mode:#{mode}"
-        @logger.info "cmode:#{cmode}"
-        task.scd = input_scd
-        task.comment_scd = input_comment_scd
-        @logger.info "input_scd:#{task.scd}"
-        @logger.info "input_c_scd:#{task.comment_scd}"
-        @logger.info "input_t_scd:#{task.train_scd}"
-
-        #if m.cmode==0 and !input_lastcm.nil?
-          #task.set_last_c_m(input_lastcm)
-        #end
-        last_start_time = Time.now
-        task.print_last
-        task.matcher_start m
-        opt = {:scd_only => config.noindex?}
-        unless config.noapply?
-          task.apply(m, opt)
-          task.send_mail(m) if config.send_mail?
-        end
-        rounds+=1
-      end
-      
-      unless config.monitor?
-        break
-      end
-      if @rounds_limit>0 and rounds>=@rounds_limit
-        break
-      end
-      sleep_time = config.monitor_interval
-      if m.nil?
-        sleep_time = 1800
-      else
-        sleep_time = 30 if sleep_time<30
-        sleep_time*=5 if m.mode>0
-      end
-      @logger.info "now sleep #{sleep_time} seconds"
-      #unless last_start_time.nil?
-        #this_start_time = last_start_time + config.monitor_interval
-        #sleep_time = this_start_time - Time.now
-      #end
-
-      sleep(sleep_time) if sleep_time>0
-      #sleep 30.0
-    end
-  end
 
 private
+
+  def get_time(str)
+    t = DateTime.strptime(str, "%Y%m%d%H%M%S").to_time
+    return t
+  end
+
   def merge_scd(input_list)
     input_cache_dir = File.join(config.tmp_dir, ".merge_input")
     output_cache_dir = File.join(config.tmp_dir, ".merge_output")
     FileUtils.rm_rf input_cache_dir if File.exists? input_cache_dir
     FileUtils.rm_rf output_cache_dir if File.exists? output_cache_dir
     FileUtils.mkdir_p input_cache_dir
+    count = 0
     input_list.each do |input|
       @logger.info "merging #{input.path}"
       scd_list = ScdParser.get_scd_list(input.path)
       scd_list.each do |scd|
+        if @rtype
+          scd_type = ScdParser.scd_type(scd)
+          next if scd_type!=ScdParser::RTYPE_SCD
+        end
         FileUtils.cp scd, input_cache_dir
+        count+=1
       end
     end
+    return nil if count==0
     last_input = input_list.last
     output_dir = File.join(output_cache_dir, last_input.name)
     FileUtils.mkdir_p output_dir
@@ -307,8 +234,7 @@ private
     File.open(done_file, 'w') do |f|
       f.puts 'a'
     end
-
-    B5mInputScd.new(output_dir)
+    return B5mInputScd.new(output_dir)
   end
 
   def do_omapper(m, omapper)
@@ -335,5 +261,6 @@ private
     writer.close
     m.scd = output_path
   end
+
 
 end

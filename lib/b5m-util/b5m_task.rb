@@ -325,6 +325,9 @@ class B5mTask
     elsif m.cmode>=0
       subject += ' Comment Only'
     end
+    if config.schema=="b5m"
+      subject += " (rtype #{m.rtype})"
+    end
     #subject += " to #{config.first_ip}"
     subject += ' Finish'
     body = "schema #{config.schema}\n"
