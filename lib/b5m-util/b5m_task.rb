@@ -9,27 +9,26 @@ require 'sf1-util/scd_parser'
 require 'sf1-util/sf1_logger'
 require 'net/smtp'
 require 'fileutils'
+require 'logger'
 
 class B5mTask
   include Sf1Logger
 
-  attr_accessor :email, :m, :scd, :train_scd, :comment_scd
-  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_o_m, :last_c_m, :last_odb, :last_codb, :last_cdb, :scd, :comment_scd, :last_db_m, :last_rebuild_m
+  attr_accessor :email, :m, :train_scd
+  attr_reader :config, :instance_list, :m_list, :last_m, :last_rebuild_m, :last_c_m, :last_complete_m
 
   def initialize(config_file)
+    @logger = Logger.new(STDERR)
     @email = false
     if config_file.is_a? String
       @config = B5mConfig.new(config_file)
     else
       @config = config_file
     end
-    @scd = config.path_of('scd')
     @train_scd = config.path_of('train_scd')
-    @comment_scd = config.path_of('comment_scd')
     @indexer = nil
     indexer_type = "single"
     #indexer_type = @config['indexer']['type']
-    #STDERR.puts "indexer type #{indexer_type}"
     if !@config['indexer']['type'].nil?
       indexer_type = @config['indexer']['type']
     end
@@ -46,16 +45,16 @@ class B5mTask
       #instance = B5mSf1Instance.new(si, @config.name, @config.no_comment?)
       #@instance_list << instance
     #end
-    unless File.exists? mdb
-      FileUtils.mkdir_p(mdb)
-    end
     @m_list = []
     @broken_m_list = []
     gen
   end
 
   def gen()
-    return if config.schema!="b5m"
+    unless File.exists? mdb
+      FileUtils.mkdir_p(mdb)
+    end
+    #return if config.schema!="b5m"
     @m_list.clear
     @broken_m_list.clear
     Dir.foreach(mdb) do |m|
@@ -73,33 +72,12 @@ class B5mTask
     @m_list.sort!
     #assign last_m, last_odb, last_codb, last_cdb
     @last_m = @m_list.last
-    @last_o_m = nil
-    @last_odb = nil
-    @m_list.reverse_each do |em|
-      if em.mode>=0 #do o/p
-        @last_o_m = em
-        @last_odb = @last_o_m.odb
-        break
-      end
-    end
-    @last_codb = nil
-    @last_cdb = nil
     @last_c_m = nil
     @m_list.reverse_each do |em|
       if em.cmode>=0 #do b5mc
-        @last_codb = em.odb
-        @last_cdb = em.cdb
         @last_c_m = em
         break
       end
-    end
-    @last_db_m = nil
-    if @last_o_m.nil?
-      @last_db_m = @last_c_m
-    elsif @last_c_m.nil?
-      @last_db_m = @last_o_m
-    else
-      @last_db_m = [@last_o_m, @last_c_m].min
     end
     @last_rebuild_m = nil
     @m_list.reverse_each do |em|
@@ -108,7 +86,14 @@ class B5mTask
         break
       end
     end
-    check_valid
+    @last_complete_m = nil
+    @m_list.reverse_each do |em|
+      unless em.rtype?
+        @last_complete_m = em
+        break
+      end
+    end
+    #check_valid
   end
 
   def clean(opt={})
@@ -118,87 +103,52 @@ class B5mTask
     keep = 0
     keep = opt[:keep] unless opt[:keep].nil?
     if keep>0
-      @m_list.each_with_index do |m, i|
-        doclean = false
-        doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
-        if doclean
-          puts "keep clean #{m.b5mo_mirror}"
-          FileUtils.rm_rf m.b5mo_mirror
+      ikeep = 0
+      @m_list.reverse_each do |m|
+        if File.exists? m.b5mo_mirror
+          ikeep+=1
+          if ikeep>keep
+            @logger.info "minimize m #{m}"
+            FileUtils.rm_rf m.b5mo_mirror
+            FileUtils.rm_rf m.b5mo_block
+            FileUtils.rm_rf m.odb
+          end
         end
       end
+      #@m_list.each_with_index do |m, i|
+      #  doclean = false
+      #  doclean = true if @m_list.size-i>keep and File.exists? m.b5mo_mirror
+      #  if doclean
+      #    @logger.info "minimize m #{m}"
+      #    FileUtils.rm_rf m.b5mo_mirror
+      #    FileUtils.rm_rf m.b5mo_block
+      #  end
+      #end
     end
   end
 
-  def check_valid
-    check_db_valid @last_odb
-    check_db_valid @last_codb
-    check_db_valid @last_cdb
-  end
-
   def print_last
-    puts "last_m #{@last_m}"
-    puts "last_o_m #{@last_o_m}"
-    puts "last_c_m #{@last_c_m}"
-    puts "last_rebuild_m #{@last_rebuild_m}"
-    puts "last_db_m #{@last_db_m}"
-    puts "last_odb #{@last_odb}"
-    puts "last_codb #{@last_codb}"
-    puts "last_cdb #{@last_cdb}"
-  end
-
-  def set_last_c_m(m)
-    @last_c_m = m
-    @last_codb = m.odb
-    @last_cdb = m.cdb
-    check_valid
+    @logger.info "last_m #{@last_m}"
+    @logger.info "last_rebuild_m #{@last_rebuild_m}"
+    @logger.info "last_c_m #{@last_c_m}"
+    @logger.info "last_complete_m #{@last_complete_m}"
   end
 
   def copy_m(from_m)
     target_m = File.join(mdb, from_m.name)
     if File.exists? target_m
-      puts "#{target_m} exists, copy_m failed"
+      @logger.error "#{target_m} exists, copy_m failed"
       return false
     end
-    puts "copy #{from_m.path} to #{target_m}"
+    @logger.info "copy #{from_m.path} to #{target_m}"
     FileUtils.cp_r from_m.path, target_m
-    puts "copied"
+    @logger.info "copied"
     return true
-  end
-
-  def m_release
-    return if @last_rebuild_m.nil?
-    puts "last_rebuild_m #{@last_rebuild_m}"
-    gap = @last_rebuild_m
-    unless @last_db_m.nil?
-      puts "last_db_m #{@last_db_m}"
-      gap = [@last_rebuild_m, @last_db_m].min
-    end
-    puts "m_release gap #{gap}"
-    new_m_list = []
-    @m_list.each do |m|
-      if m<gap
-        puts "releasing #{m}"
-        m.delete
-      else
-        new_m_list << m
-      end
-    end
-    @m_list = new_m_list
   end
 
   def work_dir
 
     config.path_of('work_dir')
-  end
-
-  def knowledge
-
-    File.join(work_dir, "knowledge")
-  end
-
-  def bdb
-
-    File.join(knowledge, 'bdb')
   end
 
   def db
@@ -214,52 +164,28 @@ class B5mTask
 
   def matcher_start(m)
     @m = m
-    if m.exists?
-      raise "m #{@m} already exists"
-    end
-    m.create
     m.status = "matching"
     m.flush
     #then copy related db to the new m
-    if m.mode==0 and !last_odb.nil?
-      puts "copy #{last_odb} to #{m.odb}"
-      FileUtils.cp_r(last_odb, m.odb)
-    end
-    if m.cmode==0 and !last_cdb.nil?
-      puts "copy #{last_cdb} to #{m.cdb}"
-      FileUtils.cp_r(last_cdb, m.cdb)
-    end
-    scd_path = scd
-    if m.mode==0 #incremental
-      scd_path = File.join(scd, "incremental")
-    else
-      scd_path = File.join(scd, "rebuild")
-    end
-    unless File.directory?(scd_path)
-      scd_path = scd
-    end
-    comment_scd_path = comment_scd
-    puts "offer-scd:#{scd_path}"
-    puts "comment-scd:#{comment_scd_path}"
-    if !comment_scd_path.nil?
-      comment_scd_list = ScdParser.get_scd_list(comment_scd_path)
-      if comment_scd_list.empty?
-        puts "comment scd empty, set cmode=-1"
-        m.cmode = -1
-      end
-    else
-      m.cmode = -1
+    #if m.mode==0 and !last_odb.nil?
+    #  puts "copy #{last_odb} to #{m.odb}"
+    #  FileUtils.cp_r(last_odb, m.odb)
+    #end
+
+    last_o_m = @last_m
+    unless m.rtype?
+      last_o_m = @last_complete_m
     end
     cma = config.path_of('cma')
-    mobile_source = config.path_of('mobile_source')
-    human_match = config.path_of('human_match')
-    daemon = B5mDaemon.new
+    #mobile_source = config.path_of('mobile_source')
+    #human_match = config.path_of('human_match')
+    daemon = B5mDaemon.new(config.matcher_ip, config.matcher_port)
     if config.schema=="b5m"
-      unless File.exists? knowledge
-        FileUtils.mkdir_p knowledge
+      unless File.exists? m.knowledge
+        FileUtils.mkdir_p m.knowledge
       end
       #do product training
-      cmd = "--product-train -S #{train_scd} -K #{knowledge} --mode #{m.mode} -C #{cma}"
+      cmd = "--product-train -S #{train_scd} -K #{m.knowledge} --mode #{m.mode} -C #{cma}"
       unless config.thread_num.nil?
         cmd += " --thread-num #{config.thread_num}"
       end
@@ -288,33 +214,24 @@ class B5mTask
             FileUtils.cp config.omapper, m.omapper_data
           end
         end
-        cmd = "--b5mo-generate -S #{scd_path} -K #{knowledge} -C #{cma} --mode #{m.mode} --odb #{m.odb} --mdb-instance #{m} --mobile-source #{mobile_source}"
-        cmd+=" --bdb #{bdb}"
+        cmd = "--b5mo-generate --mdb-instance #{m}"
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
-        end
-        unless human_match.nil?
-          cmd+=" --human-match #{human_match}"
-        end
-        unless config.thread_num.nil?
-          cmd += " --thread-num #{config.thread_num}"
         end
         unless daemon.run(cmd)
           abort("b5mo generate failed")
         end
+        #cmd = "--b5mo-check --mdb-instance #{m}"
+        #if !last_o_m.nil? and m.mode==0
+        #  cmd+=" --last-mdb-instance #{last_o_m}"
+        #end
+        #unless daemon.run(cmd)
+        #  abort("b5mo check failed")
+        #end
         #b5mp generator
         cmd = "--b5mp-generate --mdb-instance #{m}"
         if !last_o_m.nil? and m.mode==0
           cmd+=" --last-mdb-instance #{last_o_m}"
-        end
-        if config.spu_only?
-          cmd+=" --spu-only"
-        end
-        unless config.thread_num.nil?
-          cmd += " --thread-num #{config.thread_num}"
-        end
-        unless config.buffer_size.nil?
-          cmd += " --buffer-size #{config.buffer_size}"
         end
         unless daemon.run(cmd)
           abort("b5mp generate failed")
@@ -322,38 +239,47 @@ class B5mTask
       end
 
       if m.cmode>=0
-        cname = File.basename(comment_scd_path)
+        cname = File.basename(m.comment_scd)
         ctime = Time.at(0)
         if cname =~ /\d{14}/
           ctime = DateTime.strptime(cname, "%Y%m%d%H%M%S").to_time
         end
         m.ctime = ctime
         #b5mc generator
-        cmd = "--b5mc-generate -S #{comment_scd_path} --mode #{m.cmode} --mdb-instance #{m}"
+        cmd = "--b5mc-generate --mdb-instance #{m}"
         if !last_c_m.nil? and m.cmode==0
           cmd+=" --last-mdb-instance #{last_c_m}"
-        end
-        unless config.thread_num.nil?
-          cmd += " --thread-num #{config.thread_num}"
         end
         unless daemon.run(cmd)
           abort("b5mc generate failed")
         end
       end
     elsif config.schema=="ticket"
-      cmd = "--ticket-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
+      cmd = "--ticket-generate --mdb-instance #{m}"
       unless daemon.run(cmd)
         abort("ticket generate failed")
       end
     elsif config.schema=="tuan"
-      cmd = "--tuan-generate -S #{scd_path} -C #{cma} --mdb-instance #{m}"
+      cmd = "--tuan-generate --mdb-instance #{m}"
       unless daemon.run(cmd)
         abort("tuan generate failed")
+      end
+    elsif config.schema=="tour"
+      cmd = "--tour-generate --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("tour generate failed")
+      end
+    elsif config.schema=="hotel"
+      cmd = "--hotel-generate --mdb-instance #{m}"
+      unless daemon.run(cmd)
+        abort("hotel generate failed")
       end
     else
       abort("schema error")
     end
     m.status = "matched"
+    sleep 5.0
+    m.count_scd
     m.flush
     gen
   end
@@ -365,7 +291,17 @@ class B5mTask
   #end
 
   def apply(m, opt={})
-    @indexer.index(m, opt)
+    begin
+      @indexer.index(m, opt)
+      if config.schema=="__other"
+        sleep 5.0
+        m.count_scd
+        m.flush
+      end
+    rescue Exception => e
+      STDERR.puts "exception #{e} in indexing #{m}"
+      raise e
+    end
     if m.is_a? Array
       m.each do |im|
         im.status = "finished"
@@ -380,8 +316,8 @@ class B5mTask
   def send_mail(m)
     return if m.nil?
     return if m.status!="finished" and m.status!="matched"
-    puts "start to send mail at #{m}"
-    subject = "Matcher (#{config.schema})"
+    @logger.info "start to send mail at #{m}"
+    subject = "Matcher/Index (#{config.coll_name})"
     if m.mode>0
       subject += ' Rebuild'
     elsif m.mode==0
@@ -389,24 +325,40 @@ class B5mTask
     elsif m.cmode>=0
       subject += ' Comment Only'
     end
+    if config.schema=="b5m"
+      subject += " (rtype #{m.rtype})"
+    end
     #subject += " to #{config.first_ip}"
     subject += ' Finish'
     body = "schema #{config.schema}\n"
-    body = "working path #{m.path}\n"
+    body += "collection_name #{config.coll_name}\n"
+    body += "working path #{m.path}\n"
     body += "timestamp #{m.name}\n"
     body += "o/p mode #{m.mode}\n"
     body += "c mode #{m.cmode}\n"
+    body += "rtype #{m.rtype}\n"
     body += "start_time #{m.start_time}\n"
-    ou_count, od_count = ScdParser.get_ud_doc_count(m.b5mo)
-    pu_count, pd_count = ScdParser.get_ud_doc_count(m.b5mp)
-    cu_count, cd_count = ScdParser.get_ud_doc_count(m.b5mc)
-    body += "b5mo update(rtype) doc count #{ou_count}\n"
-    body += "b5mo delete doc count #{od_count}\n"
-    body += "b5mp update(rtype) doc count #{pu_count}\n"
-    body += "b5mp delete doc count #{pd_count}\n"
-    body += "b5mc update doc count #{cu_count}\n"
-    body += "b5mc delete doc count #{cd_count}\n"
-
+    #ou_count, od_count = ScdParser.get_ud_doc_count(m.b5mo)
+    #pu_count, pd_count = ScdParser.get_ud_doc_count(m.b5mp)
+    #cu_count, cd_count = ScdParser.get_ud_doc_count(m.b5mc)
+    if m.ou_count>0
+      body += "O insert/update/rtype doc count #{m.ou_count}\n"
+    end
+    if m.od_count>0
+      body += "O delete doc count #{m.od_count}\n"
+    end
+    if m.pu_count>0
+      body += "P insert/update/rtype doc count #{m.pu_count}\n"
+    end
+    if m.pd_count>0
+      body += "P delete doc count #{m.pd_count}\n"
+    end
+    if m.cu_count>0
+      body += "C update doc count #{m.cu_count}\n"
+    end
+    if m.cd_count>0
+      body += "C delete doc count #{m.cd_count}\n"
+    end
 
     begin
 
@@ -417,7 +369,7 @@ class B5mTask
                    :subject => subject, 
                    :body => body})
     rescue Exception => e
-      puts "send mail error #{e}"
+      @logger.error "send mail error #{e}"
     end
 
   end
@@ -431,6 +383,5 @@ private
     end
   end
 
-
-
 end
+

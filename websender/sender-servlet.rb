@@ -1,5 +1,6 @@
 require "rubygems"
 require "sf1-driver"
+require 'sf1-util/sf1_driver_or_nginx'
 require "json"
 require "webrick"
 include WEBrick
@@ -50,7 +51,7 @@ class SenderServlet < HTTPServlet::AbstractServlet
   end
 
   def sf1
-    @sf1 ||= Sf1Driver.new(CONFIG[:BA][:IP], CONFIG[:BA][:Port])
+    @sf1 ||= Sf1DriverOrNginx.new(CONFIG[:BA][:IP], CONFIG[:BA][:Port], CONFIG[:NGINX_POSTFIX])
   end
   
 end

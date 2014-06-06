@@ -2,16 +2,22 @@ require 'yaml'
 require 'tmpdir'
 
 class B5mConfig
-  attr_reader :file, :config, :id, :name, :schema, :b5mo_name, :b5mp_name, :b5mc_name, :omapper, :thread_num, :buffer_size
+  attr_reader :file, :config, :id, :name, :schema, :matcher_ip, :matcher_port, :coll_name, :collection_name, :o_collection_name, :p_collection_name, :a_collection_name, :c_collection_name, :omapper, :thread_num, :buffer_size, :sorter_bin, :imc, :auto_rebuild, :omapper, :complete_interval
   def initialize(file)
     @file = File.expand_path(file)
-    @config = YAML.load_file(@file)["config"]
+    root = YAML.load_file(@file)
+    @config = root["config"]
+    @config = root if @config.nil?
     @id = File.basename(@file, ".yml")
-    @name = @id
-    @name = @config['name'] unless @config['name'].nil?
+    @name = @config['name']
     @schema = "b5m"
     unless @config['schema'].nil?
       @schema = @config['schema']
+    end
+    @matcher_ip = "0.0.0.0"
+    @matcher_port = 18190
+    unless @config['matcher_port'].nil?
+      @matcher_port = @config['matcher_port']
     end
     @omapper = @config['omapper']
     @thread_num = nil
@@ -21,6 +27,45 @@ class B5mConfig
     @buffer_size = nil
     unless @config['buffer_size'].nil?
       @buffer_size = @config['buffer_size']
+    end
+    @sorter_bin = nil
+    unless @config['sorter_bin'].nil?
+      @sorter_bin = @config['sorter_bin']
+    end
+    @imc = 0
+    unless @config['imc'].nil?
+      @imc = @config['imc'].to_i
+    end
+    @auto_rebuild = @config['auto_rebuild']
+    @omapper = @config['omapper']
+    if @config['path_of']['work_dir'].nil?
+      @config['path_of']['work_dir'] = File.join(File.dirname(@file), "work_dir")
+    end
+    @complete_interval = @config['complete_interval']
+    if @complete_interval.nil?
+      @complete_interval = 24*3600
+    end
+    @coll_name = @schema
+    indexer = @config['indexer']
+    unless indexer.nil?
+      collection_name = indexer['collection_name']
+      unless collection_name.nil?
+        @coll_name = collection_name
+      end
+    end
+    @collection_name = @coll_name
+    @o_collection_name = "#{@collection_name}o"
+    @p_collection_name = "#{@collection_name}p"
+    @a_collection_name = "#{@collection_name}a"
+    @c_collection_name = "#{@collection_name}c"
+    if @schema=="tuan"
+      @o_collection_name = "#{@collection_name}m"
+      @p_collection_name = "#{@collection_name}a"
+    end
+      
+    unless indexer.nil?
+      @o_collection_name = indexer['o_collection_name'] unless indexer['o_collection_name'].nil?
+      @p_collection_name = indexer['p_collection_name'] unless indexer['p_collection_name'].nil?
     end
     #@b5mo_name = "#{name}o"
     #@b5mp_name = "#{name}p"
@@ -97,6 +142,11 @@ class B5mConfig
     return false if @config['monitor'].nil?
     return @config['monitor']
   end
+  def use_rtype?
+
+    return false if @config['use_rtype'].nil?
+    return @config['use_rtype']
+  end
 
   def monitor_interval
     return 0 if @config['monitor_interval'].nil?
@@ -130,6 +180,13 @@ class B5mConfig
   def scd_done_name
     return "done" if @config['scd_done_name'].nil?
     return @config['scd_done_name']
+  end
+
+  def save(file)
+    obj = {:config => @config}
+    File.open(file, "w") do |f|
+      f.puts obj.to_yaml
+    end
   end
 
   #def sf1_instances
