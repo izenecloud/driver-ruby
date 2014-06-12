@@ -1,0 +1,42 @@
+{
+  "title":"forecast price",
+  "type":"map",
+  "desc":"forecast price",
+  "mapping": {
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "collection": {
+      "type": "str",
+      "desc": "collection name",
+      "required": true
+    },
+
+    "price_history": {
+      "type": "seq",
+      "desc": "price_history",
+      "sequence": [{
+        "type": "map",
+		"mapping":{
+			"price":{
+				"type":"int",
+				"desc":"price."
+			},
+
+			"month":{
+				"type":"int",
+				"desc":"monthly."
+			},
+
+			"sales":{
+				"type":"int",
+				"desc":"sales."
+			}
+		}
+      }]
+    }
+  }
+}
