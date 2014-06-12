@@ -127,6 +127,24 @@
       }]
     },
 
+    "geolocation": {
+      "type": "map",
+      "mapping": {
+        "property": {
+          "type": "str",
+          "desc": "geo location property name"
+        },
+        "latitude": {
+          "type": "str",
+          "desc": "latitude of target location"
+        },
+        "longitude": {
+          "type": "str",
+          "desc": "longitude of target location"
+        }
+      }
+    },
+
     "limit": {
       "type": "int",
       "desc": "Number of documents in page"
