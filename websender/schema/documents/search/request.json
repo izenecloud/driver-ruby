@@ -132,15 +132,18 @@
       "mapping": {
         "property": {
           "type": "str",
-          "desc": "geo location property name"
+          "desc": "geo location property name",
+          "required": true
         },
         "latitude": {
           "type": "str",
-          "desc": "latitude of target location"
+          "desc": "latitude of target location",
+          "required": true
         },
         "longitude": {
           "type": "str",
-          "desc": "longitude of target location"
+          "desc": "longitude of target location",
+          "required": true
         }
       }
     },
