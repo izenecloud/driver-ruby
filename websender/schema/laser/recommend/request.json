@@ -1,0 +1,23 @@
+{
+  "title":"Search Documents",
+  "type":"map",
+  "desc":"Search documents from SF1",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "select": {
+      "type": "seq",
+      "sequence": $(select)
+    }
+
+  }
+}
