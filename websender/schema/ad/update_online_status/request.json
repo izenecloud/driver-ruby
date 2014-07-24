@@ -1,0 +1,34 @@
+{
+  "title":"set online status ad creative",
+  "type":"map",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+        "type": "seq",
+        "required": true,
+        "sequence": [{
+            "type": "map",
+            "mapping": {
+                "DOCID": {
+                    "type": "str",
+                    "required": true
+                },
+                "is_online_ad": {
+                    "type": "bool",
+                    "required": true
+                }
+            }
+        }]
+    }        
+  }
+}

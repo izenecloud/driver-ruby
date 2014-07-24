@@ -1,0 +1,14 @@
+{
+  "collection": "example",
+  "resource":
+  {
+      "DOCID": "",
+      "bidphrase": 
+      [
+        {
+          "ad_keyword": "key2",
+          "bidprice": 200
+        }
+      ]
+  }
+}

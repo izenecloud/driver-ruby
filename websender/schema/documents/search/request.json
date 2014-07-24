@@ -144,6 +144,11 @@
           "type": "str",
           "desc": "longitude of target location",
           "required": true
+        },
+		"scope": {
+          "type": "str",
+          "desc": "search nearby scope(accuracy:meters)",
+          "required": true
         }
       }
     },
