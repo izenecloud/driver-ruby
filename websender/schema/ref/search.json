@@ -48,6 +48,26 @@
       }
     }]
   },
+  "ad_search": {
+    "desc": "Informations that are used to retrieve ads",
+    "type": "seq",
+    "sequence": [{
+      "title": "item",
+      "type": "map",
+      "mapping": {
+        "property": {
+          "type": "str",
+          "required": true,
+          "desc": "the attribute name"
+        },
+        "value": {
+          "type": "str",
+          "required": true,
+          "desc": "the attribute value"
+        }
+      }
+    }]
+  },
   "attr_label": {
     "desc": "Only get documents in the specified attribute groups",
     "type": "seq",
@@ -96,13 +116,17 @@
         "type": "str",
         "desc": "Searching mode name"
       },
+      "algorithm": {
+        "type": "str",
+        "desc": "Searching algorithm name, used for ZambeziSearch, SVS, WAND, WAND_AND, WAND_OR, MBWAND"
+      },
       "threshold": {
         "type": "str",
         "desc": "threshold corresponding to wand mode"
       },
       "lucky": {
         "type": "str",
-        "desc": "largest number of documents to return"
+        "desc": "largest number of MBWAND documents to return"
       },
       "use_fuzzy": {
         "type": "bool",
@@ -115,6 +139,30 @@
       "original_query": {
         "type": "bool",
         "desc": "option to use original query or modified query"
+      },
+      "use_fuzzyThreshold": {
+        "type": "bool",
+        "desc": "option to use fuzzy search threshold for majortokens and minortokens"
+      },
+      "fuzzy_threshold": {
+        "type": "str",
+        "desc": "fuzzy threshold corresponding to majortokens and minortokens"
+      },
+      "tokens_threshold": {
+        "type": "str",
+        "desc": "fuzzy threshold corresponding to majortokens and minortokens"
+      },
+      "use_pivilegeQuery": {
+        "type": "bool",
+        "desc": "option to use privilege query ... "
+      },
+      "privilege_Query": {
+        "type": "str",
+        "desc": "privilege query that can get extra weight ..."
+      },
+      "privilege_Weight": {
+        "type": "str",
+        "desc": "between 0.1 and 1.0"
       }
     }
   },

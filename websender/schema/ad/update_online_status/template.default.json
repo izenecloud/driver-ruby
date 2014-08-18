@@ -1,0 +1,14 @@
+{
+  "collection": "example",
+  "resource":
+  [
+    {
+      "DOCID": "",
+      "is_online_ad": true
+    },
+    {
+      "DOCID": "",
+      "is_online_ad": false
+    }
+  ]
+}

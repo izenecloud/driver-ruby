@@ -1,0 +1,31 @@
+{
+  "title":"Set ad campaign budget",
+  "type":"map",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "ad_campaign": {
+          "type": "str",
+          "required": true
+        },
+        "bidbudget": {
+          "type": "str",
+          "required": true
+        }
+      },
+      "required":true
+    }
+  }
+}

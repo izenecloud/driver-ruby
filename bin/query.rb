@@ -26,6 +26,7 @@ File.open(json_fname, "r") do |fs|
     request["header"] = {"check_time" => true}
 
     response = conn.call(request["uri"], request)
+    puts response
     puts "omitting the 1st query time: #{response["timers"]["process_time"]}"
 end
 

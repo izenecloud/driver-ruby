@@ -1,0 +1,37 @@
+{
+  "title":"del bid phrase for the ad creative",
+  "type":"map",
+  "mapping": {
+    "collection": {
+      "type":"str",
+      "desc":"Specify a collection name",
+      "required":true
+    },
+
+    "header": {
+      "type":"map",
+      "mapping": $(header)
+    },
+
+    "resource": {
+      "type":"map",
+      "mapping": {
+        "DOCID": {
+          "type": "str",
+          "required": true,
+          "desc": "ad creative docid"
+        },
+        "bidphrase": {
+          "type": "seq",
+          "required": true,
+          "sequence": [{
+            "type": "str",
+            "required": true,
+            "desc": "the keyword list"
+          }]
+        }        
+      },
+      "required":true
+    }
+  }
+}
