@@ -1,0 +1,8 @@
+{
+  "collection": "example",
+  "resource":
+  {
+      "ad_campaign": "campaign1",
+      "bidbudget": "1000"
+  }
+}
