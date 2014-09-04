@@ -213,6 +213,10 @@ class B5mM
     File.join(path, "bdb")
   end
 
+  def psm
+
+    File.join(path, "psm")
+  end
 
 end
 

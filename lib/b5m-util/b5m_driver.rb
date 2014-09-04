@@ -43,6 +43,7 @@ class B5mDriver
     #  cmode = 1
     #end
     mname = B5mM.get_a_name
+    m = nil
     if config.monitor?
       auto_rebuild = config.auto_rebuild
       if auto_rebuild.nil?
@@ -108,13 +109,23 @@ class B5mDriver
       elsif input_scd_list.size==1 or config.schema=="__other"
         input_scd = input_scd_list.first.path
         mname = input_scd_list.first.name
+        m = B5mM.new(task.mdb, mname)
+        if m.exists?
+          STDERR.puts "m #{@m} already exists"
+          return
+        end
       else
+        mname = input_scd_list.last.name
+        m = B5mM.new(task.mdb, mname)
+        if m.exists?
+          STDERR.puts "m #{@m} already exists"
+          return
+        end
         input_b5m_scd = merge_scd(input_scd_list)
         if input_b5m_scd.nil?
           input_scd = nil
         else
           input_scd = input_b5m_scd.path
-          mname = input_b5m_scd.name
         end
       end
       input_comment_scd = input_comment_scd.path unless input_comment_scd.nil?
@@ -124,7 +135,7 @@ class B5mDriver
           input_scd_list = ScdParser.get_scd_list(input_scd)
           input_scd_list.each do |scd|
             scd_type = ScdParser.scd_type(scd)
-            if scd_type==ScdParser::RTYPE_SCD
+            if scd_type==ScdParser::RTYPE_SCD or scd_type==ScdParser::DELETE_SCD
               rtype_count+=1
             end
           end
@@ -134,8 +145,10 @@ class B5mDriver
         end
       end
     end
+    if m.nil?
+      return
+    end
     unless input_scd.nil?
-      m = B5mM.new(task.mdb, mname)
       m.mode = mode
       m.cmode = cmode
       m.scd = input_scd
@@ -156,9 +169,6 @@ class B5mDriver
       #end
       last_start_time = Time.now
       task.print_last
-      if m.exists?
-        raise "m #{@m} already exists"
-      end
       scd_path = m.scd
       if m.mode==0 #incremental
         scd_path = File.join(m.scd, "incremental")
@@ -168,7 +178,11 @@ class B5mDriver
       if File.directory?(scd_path)
         m.scd = scd_path
       end
-      m.knowledge = File.join(config.path_of("work_dir"), "knowledge")
+      knowledge = config.path_of("knowledge")
+      if knowledge.nil?
+        knowledge = File.join(config.path_of("work_dir"), "knowledge")
+      end
+      m.knowledge = knowledge
       @logger.info "schema:#{schema}"
       @logger.info "mode:#{mode}"
       @logger.info "cmode:#{cmode}"
@@ -214,7 +228,7 @@ private
       scd_list.each do |scd|
         if @rtype
           scd_type = ScdParser.scd_type(scd)
-          next if scd_type!=ScdParser::RTYPE_SCD
+          next if scd_type!=ScdParser::RTYPE_SCD and scd_type!=ScdParser::DELETE_SCD
         end
         FileUtils.cp scd, input_cache_dir
         count+=1

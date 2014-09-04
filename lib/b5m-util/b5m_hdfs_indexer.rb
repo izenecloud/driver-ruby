@@ -45,7 +45,7 @@ class B5mHdfsIndexer
     if schema=="__other"
       return get_collections_detail([])
     elsif schema=="b5m"
-      return get_collections_detail(['o','p','a','c'])
+      return get_collections_detail(['o','p','a','q','c'])
     elsif schema=="tuan"
       return get_collections_detail(['m','a'])
     else
@@ -175,22 +175,29 @@ class B5mHdfsIndexer
       tp = target_path(collection, m)
       mode = get_mode(collection, m)
       STDERR.puts "stm : #{sp}, #{tp}, #{mode}"
-      scd_list = ScdParser::get_scd_list(sp)
-      if scd_list.empty? or mode<0
-        STDERR.puts "#{collection.name} scd list empty or mode<0, ignore"
-        next
-      end
-      if sp!=tp
-        STDERR.puts "need to copy scd"
-        sleep 10.0
-        cmd_list = []
-        cmd_list << "rm -rf #{tp}"
-        cmd_list << "mkdir -p #{tp}"
-        cmd_list << "cp #{sp}/*.SCD #{tp}/"
-        cmd_list.each do |cmd|
-          STDERR.puts cmd
-          system(cmd)
-          raise "cmd fail" unless $?.success?
+      tp_scd_list = ScdParser::get_scd_list(tp)
+      if tp_scd_list.empty?
+        if sp.nil?
+          STDERR.puts "SP nil, next"
+          next
+        end
+        scd_list = ScdParser::get_scd_list(sp)
+        if scd_list.empty? or mode<0
+          STDERR.puts "#{collection.name} scd list empty or mode<0, ignore"
+          next
+        end
+        if sp!=tp
+          STDERR.puts "need to copy scd"
+          sleep 10.0
+          cmd_list = []
+          cmd_list << "rm -rf #{tp}"
+          cmd_list << "mkdir -p #{tp}"
+          cmd_list << "cp #{sp}/*.SCD #{tp}/"
+          cmd_list.each do |cmd|
+            STDERR.puts cmd
+            system(cmd)
+            raise "cmd fail" unless $?.success?
+          end
         end
       end
       itp = tp #index target path

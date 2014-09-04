@@ -112,6 +112,7 @@ class B5mTask
             FileUtils.rm_rf m.b5mo_mirror
             FileUtils.rm_rf m.b5mo_block
             FileUtils.rm_rf m.odb
+            FileUtils.rm_rf m.psm
           end
         end
       end
@@ -325,7 +326,7 @@ class B5mTask
     elsif m.cmode>=0
       subject += ' Comment Only'
     end
-    if config.schema=="b5m"
+    if config.schema=="b5m" and config.coll_name=="b5m"
       subject += " (rtype #{m.rtype})"
     end
     #subject += " to #{config.first_ip}"
