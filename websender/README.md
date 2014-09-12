@@ -1,3 +1,3 @@
-Ruby Client Tool for SF1R
+Web API Test Tool for SF1R
 ==========================
 
