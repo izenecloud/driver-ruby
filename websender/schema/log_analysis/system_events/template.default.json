@@ -1,8 +1,0 @@
-{
-  "select": ["source", "content", "timestamp"],
-  "conditions": [
-    {"property":"timestamp", "operator":"between", "value":[1.0, 10.0]},
-    {"property":"level", "operator":"in", "value":["warn", "error"]}
-  ],
-  "sort": [{"property": "timestamp"}]
-}

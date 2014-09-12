@@ -3,7 +3,8 @@
   html: text/html
   js: application/x-javascript
   css: text/css
-
+#Note off if you want to send to nginx
+#:NGINX_POSTFIX: sf1r
 :BA:
   :IP: localhost
   :Port: 18181
